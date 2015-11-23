@@ -8,59 +8,68 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_register" tools:context="com.wordofmouth.Register">
 
-    <EditText
-        android:id = "@+id/regnameField"
-        android:layout_marginTop="150dp"
-        android:hint="@string/RegisterNameHint"
-        android:textColor="#FFF"
-        android:background="#d3d3d3"
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="40dp" />
+        android:layout_height="match_parent">
 
-    <EditText
-        android:id = "@+id/regemailField"
-        android:layout_marginTop="5dp"
-        android:hint="@string/RegisterEmailHint"
-        android:inputType="textEmailAddress"
-        android:textColor="#FFF"
-        android:background="#d3d3d3"
-        android:layout_width="match_parent"
-        android:layout_height="40dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <EditText
+                android:id = "@+id/regnameField"
+                android:layout_marginTop="150dp"
+                android:hint="@string/RegisterNameHint"
+                android:textColor="#FFF"
+                android:background="#d3d3d3"
+                android:layout_width="match_parent"
+                android:layout_height="40dp" />
 
-    <EditText
-        android:id = "@+id/regusernameField"
-        android:layout_marginTop="5dp"
-        android:hint="@string/RegisterUsernameHint"
-        android:textColor="#FFF"
-        android:background="#d3d3d3"
-        android:layout_width="match_parent"
-        android:layout_height="40dp" />
+            <EditText
+                android:id = "@+id/regemailField"
+                android:layout_marginTop="5dp"
+                android:hint="@string/RegisterEmailHint"
+                android:inputType="textEmailAddress"
+                android:textColor="#FFF"
+                android:background="#d3d3d3"
+                android:layout_width="match_parent"
+                android:layout_height="40dp" />
 
-    <EditText
-        android:id = "@+id/regpasswordField"
-        android:layout_marginTop="5dp"
-        android:inputType="textPassword"
-        android:hint="@string/RegisterPasswordHint"
-        android:textColor="#FFF"
-        android:background="#d3d3d3"
-        android:layout_width="match_parent"
-        android:layout_height="40dp" />
+            <EditText
+                android:id = "@+id/regusernameField"
+                android:layout_marginTop="5dp"
+                android:hint="@string/RegisterUsernameHint"
+                android:textColor="#FFF"
+                android:background="#d3d3d3"
+                android:layout_width="match_parent"
+                android:layout_height="40dp" />
 
-    <Button
-        android:id="@+id/registerButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="@string/RegisterButtonText"/>
+            <EditText
+                android:id = "@+id/regpasswordField"
+                android:layout_marginTop="5dp"
+                android:inputType="textPassword"
+                android:hint="@string/RegisterPasswordHint"
+                android:textColor="#FFF"
+                android:background="#d3d3d3"
+                android:layout_width="match_parent"
+                android:layout_height="40dp" />
 
-    <TextView
-        android:id = "@+id/loginme"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="35dp"
-        android:layout_gravity="center_horizontal"
-        android:text="@string/RegisterAlreadyRegisteredText"
-        android:textStyle="bold"
-        android:textColor="#FFF" />
+            <Button
+                android:id="@+id/registerButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/RegisterButtonText"/>
 
+            <TextView
+                android:id = "@+id/loginme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="35dp"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/RegisterAlreadyRegisteredText"
+                android:textStyle="bold"
+                android:textColor="#FFF" />
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

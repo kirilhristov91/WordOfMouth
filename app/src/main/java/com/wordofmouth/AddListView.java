@@ -15,7 +15,7 @@ public class AddListView extends AppCompatActivity implements View.OnClickListen
 
     EditText listNameField;
     EditText listDescriptionField;
-
+    UserLocalStore userLocalStore;
     Spinner dropDown;
     Button createNewListButton;
     DBHandler dbHandler;
@@ -30,7 +30,7 @@ public class AddListView extends AppCompatActivity implements View.OnClickListen
         setSupportActionBar(toolbar);
 
         dbHandler= DBHandler.getInstance(this);
-
+        userLocalStore = new UserLocalStore(this);
         listNameField = (EditText) findViewById(R.id.listNameField);
         listDescriptionField = (EditText) findViewById(R.id.listDescriptionField);
         dropDown = (Spinner) findViewById(R.id.dropDown);
@@ -53,7 +53,7 @@ public class AddListView extends AppCompatActivity implements View.OnClickListen
         });
 
         createNewListButton.setOnClickListener(this);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
@@ -65,7 +65,8 @@ public class AddListView extends AppCompatActivity implements View.OnClickListen
                 if (dropDownChoice.equals("private")) visibility = 0;
                 else visibility = 1;
                 MyList list = new MyList(listNameField.getText().toString(), visibility, listDescriptionField.getText().toString());
-                dbHandler.addList(list);
+                int currentUserId = userLocalStore.userLocalDatabase.getInt("id",0);
+                dbHandler.addList(list, currentUserId);
                 //printdatabase();
                 //dbHandler.addList(list);
                 startActivity(new Intent(this, MainActivity.class));

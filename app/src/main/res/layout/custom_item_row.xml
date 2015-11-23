@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--suppress AndroidDomInspection -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp">
+
+
+    <ImageView
+        android:id="@+id/itemImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/itemimage"/>
+
+    <TextView
+        android:id="@+id/itemTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Title"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_alignTop="@+id/itemImage"
+        android:layout_alignLeft="@+id/addedBy"
+        android:layout_alignStart="@+id/addedBy" />
+
+    <TextView
+        android:id="@+id/addedBy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Added by:"
+        android:textSize="15sp"
+        android:layout_below="@+id/customRowRatingBar"
+        android:layout_toRightOf="@+id/itemImage"
+        android:layout_toEndOf="@+id/itemImage" />
+
+
+    <RatingBar
+        android:id="@+id/customRowRatingBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numStars="3"
+        android:stepSize="0.5"
+        android:isIndicator="true"
+
+        android:layout_below="@+id/itemTitle"
+        android:layout_alignLeft="@+id/itemTitle"
+        android:layout_alignStart="@+id/itemTitle" />
+
+    <ImageView
+        android:id="@+id/forwardImage"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/forward"
+        android:layout_alignTop="@+id/customRowRatingBar"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+
+</RelativeLayout>

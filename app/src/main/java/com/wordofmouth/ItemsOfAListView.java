@@ -35,7 +35,7 @@ public class ItemsOfAListView extends AppCompatActivity implements View.OnClickL
         itemsListView = (ListView) findViewById(R.id.itemsListView);
 
         // get the sent information from Another activity
-        // there is no listID 0 in the database so set 0 as default value
+        // there is no listID 0 in the database so set 0 as itemimage value
         Intent intent = getIntent();
         selectedListId = intent.getIntExtra("listId", 0);
         listName = intent.getStringExtra("name");
@@ -55,7 +55,7 @@ public class ItemsOfAListView extends AppCompatActivity implements View.OnClickL
         }
 
         ArrayAdapter<String> womAdapter =
-                new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, itemNames);
+                new CustomItemRowAdapter(this, itemNames,items);
         itemsListView.setAdapter(womAdapter);
 
         // set adapter listener to open itemView if there is an item selected

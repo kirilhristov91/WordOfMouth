@@ -92,10 +92,9 @@ public class DBHandler extends SQLiteOpenHelper{
     }
 
     //Add a new row to table lists
-    public void addList(MyList ul){
+    public void addList(MyList ul, int userId){
         ContentValues values = new ContentValues();
-        // change the creator id when ready with login!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        values.put(COLUMN_CreatorID, 1);
+        values.put(COLUMN_CreatorID, userId);
         values.put(COLUMN_Name, ul.get_name());
         values.put(COLUMN_Visibility, ul.get_visibility());
         values.put(COLUMN_Description, ul.get_description());

@@ -14,6 +14,7 @@ public class UserLocalStore {
 
     public void storeUserData(User user){
         SharedPreferences.Editor editor = userLocalDatabase.edit();
+        editor.putInt("id", user.id);
         editor.putString("name", user.name);
         editor.putString("email", user.email);
         editor.putString("username", user.username);
@@ -22,12 +23,13 @@ public class UserLocalStore {
     }
 
     public User getUserLoggedIn(){
+        int id = userLocalDatabase.getInt("id", 0);
         String name = userLocalDatabase.getString("name", "");
         String email = userLocalDatabase.getString("email", "");
         String username = userLocalDatabase.getString("username", "");
         String password = userLocalDatabase.getString("password", "");
 
-        User u = new User(name, email, username, password);
+        User u = new User(id,name, email, username, password);
         return u;
     }
 

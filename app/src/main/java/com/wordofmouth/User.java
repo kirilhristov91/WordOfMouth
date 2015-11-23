@@ -4,10 +4,11 @@ package com.wordofmouth;
  * Created by kirchoni on 10/11/15.
  */
 public class User {
-
+    int id;
     String name, username, email, password;
 
-    public User(String name, String email, String username, String password){
+    public User(int id, String name, String email, String username, String password){
+        this.id = id;
         this.name = name;
         this.email = email;
         this.username = username;
@@ -15,10 +16,19 @@ public class User {
     }
 
     public User(String username, String password){
+        this.id = 0;
         this.username = username;
         this.password = password;
         this.name = "";
         this.email = "";
+    }
+
+    public void setId(int id){
+        this.id = id;
+    }
+
+    public int getId(){
+        return this.id;
     }
 
     public String getName() {

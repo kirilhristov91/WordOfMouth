@@ -34,12 +34,13 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
     public void onClick(View v){
         switch(v.getId()){
             case R.id.registerButton:
+                int id=0;
                 String name = regnameField.getText().toString();
                 String email = regemailField.getText().toString();
                 String username = regusernameField.getText().toString();
                 String password = regpasswordField.getText().toString();
 
-                User user = new User(name, email, username, password);
+                User user = new User(id,name, email, username, password);
                 registerUser(user);
 
                 break;

@@ -36,11 +36,11 @@ public class MainActivity extends AppCompatActivity{
 
         //
         userLocalStore = new UserLocalStore(this);
-
+        int currentUserId = userLocalStore.userLocalDatabase.getInt("id",0);
         // get the user`s lists to display on fragment
         dbHandler = DBHandler.getInstance(this);
         lists = new ArrayList<MyList>();
-        lists = dbHandler.getLists();
+        lists = dbHandler.getLists(currentUserId);
 
         // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
         adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,NumberOfTabs);
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onStart() {
         super.onStart();
-        //System.out.println(userLocalStore.userLocalDatabase.getAll().toString());
+        System.out.println(userLocalStore.userLocalDatabase.getAll().toString());
         if(!authenticate()){
           startActivity(new Intent(MainActivity.this, Login.class));
         }

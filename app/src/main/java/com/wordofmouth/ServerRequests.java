@@ -216,9 +216,10 @@ public class ServerRequests {
                     returnedUser = null;
                 }
                 else{
+                    int id = jResult.getInt("id");
                     String name = jResult.getString("name");
                     String email = jResult.getString("email");
-                    returnedUser = new User(name, email, user.username, user.password);
+                    returnedUser = new User(id,name, email, user.username, user.password);
                 }
 
             } catch (Exception e) {

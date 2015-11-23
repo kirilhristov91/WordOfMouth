@@ -12,6 +12,7 @@ import java.util.ArrayList;
 public class DBHandler extends SQLiteOpenHelper{
 
     private static DBHandler sInstance;
+    UserLocalStore userLocalStore;
 
     //if updating the database change the version:
     private static final int DATABASE_VERSION = 2;
@@ -123,7 +124,7 @@ public class DBHandler extends SQLiteOpenHelper{
     }*/
 
     // get the lists as list of objects
-    public ArrayList<MyList> getLists(){
+    public ArrayList<MyList> getLists(int userId){
         // prepare the variables to store a row
         int id;
         int creatorId;
@@ -133,7 +134,8 @@ public class DBHandler extends SQLiteOpenHelper{
         ArrayList<MyList> lists = new ArrayList<MyList>();
 
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT * FROM " + TABLE_USER_LISTS;
+        String query = "SELECT * FROM " + TABLE_USER_LISTS +
+                       " WHERE _creatorId = " + userId;
         // cursor points to a location in the results
         Cursor c = db.rawQuery(query, null);
         // move to the first row

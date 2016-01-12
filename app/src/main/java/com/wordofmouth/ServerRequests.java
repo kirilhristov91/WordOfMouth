@@ -43,7 +43,7 @@ public class ServerRequests {
         new FetchUserDataAsyncTask(user, userCallback).execute();
     }
 
-    public class StoreUserDataAsyncTask extends AsyncTask<Void, Void, Void>{
+    public class StoreUserDataAsyncTask extends AsyncTask<Void, Void, User>{
         User user;
         GetUserCallback userCallback;
 
@@ -54,7 +54,9 @@ public class ServerRequests {
 
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected User doInBackground(Void... params) {
+
+            User returnedUser = null;
 
             Map<String,String> dataToSend = new HashMap<>();
             dataToSend.put("name",user.getName());
@@ -83,27 +85,28 @@ public class ServerRequests {
                 OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
                 //Writing dataToSend to outputstreamwriter
                 writer.write(encodedStr);
-                //Sending the data to the server - This much is enough to send data to server
-                //But to read the response of the server, you will have to implement the procedure below
+                //Sending the data to the server
                 writer.flush();
 
-
-                //Data Read Procedure - Basically reading the data comming line by line
+                //Data Read Procedure
                 StringBuilder sb = new StringBuilder();
                 reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
 
                 String line;
-                while((line = reader.readLine()) != null) { //Read till there is something available
-                    sb.append(line + "\n");     //Reading and saving line by line - not all at once
+                while((line = reader.readLine()) != null) {
+                    sb.append(line);
                 }
-                line = sb.toString();           //Saving complete data received in string, you can do it differently
-
-                ////////////////////////////////////////////////////////////////////////////////////////
-                // tuka moje da slojish PROVERKA DALI TI VRYSHTA success i ako ne da praish neshto ddz
+                line = sb.toString();
 
                 //Just check to the values received in Logcat
-                Log.i("custom_check", "The values received in the store part are as follows:");
+                Log.i("custom_Register_check", "The values received in the store part are as follows:");
                 Log.i("custom_check",line);
+
+                // if username exists
+                if(line.equals("Username Already Exists")){
+                    Log.i("VLQZAH TUKA V IFA CHE VRYSHTA CHE E ZAETO","VLQZAH");
+                    returnedUser = new User(-1,"Exists","Exists","Exists","Exists");
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -120,7 +123,7 @@ public class ServerRequests {
             //Same return null, but if you want to return the read string (stored in line)
             //then change the parameters of AsyncTask and return that type, by converting
             //the string - to say JSON or user in your case
-            return null;
+            return returnedUser;
 
         }
 
@@ -143,10 +146,10 @@ public class ServerRequests {
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
+        protected void onPostExecute(User returnedUser) {
             progressDialog.dismiss();
-            userCallback.done(null);
-            super.onPostExecute(aVoid);
+            userCallback.done(returnedUser);
+            super.onPostExecute(returnedUser);
         }
     }
 

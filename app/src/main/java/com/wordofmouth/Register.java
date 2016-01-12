@@ -1,13 +1,18 @@
 package com.wordofmouth;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class Register extends AppCompatActivity implements View.OnClickListener{
 
@@ -43,22 +48,76 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
                 String username = regusernameField.getText().toString();
                 String password = regpasswordField.getText().toString();
 
-                User user = new User(id,name, email, username, password);
-                registerUser(user);
+                String generatedPassword = null;
+                try {
+                    // Create MessageDigest instance for MD5
+                    MessageDigest md = MessageDigest.getInstance("MD5");
+                    //Add password bytes to digest
+                    md.update(password.getBytes());
+                    //Get the hash's bytes
+                    byte[] bytes = md.digest();
+                    //This bytes[] has bytes in decimal format;
+                    //Convert it to hexadecimal format
+                    StringBuilder sb = new StringBuilder();
+                    for(int i=0; i< bytes.length ;i++)
+                    {
+                        sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+                    }
+                    //Get complete hashed password in hex format
+                    generatedPassword = sb.toString();
+                }
+                catch (NoSuchAlgorithmException e)
+                {
+                    e.printStackTrace();
+                }
+                System.out.println("REGISTER " + generatedPassword);
+
+                User user = new User(id,name, email, username, generatedPassword);
+
+                if(!isValidEmail(email)){
+                    showError();
+                }
+
+                else {
+                    registerUser(user);
+                }
 
                 break;
+
             case R.id.loginme:
                 startActivity(new Intent(this, Login.class));
 
         }
     }
 
+    public final static boolean isValidEmail(CharSequence target) {
+        return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+    }
+
+    private void showError(){
+        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(Register.this);
+        allertBuilder.setMessage("Invalid e-mail address!");
+        allertBuilder.setPositiveButton("OK", null);
+        allertBuilder.show();
+    }
+
+    private void showUserTakenError(){
+        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(Register.this);
+        allertBuilder.setMessage("Username is already taken");
+        allertBuilder.setPositiveButton("OK", null);
+        allertBuilder.show();
+    }
+
+
     private void registerUser(User user){
         ServerRequests serverRequests = new ServerRequests(this);
         serverRequests.storeUserDataInBackground(user, new GetUserCallback() {
             @Override
             public void done(User returnedUser) {
-                startActivity(new Intent(Register.this, Login.class));
+                if(returnedUser!=null){
+                    showUserTakenError();
+                }
+                else startActivity(new Intent(Register.this, Login.class));
             }
         });
     }

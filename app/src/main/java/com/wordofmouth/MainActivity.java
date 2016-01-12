@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity{
     ViewPager pager;
     ViewPagerAdapter adapter;
     SlidingTabLayout tabs;
-    CharSequence Titles[]={"My Lists","Shared Lists","Profile"};
+    CharSequence Titles[]={"My Lists","Shared With Me","Profile"};
     int NumberOfTabs =3;
     DBHandler dbHandler;
 

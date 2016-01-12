@@ -1,8 +1,5 @@
 package com.wordofmouth;
 
-/**
- * Created by kirchoni on 10/11/15.
- */
 public class User {
     int id;
     String name, username, email, password;

@@ -72,6 +72,7 @@ public class ItemsOfAListView extends AppCompatActivity implements View.OnClickL
                         myIntent.putExtra("itemId", itemIdClicked);
                         myIntent.putExtra("itemName", itemName);
                         startActivity(myIntent);
+                        finish();
                     }
                 }
         );
@@ -87,6 +88,7 @@ public class ItemsOfAListView extends AppCompatActivity implements View.OnClickL
                 intent.putExtra("listId", selectedListId);
                 intent.putExtra("name", listName);
                 startActivity(intent);
+                finish();
                 break;
         }
     }

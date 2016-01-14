@@ -54,6 +54,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
                         myIntent.putExtra("listId", idClicked);
                         myIntent.putExtra("name", list);
                         startActivity(myIntent);
+                        mainActivity.finish();
                     }
                 }
         );

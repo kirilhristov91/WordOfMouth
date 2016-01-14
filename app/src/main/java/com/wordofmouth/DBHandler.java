@@ -15,7 +15,7 @@ public class DBHandler extends SQLiteOpenHelper{
     UserLocalStore userLocalStore;
 
     //if updating the database change the version:
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 6;
     private static final String DATABASE_NAME = "WOM.db";
 
     //Lists table
@@ -26,7 +26,6 @@ public class DBHandler extends SQLiteOpenHelper{
     public static final String COLUMN_Visibility = "_visibility";
     public static final String COLUMN_Description = "_description";
 
-
     // Items table
     public static final String TABLE_Items = "Items";
     public static final String COLUMN_ItemID = "_itemId";
@@ -34,6 +33,11 @@ public class DBHandler extends SQLiteOpenHelper{
     public static final String COLUMN_ItemName = "_itemName";
     public static final String COLUMN_Rating = "_rating";
     public static final String COLUMN_ItemDescription = "_description";
+
+    //Profile image table
+    public static final String TABLE_Profile_Image = "ProfileImage";
+    public static final String COLUMN_UserID = "_userId";
+    public static final String COLUMN_Image = "_image";
 
 
     /*public DBHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
@@ -80,14 +84,21 @@ public class DBHandler extends SQLiteOpenHelper{
                 TABLE_USER_LISTS + "(" + COLUMN_ID + ")"+
                 ");";
 
+        String CreateProfileImageTableQuery = "CREATE TABLE " + TABLE_Profile_Image + "(" +
+                COLUMN_UserID + " INTEGER PRIMARY KEY, " +
+                COLUMN_Image + " TEXT " +
+                ");";
+
         db.execSQL(CreateListTableQuery);
         db.execSQL(CreateItemsTableQuery);
+        db.execSQL(CreateProfileImageTableQuery);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_Items);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER_LISTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_Profile_Image);
         onCreate(db);
     }
 
@@ -114,6 +125,49 @@ public class DBHandler extends SQLiteOpenHelper{
         SQLiteDatabase db = getWritableDatabase();
         db.insert(TABLE_Items, null, values);
         db.close();
+    }
+
+    public void addProfilePicture(int userId, String encodedImage){
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_Profile_Image +
+                " WHERE _userId = " + userId;
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+        if (c.getCount() > 0) {
+            String UpdatePicture = "UPDATE " + TABLE_Profile_Image +
+                    " SET " + COLUMN_Image + "=\"" + encodedImage + "\";";
+            db.execSQL(UpdatePicture);
+        }
+
+        else {
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_UserID, userId);
+            values.put(COLUMN_Image, encodedImage);
+            db.insert(TABLE_Profile_Image, null, values);
+        }
+        c.close();
+        db.close();
+    }
+
+    public String getProfilePicture(int userId){
+        String encodedImage = null;
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_Profile_Image +
+                " WHERE _userId = " + userId;
+
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+        if (c.isAfterLast()) {
+            System.out.println("NQMA NISHTO V BAZATA");
+        }
+        if(!c.isAfterLast()) {
+            if (c.getString(c.getColumnIndex(COLUMN_Image)) != null) {
+                encodedImage = c.getString(c.getColumnIndex(COLUMN_Image));
+            }
+        }
+        c.close();
+        db.close();
+        return encodedImage;
     }
 
     //Delete a list from the database

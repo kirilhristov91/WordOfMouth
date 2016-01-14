@@ -38,6 +38,7 @@ public class ProfileViewTab extends Fragment implements View.OnClickListener{
 
     DBHandler dbHandler;
     Bitmap toSave;
+    boolean fromGallery = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -146,7 +147,8 @@ public class ProfileViewTab extends Fragment implements View.OnClickListener{
         if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK){
             Bundle extras = data.getExtras();
             Bitmap image = (Bitmap) extras.get("data");
-            dbHandler.setTemp(BitMapToString(image));
+            dbHandler.setTemp(BitMapToString(image,100));
+            fromGallery = false;
         }
 
         if (requestCode == REQUEST_BROWSE_GALLERY && resultCode == Activity.RESULT_OK) {
@@ -158,7 +160,7 @@ public class ProfileViewTab extends Fragment implements View.OnClickListener{
                 //image = fixOrientation(image);
                 toSave = image;
                 profilePicture.setImageBitmap(image);
-
+                fromGallery = true;
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -167,7 +169,7 @@ public class ProfileViewTab extends Fragment implements View.OnClickListener{
 
     public void saveImageToDB(){
         User currentUser = mainActivity.userLocalStore.getUserLoggedIn();
-        String imageToSave = BitMapToString(toSave);
+        String imageToSave = BitMapToString(toSave, 100);
         System.out.println("KOLKO E GOLQM STRINGA " + imageToSave.length());
         currentUser.getId();
         dbHandler.addProfilePicture(currentUser.getId(), imageToSave);
@@ -177,10 +179,11 @@ public class ProfileViewTab extends Fragment implements View.OnClickListener{
     }
 
     // method to transform image to string
-    public String BitMapToString(Bitmap bitmap){
+    public String BitMapToString(Bitmap bitmap, int compressFactor){
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        if (fromGallery) compressFactor = 25;
         // shrink the file size of the image - nz kolko da e pomisli si
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 25, stream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, compressFactor, stream);
         return Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);
     }
 

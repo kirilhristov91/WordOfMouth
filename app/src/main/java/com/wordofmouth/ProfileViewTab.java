@@ -57,16 +57,26 @@ public class ProfileViewTab extends Fragment implements View.OnClickListener{
             updatePicture.setEnabled(false);
         }
 
-        //get current image from database if there
-        User currentUser = mainActivity.userLocalStore.getUserLoggedIn();
-        String pic = dbHandler.getProfilePicture(currentUser.getId());
-        //System.out.println("TOVA TI E SAVENATA SNIMKA " + pic);
-        if(pic != null){
-            Bitmap bitmap = StringToBitMap(pic);
-            profilePicture.setImageBitmap(bitmap);
-            toSave = bitmap;
+        // check if there is a picture in the db taken just now
+        // this is necessary because the activity restarts after the camera closes
+        String pictureTakenWithTheCamera;
+        if((pictureTakenWithTheCamera = dbHandler.getTemp())!=null){
+            System.out.println("VLIZAM TUKA DA MU EBA MAIKATA");
+            Bitmap pic = StringToBitMap(pictureTakenWithTheCamera);
+            profilePicture.setImageBitmap(pic);
+            toSave = pic;
         }
 
+        else {
+            //get current image from database if there
+            User currentUser = mainActivity.userLocalStore.getUserLoggedIn();
+            String pic = dbHandler.getProfilePicture(currentUser.getId());
+            if (pic != null) {
+                Bitmap bitmap = StringToBitMap(pic);
+                profilePicture.setImageBitmap(bitmap);
+                toSave = bitmap;
+            }
+        }
         rotateRight.setOnClickListener(this);
         rotateLeft.setOnClickListener(this);
         updatePicture.setOnClickListener(this);
@@ -136,10 +146,7 @@ public class ProfileViewTab extends Fragment implements View.OnClickListener{
         if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK){
             Bundle extras = data.getExtras();
             Bitmap image = (Bitmap) extras.get("data");
-            //image = fixOrientation(image);
-            toSave = image;
-            profilePicture.setImageBitmap(image);
-
+            dbHandler.setTemp(BitMapToString(image));
         }
 
         if (requestCode == REQUEST_BROWSE_GALLERY && resultCode == Activity.RESULT_OK) {
@@ -158,30 +165,22 @@ public class ProfileViewTab extends Fragment implements View.OnClickListener{
         }
     }
 
-    /*
-    public Bitmap fixOrientation(Bitmap mBitmap) {
-        if (mBitmap.getWidth() > mBitmap.getHeight()) {
-            Matrix matrix = new Matrix();
-            matrix.postRotate(90);
-            mBitmap = Bitmap.createBitmap(mBitmap , 0, 0, mBitmap.getWidth(), mBitmap.getHeight(), matrix, true);
-        }
-        return mBitmap;
-    }*/
-
     public void saveImageToDB(){
         User currentUser = mainActivity.userLocalStore.getUserLoggedIn();
         String imageToSave = BitMapToString(toSave);
         System.out.println("KOLKO E GOLQM STRINGA " + imageToSave.length());
         currentUser.getId();
         dbHandler.addProfilePicture(currentUser.getId(), imageToSave);
+        dbHandler.deleteTemp();
         Toast.makeText(mainActivity, "Your profile picture was updated!", Toast.LENGTH_SHORT).show();
+
     }
 
     // method to transform image to string
     public String BitMapToString(Bitmap bitmap){
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        // shrink the file size of the image
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 15, stream);
+        // shrink the file size of the image - nz kolko da e pomisli si
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 25, stream);
         return Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);
     }
 
@@ -190,4 +189,26 @@ public class ProfileViewTab extends Fragment implements View.OnClickListener{
         byte[] bytes = Base64.decode(encodedString, Base64.DEFAULT);
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
+
+
+/*
+    File createImageFile() throws IOException {
+
+        String timeStamp = SimpleDateFormat.getDateInstance().toString();
+        String imageFileName = "IMAGE_" + timeStamp + "_";
+        File storageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+
+        File image = File.createTempFile(imageFileName,".jpg", storageDirectory);
+        mImageFileLocation = image.getAbsolutePath();
+
+        return image;
+    }
+
+    void setReducedImageSize() {
+
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        Bitmap photoReducedSizeBitmp = BitmapFactory.decodeFile(mImageFileLocation, bmOptions);
+        profilePicture.setImageBitmap(photoReducedSizeBitmp);
+    }*/
 }

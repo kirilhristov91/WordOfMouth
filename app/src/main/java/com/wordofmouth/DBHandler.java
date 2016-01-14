@@ -149,6 +149,43 @@ public class DBHandler extends SQLiteOpenHelper{
         db.close();
     }
 
+    public void setTemp(String tempImage){
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_UserID, -1);
+        values.put(COLUMN_Image, tempImage);
+        db.insert(TABLE_Profile_Image, null, values);
+        db.close();
+    }
+
+    public void deleteTemp(){
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "DELETE FROM " + TABLE_Profile_Image +
+                " WHERE _userId = " + -1;
+        db.execSQL(query);
+        db.close();
+    }
+
+    public String getTemp(){
+        String encodedImage = null;
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_Profile_Image +
+                " WHERE _userId = " + -1;
+
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+
+        if(!c.isAfterLast()) {
+            if (c.getString(c.getColumnIndex(COLUMN_Image)) != null) {
+                encodedImage = c.getString(c.getColumnIndex(COLUMN_Image));
+            }
+        }
+        c.close();
+        db.close();
+        return encodedImage;
+    }
+
+
     public String getProfilePicture(int userId){
         String encodedImage = null;
         SQLiteDatabase db = getWritableDatabase();

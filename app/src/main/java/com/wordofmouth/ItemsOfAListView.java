@@ -2,9 +2,13 @@ package com.wordofmouth;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +26,8 @@ public class ItemsOfAListView extends AppCompatActivity implements View.OnClickL
     ArrayList<Item> items;
     int selectedListId;
     String listName;
+    DBHandler dbHandler;
+    String[] itemNames;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,21 +49,31 @@ public class ItemsOfAListView extends AppCompatActivity implements View.OnClickL
         getSupportActionBar().setTitle(listName);
 
         // create an instance of the local database
-        DBHandler dbHandler = DBHandler.getInstance(this);
+        dbHandler = DBHandler.getInstance(this);
 
         // get all the items for the selected list
+        long start = System.currentTimeMillis();
         items = new ArrayList<Item>();
         items = dbHandler.getItems(selectedListId);
+        long end = System.currentTimeMillis();
+        System.out.println("\nElapsed time for db: " + (end - start) + " milliseconds");
 
         // display via adapter
-        String[] itemNames = new String[items.size()];
+        itemNames = new String[items.size()];
         for(int i =0; i< items.size();i++){
             itemNames[i] = items.get(i).get_name();
         }
 
-        ArrayAdapter<String> womAdapter =
-                new CustomItemRowAdapter(this, itemNames, items);
-        itemsListView.setAdapter(womAdapter);
+        StringToBitmapRequests stbr = new StringToBitmapRequests(this);
+        stbr.stringToBitmapInBackground(items, new GetBitmap() {
+            @Override
+            public void done(ArrayList<Bitmap> result) {
+                System.out.println("SIZE OF BITMAPS " + result.size());
+                ArrayAdapter<String> womAdapter =
+                        new CustomItemRowAdapter(ItemsOfAListView.this, itemNames, items, result);
+                itemsListView.setAdapter(womAdapter);
+            }
+        });
 
         // set adapter listener to open itemView if there is an item selected
         itemsListView.setOnItemClickListener(

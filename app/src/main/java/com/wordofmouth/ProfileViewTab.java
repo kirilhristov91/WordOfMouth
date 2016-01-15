@@ -103,7 +103,7 @@ public class ProfileViewTab extends Fragment implements View.OnClickListener{
                 Matrix matrix1 = new Matrix();
                 matrix1.postRotate(angle);
                 bm1 = Bitmap.createBitmap(bm1, 0, 0, bm1.getWidth(), bm1.getHeight(), matrix1, true);
-                toSave = Bitmap.createScaledBitmap(bm1,100,100,true);
+                toSave = bm1;
                 break;
             case R.id.rotateLeft:
                 angle = angle-90;
@@ -112,7 +112,7 @@ public class ProfileViewTab extends Fragment implements View.OnClickListener{
                 Matrix matrix2 = new Matrix();
                 matrix2.postRotate(angle);
                 bm2 = Bitmap.createBitmap(bm2, 0, 0, bm2.getWidth(), bm2.getHeight(), matrix2, true);
-                toSave = Bitmap.createScaledBitmap(bm2,100,100,true);
+                toSave = bm2;
                 break;
             case R.id.saveProfileChanges:
                 saveImageToDB();
@@ -158,8 +158,7 @@ public class ProfileViewTab extends Fragment implements View.OnClickListener{
             try {
                 image = BitmapFactory.decodeStream(mainActivity.getContentResolver().openInputStream(targetUri));
                 //image = fixOrientation(image);
-                toSave = Bitmap.createScaledBitmap(image,100,100,true);
-                profilePicture.setImageBitmap(toSave);
+                profilePicture.setImageBitmap(image);
                 fromGallery = true;
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -170,7 +169,6 @@ public class ProfileViewTab extends Fragment implements View.OnClickListener{
     public void saveImageToDB(){
         User currentUser = mainActivity.userLocalStore.getUserLoggedIn();
         String imageToSave = BitMapToString(toSave, 100);
-        System.out.println("KOLKO E GOLQM STRINGA " + imageToSave.length());
         currentUser.getId();
         dbHandler.addProfilePicture(currentUser.getId(), imageToSave);
         dbHandler.deleteTemp();
@@ -181,7 +179,7 @@ public class ProfileViewTab extends Fragment implements View.OnClickListener{
     // method to transform image to string
     public String BitMapToString(Bitmap bitmap, int compressFactor){
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        if (fromGallery) compressFactor = 25;
+        if (fromGallery) compressFactor = 30;
         // shrink the file size of the image - nz kolko da e pomisli si
         bitmap.compress(Bitmap.CompressFormat.JPEG, compressFactor, stream);
         return Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);

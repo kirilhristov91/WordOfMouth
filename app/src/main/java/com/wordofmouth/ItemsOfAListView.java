@@ -48,14 +48,21 @@ public class ItemsOfAListView extends AppCompatActivity implements View.OnClickL
 
         // create an instance of the local database
         dbHandler = DBHandler.getInstance(this);
-
-        // get all the items for the selected list
-        long start = System.currentTimeMillis();
         items = new ArrayList<Item>();
-        items = dbHandler.getItems(selectedListId);
-        long end = System.currentTimeMillis();
-        System.out.println("\nElapsed time for db: " + (end - start) + " milliseconds");
 
+        DBGetItems dbGetItems = new DBGetItems(this);
+        dbGetItems.GetItemsInBackground(selectedListId, new GetItems() {
+            @Override
+            public void done(ArrayList<Item> returnedItems) {
+                System.out.println("Number of elements " + returnedItems.size());
+                Display(returnedItems);
+            }
+        });
+    }
+
+    public void Display(ArrayList<Item> returnedItems){
+        items = returnedItems;
+        System.out.println("Number of elements in items " + items.size());
         // display via adapter
         itemNames = new String[items.size()];
         for(int i =0; i< items.size();i++){
@@ -96,7 +103,6 @@ public class ItemsOfAListView extends AppCompatActivity implements View.OnClickL
                     }
                 }
         );
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override

@@ -16,7 +16,7 @@ public class StringToBitmapRequests {
     public StringToBitmapRequests(Context context){
         progressDialog = new ProgressDialog(context);
         progressDialog.setCancelable(false);
-        progressDialog.setTitle("Processing");
+        progressDialog.setTitle("Fetching images");
         progressDialog.setMessage("Please wait...");
     }
 

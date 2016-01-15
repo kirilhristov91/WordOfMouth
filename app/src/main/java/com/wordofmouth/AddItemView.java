@@ -27,17 +27,18 @@ public class AddItemView extends AppCompatActivity implements View.OnClickListen
     EditText itemDescriptionField;
     RatingBar ratingBar;
     Button addItemButton;
+    ImageView addItemPhoto;
+    ImageView rotateRightItem;
+    ImageView rotateLeftItem;
+
     DBHandler dbHandler;
+    UserLocalStore userLocalStore;
     double ratingSelected;
     int listId;
     String listName;
-    ImageView addItemPhoto;
-    Bitmap photo = null;
-    static final int REQUEST_BROWSE_GALLERY = 1;
-    UserLocalStore userLocalStore;
-    ImageView rotateRightItem;
-    ImageView rotateLeftItem;
     int angle = 0;
+    Bitmap photo;
+    static final int REQUEST_BROWSE_GALLERY = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +54,7 @@ public class AddItemView extends AppCompatActivity implements View.OnClickListen
         System.out.println("V ADD ITEM VIEW SYM: " + listId + " " + listName);
 
         ratingSelected = 0.0;
-
+        photo = null;
 
         dbHandler= DBHandler.getInstance(this);
         userLocalStore = new UserLocalStore(this);
@@ -110,7 +111,7 @@ public class AddItemView extends AppCompatActivity implements View.OnClickListen
                 System.out.println(userLocalStore.userLocalDatabase.getAll().toString());
                 String imageToSave="";
                 if(photo!=null) {
-                   imageToSave = BitMapToString(photo,25);
+                   imageToSave = BitMapToString(photo,30);
                 }
                 Item i = new Item(itemNameField.getText().toString(), ratingSelected, itemDescriptionField.getText().toString(), imageToSave, userLocalStore.getUserLoggedIn().getUsername());
                 dbHandler.addItem(i, listId);

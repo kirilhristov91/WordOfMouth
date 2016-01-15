@@ -103,7 +103,7 @@ public class ProfileViewTab extends Fragment implements View.OnClickListener{
                 Matrix matrix1 = new Matrix();
                 matrix1.postRotate(angle);
                 bm1 = Bitmap.createBitmap(bm1, 0, 0, bm1.getWidth(), bm1.getHeight(), matrix1, true);
-                toSave = bm1;
+                toSave = Bitmap.createScaledBitmap(bm1,100,100,true);
                 break;
             case R.id.rotateLeft:
                 angle = angle-90;
@@ -112,7 +112,7 @@ public class ProfileViewTab extends Fragment implements View.OnClickListener{
                 Matrix matrix2 = new Matrix();
                 matrix2.postRotate(angle);
                 bm2 = Bitmap.createBitmap(bm2, 0, 0, bm2.getWidth(), bm2.getHeight(), matrix2, true);
-                toSave = bm2;
+                toSave = Bitmap.createScaledBitmap(bm2,100,100,true);
                 break;
             case R.id.saveProfileChanges:
                 saveImageToDB();
@@ -158,8 +158,8 @@ public class ProfileViewTab extends Fragment implements View.OnClickListener{
             try {
                 image = BitmapFactory.decodeStream(mainActivity.getContentResolver().openInputStream(targetUri));
                 //image = fixOrientation(image);
-                toSave = image;
-                profilePicture.setImageBitmap(image);
+                toSave = Bitmap.createScaledBitmap(image,100,100,true);
+                profilePicture.setImageBitmap(toSave);
                 fromGallery = true;
             } catch (FileNotFoundException e) {
                 e.printStackTrace();

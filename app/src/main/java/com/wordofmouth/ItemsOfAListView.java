@@ -79,9 +79,6 @@ public class ItemsOfAListView extends AppCompatActivity implements View.OnClickL
             }
         });
 
-
-
-
         // set adapter listener to open itemView if there is an item selected
         itemsListView.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
@@ -99,7 +96,7 @@ public class ItemsOfAListView extends AppCompatActivity implements View.OnClickL
                     }
                 }
         );
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override

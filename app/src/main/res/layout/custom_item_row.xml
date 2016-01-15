@@ -33,15 +33,27 @@
         android:layout_toRightOf="@+id/itemImage"
         android:layout_toEndOf="@+id/itemImage" />
 
+    <TextView
+        android:id="@+id/addedByUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="username:"
+        android:textSize="15sp"
+        android:layout_below="@+id/customRowRatingBar"
+        android:layout_toRightOf="@+id/addedBy"
+        android:layout_toEndOf="@+id/addedBy"
+        android:layout_marginLeft="14dp"
+        android:layout_marginStart="14dp" />
+
 
     <RatingBar
         android:id="@+id/customRowRatingBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:numStars="3"
+        android:numStars="5"
         android:stepSize="0.5"
         android:isIndicator="true"
-
+        style="?android:attr/ratingBarStyleIndicator"
         android:layout_below="@+id/itemTitle"
         android:layout_alignLeft="@+id/itemTitle"
         android:layout_alignStart="@+id/itemTitle" />

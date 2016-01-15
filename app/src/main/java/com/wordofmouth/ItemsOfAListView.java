@@ -56,7 +56,7 @@ public class ItemsOfAListView extends AppCompatActivity implements View.OnClickL
         }
 
         ArrayAdapter<String> womAdapter =
-                new CustomItemRowAdapter(this, itemNames,items);
+                new CustomItemRowAdapter(this, itemNames, items);
         itemsListView.setAdapter(womAdapter);
 
         // set adapter listener to open itemView if there is an item selected

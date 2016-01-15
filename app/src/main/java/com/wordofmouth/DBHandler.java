@@ -15,7 +15,7 @@ public class DBHandler extends SQLiteOpenHelper{
     UserLocalStore userLocalStore;
 
     //if updating the database change the version:
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 9;
     private static final String DATABASE_NAME = "WOM.db";
 
     //Lists table
@@ -33,6 +33,8 @@ public class DBHandler extends SQLiteOpenHelper{
     public static final String COLUMN_ItemName = "_itemName";
     public static final String COLUMN_Rating = "_rating";
     public static final String COLUMN_ItemDescription = "_description";
+    public static final String COLUMN_ItemImage = "_itemImage";
+    public static final String COLUMN_Creator = "_creatorUsername";
 
     //Profile image table
     public static final String TABLE_Profile_Image = "ProfileImage";
@@ -80,6 +82,8 @@ public class DBHandler extends SQLiteOpenHelper{
                 COLUMN_ItemName + " TEXT, " +
                 COLUMN_Rating + " DOUBLE, " +
                 COLUMN_ItemDescription + " TEXT, " +
+                COLUMN_Creator + " TEXT, " +
+                COLUMN_ItemImage + " TEXT, " +
                 "FOREIGN KEY (" + COLUMN_ListID + ") REFERENCES " +
                 TABLE_USER_LISTS + "(" + COLUMN_ID + ")"+
                 ");";
@@ -116,12 +120,12 @@ public class DBHandler extends SQLiteOpenHelper{
 
     public void addItem(Item i, int listID){
         ContentValues values = new ContentValues();
-        // maybe add creatorID as well when able to do that
-        // in order to know who created the item
         values.put(COLUMN_ListID, listID);
         values.put(COLUMN_ItemName, i.get_name());
         values.put(COLUMN_Rating, i.get_rating());
         values.put(COLUMN_Description, i.get_description());
+        values.put(COLUMN_Creator, i.get_creatorUsername());
+        values.put(COLUMN_ItemImage, i.get_itemImage());
         SQLiteDatabase db = getWritableDatabase();
         db.insert(TABLE_Items, null, values);
         db.close();
@@ -260,6 +264,8 @@ public class DBHandler extends SQLiteOpenHelper{
         String itemName = "";
         double rating;
         String des = "";
+        String image = "";
+        String creatorUsername = "";
         ArrayList<Item> itemsList = new ArrayList<Item>();
 
         SQLiteDatabase db = getWritableDatabase();
@@ -283,7 +289,15 @@ public class DBHandler extends SQLiteOpenHelper{
                 des = c.getString(c.getColumnIndex("_description"));
             }
 
-            Item item = new Item(itemName, rating, des);
+            if(c.getString(c.getColumnIndex(COLUMN_Creator)) != null){
+                creatorUsername = c.getString(c.getColumnIndex(COLUMN_Creator));
+            }
+
+            if(c.getString(c.getColumnIndex(COLUMN_ItemImage)) != null){
+                image = c.getString(c.getColumnIndex(COLUMN_ItemImage));
+            }
+
+            Item item = new Item(itemName, rating, des, image, creatorUsername);
             item.set_itemId(id);
             item.set_listId(listID);
             itemsList.add(item);

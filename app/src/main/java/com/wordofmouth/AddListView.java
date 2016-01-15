@@ -73,6 +73,7 @@ public class AddListView extends AppCompatActivity implements View.OnClickListen
                 //printdatabase();
                 //dbHandler.addList(list);
                 startActivity(new Intent(this, MainActivity.class));
+                finish();
         }
     }
 

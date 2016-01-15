@@ -9,9 +9,19 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_add_item_view" tools:context="com.wordofmouth.AddItemView">
 
+
+    <ImageView
+        android:id="@+id/addImageToItem"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/add_file"/>
+
     <EditText
         android:id="@+id/itemNameField"
-        android:layout_marginTop="120dp"
+        android:layout_below="@id/addImageToItem"
+        android:layout_marginTop="15dp"
         android:hint="Name"
         android:textColor="#FFF"
         android:background="#d3d3d3"
@@ -43,7 +53,7 @@
         android:id="@+id/ratingBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:numStars="3"
+        android:numStars="5"
         android:stepSize="0.5"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"

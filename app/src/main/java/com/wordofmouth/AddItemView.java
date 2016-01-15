@@ -123,6 +123,15 @@ public class AddItemView extends AppCompatActivity implements View.OnClickListen
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, ItemsOfAListView.class);
+        intent.putExtra("listId", listId);
+        intent.putExtra("name", listName);
+        startActivity(intent);
+        finish();
+    }
+
     public void browseGallery(){
         Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, REQUEST_BROWSE_GALLERY);

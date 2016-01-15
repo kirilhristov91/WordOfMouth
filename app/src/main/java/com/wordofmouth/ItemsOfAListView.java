@@ -96,6 +96,13 @@ public class ItemsOfAListView extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
     public void onClick(View v) {
         // open addItemView
         switch(v.getId()) {

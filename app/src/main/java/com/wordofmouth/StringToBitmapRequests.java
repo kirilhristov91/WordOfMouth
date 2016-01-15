@@ -34,23 +34,34 @@ public class StringToBitmapRequests {
         public StringToBitmapAsyncTask(ArrayList<Item> items, GetBitmap getBitmap) {
             this.items = items;
             this.getBitmap = getBitmap;
-            bitmaps = new ArrayList<Bitmap>();
+            bitmaps = new ArrayList<>();
         }
 
         @Override
         protected ArrayList<Bitmap> doInBackground(Void... params) {
+            //final BitmapFactory.Options options = new BitmapFactory.Options();
             for(int i=0;i< items.size();i++){
-                String asd = items.get(i).get_itemImage();
-                System.out.println("VLIZAM TUKA BE V DO IN BACKGROUND");
-                byte[] bytes = Base64.decode(items.get(i).get_itemImage(), Base64.DEFAULT);
-                bitmaps.add(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                if(!items.get(i).get_itemImage().equals("")) {
+                    byte[] bytes = Base64.decode(items.get(i).get_itemImage(), Base64.DEFAULT);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    if (bitmap.getHeight() > bitmap.getWidth()) {
+                        bitmap = Bitmap.createScaledBitmap(bitmap, 50, 100, true);
+                    }
+                    //w h
+                    else if (bitmap.getHeight() < bitmap.getWidth()) {
+                        bitmap = Bitmap.createScaledBitmap(bitmap, 100, 50, true);
+                    } else {
+                        bitmap = Bitmap.createScaledBitmap(bitmap, 100, 100, true);
+                    }
+                    bitmaps.add(bitmap);
+                }
+                else bitmaps.add(null);
             }
             return bitmaps;
         }
 
         @Override
-        protected void onPostExecute(ArrayList result) {
-            System.out.println("VLIZAM TUKA BE V DO IN ONPOSTEXECUTE");
+        protected void onPostExecute(ArrayList<Bitmap> result) {
             progressDialog.dismiss();
             getBitmap.done(result);
             super.onPostExecute(result);

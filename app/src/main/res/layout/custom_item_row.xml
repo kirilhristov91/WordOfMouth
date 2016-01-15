@@ -55,6 +55,7 @@
         android:numStars="5"
         android:stepSize="0.5"
         android:isIndicator="true"
+        android:progressTint="@color/colorPrimary"
         style="?android:attr/ratingBarStyleIndicator"
         android:layout_below="@+id/itemTitle"
         android:layout_alignLeft="@+id/itemTitle"

@@ -34,7 +34,6 @@ public class CustomItemRowAdapter extends ArrayAdapter<String> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        long start = System.currentTimeMillis();
         ViewHolderItem viewHolder;
 
         if(convertView == null) {
@@ -60,8 +59,6 @@ public class CustomItemRowAdapter extends ArrayAdapter<String> {
         viewHolder.itemTitle.setText(singleItem);
         viewHolder.addedBy.setText(itemsList.get(position).get_creatorUsername());
         viewHolder.ratingBar.setRating((float) itemsList.get(position).get_rating());
-        long end = System.currentTimeMillis();
-        System.out.println("\nElapsed time customrow " + position + " : " + (end - start) + " milliseconds");
         return convertView;
     }
 }

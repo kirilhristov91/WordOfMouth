@@ -3,12 +3,10 @@ package com.wordofmouth;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
+
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -69,11 +67,20 @@ public class ItemsOfAListView extends AppCompatActivity implements View.OnClickL
             @Override
             public void done(ArrayList<Bitmap> result) {
                 System.out.println("SIZE OF BITMAPS " + result.size());
+                final Runtime runtime = Runtime.getRuntime();
+                final long usedMemInMB = (runtime.totalMemory() - runtime.freeMemory()) / 1048576L;
+                final long maxHeapSizeInMB = runtime.maxMemory() / 1048576L;
+                System.out.println("Total heap size: " + maxHeapSizeInMB + " MB");
+                System.out.println("Available heap size: " + usedMemInMB + " MB");
+
                 ArrayAdapter<String> womAdapter =
                         new CustomItemRowAdapter(ItemsOfAListView.this, itemNames, items, result);
                 itemsListView.setAdapter(womAdapter);
             }
         });
+
+
+
 
         // set adapter listener to open itemView if there is an item selected
         itemsListView.setOnItemClickListener(

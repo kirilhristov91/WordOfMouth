@@ -18,6 +18,27 @@
         android:layout_centerHorizontal="true"
         android:src="@drawable/add_file"/>
 
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/rotateRightItem"
+        android:src="@drawable/rotate_right"
+
+        android:layout_alignBottom="@+id/addImageToItem"
+        android:layout_toRightOf="@+id/ratingBar"
+        android:layout_toEndOf="@+id/ratingBar"
+        android:layout_marginBottom="27dp" />
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/rotateLeftItem"
+        android:src="@drawable/rotate_left"
+        android:layout_alignTop="@+id/rotateRightItem"
+        android:layout_toLeftOf="@+id/ratingBar"
+        android:layout_toStartOf="@+id/ratingBar" />
+
     <EditText
         android:id="@+id/itemNameField"
         android:layout_below="@id/addImageToItem"

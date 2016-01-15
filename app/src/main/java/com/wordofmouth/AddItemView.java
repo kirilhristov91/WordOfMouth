@@ -5,7 +5,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -31,9 +32,12 @@ public class AddItemView extends AppCompatActivity implements View.OnClickListen
     int listId;
     String listName;
     ImageView addItemPhoto;
-    String photo="";
+    Bitmap photo = null;
     static final int REQUEST_BROWSE_GALLERY = 1;
     UserLocalStore userLocalStore;
+    ImageView rotateRightItem;
+    ImageView rotateLeftItem;
+    int angle = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +62,8 @@ public class AddItemView extends AppCompatActivity implements View.OnClickListen
         itemDescriptionField = (EditText) findViewById(R.id.itemDescriptionField);
         ratingBar = (RatingBar) findViewById(R.id.ratingBar);
         addItemButton = (Button) findViewById(R.id.addItemButton);
-
+        rotateLeftItem = (ImageView) findViewById(R.id.rotateLeftItem);
+        rotateRightItem = (ImageView) findViewById(R.id.rotateRightItem);
 
         ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             public void onRatingChanged(RatingBar ratingBar, float rating,
@@ -67,6 +72,8 @@ public class AddItemView extends AppCompatActivity implements View.OnClickListen
             }
         });
 
+        rotateRightItem.setOnClickListener(this);
+        rotateLeftItem.setOnClickListener(this);
         addItemPhoto.setOnClickListener(this);
         addItemButton.setOnClickListener(this);
     }
@@ -78,9 +85,34 @@ public class AddItemView extends AppCompatActivity implements View.OnClickListen
             case R.id.addImageToItem:
                 browseGallery();
                 break;
+            case R.id.rotateRightItem:
+                System.out.println("ROTATE RIGHT");
+                angle = angle+90;
+                addItemPhoto.setRotation((float) angle);
+                Bitmap bm1=((BitmapDrawable)addItemPhoto.getDrawable()).getBitmap();
+                Matrix matrix1 = new Matrix();
+                matrix1.postRotate(angle);
+                bm1 = Bitmap.createBitmap(bm1, 0, 0, bm1.getWidth(), bm1.getHeight(), matrix1, true);
+                photo = bm1;
+                break;
+            case R.id.rotateLeftItem:
+                System.out.println("ROTATE LEFT");
+                angle = angle-90;
+                addItemPhoto.setRotation((float) angle);
+                Bitmap bm2=((BitmapDrawable)addItemPhoto.getDrawable()).getBitmap();
+                Matrix matrix2 = new Matrix();
+                matrix2.postRotate(angle);
+                bm2 = Bitmap.createBitmap(bm2, 0, 0, bm2.getWidth(), bm2.getHeight(), matrix2, true);
+                photo = bm2;
+                break;
+
             case R.id.addItemButton:
                 System.out.println(userLocalStore.userLocalDatabase.getAll().toString());
-                Item i = new Item(itemNameField.getText().toString(), ratingSelected, itemDescriptionField.getText().toString(), photo, userLocalStore.getUserLoggedIn().getUsername());
+                String imageToSave="";
+                if(photo!=null) {
+                   imageToSave = BitMapToString(photo,25);
+                }
+                Item i = new Item(itemNameField.getText().toString(), ratingSelected, itemDescriptionField.getText().toString(), imageToSave, userLocalStore.getUserLoggedIn().getUsername());
                 dbHandler.addItem(i, listId);
                 Intent intent = new Intent(this, ItemsOfAListView.class);
                 intent.putExtra("listId", listId);
@@ -104,7 +136,7 @@ public class AddItemView extends AppCompatActivity implements View.OnClickListen
             Bitmap image;
             try {
                 image = BitmapFactory.decodeStream(this.getContentResolver().openInputStream(targetUri));
-                photo = BitMapToString(image,25);
+                photo = image;
                 addItemPhoto.setImageBitmap(image);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();

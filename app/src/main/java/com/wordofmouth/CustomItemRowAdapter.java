@@ -14,6 +14,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.ImageView;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 public class CustomItemRowAdapter extends ArrayAdapter<String> {

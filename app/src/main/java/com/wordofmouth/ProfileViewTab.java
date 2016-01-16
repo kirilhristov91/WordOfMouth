@@ -157,7 +157,9 @@ public class ProfileViewTab extends Fragment implements View.OnClickListener{
             Bitmap image;
             try {
                 image = BitmapFactory.decodeStream(mainActivity.getContentResolver().openInputStream(targetUri));
-                //image = fixOrientation(image);
+                while (image.getWidth() > 4096 || image.getHeight() > 4096) {
+                    image = Bitmap.createScaledBitmap(image,image.getWidth()/2, image.getHeight()/2, true);
+                }
                 profilePicture.setImageBitmap(image);
                 fromGallery = true;
             } catch (FileNotFoundException e) {
@@ -179,7 +181,7 @@ public class ProfileViewTab extends Fragment implements View.OnClickListener{
     // method to transform image to string
     public String BitMapToString(Bitmap bitmap, int compressFactor){
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        if (fromGallery) compressFactor = 30;
+        if (fromGallery) compressFactor = 80;
         // shrink the file size of the image - nz kolko da e pomisli si
         bitmap.compress(Bitmap.CompressFormat.JPEG, compressFactor, stream);
         return Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);
@@ -188,7 +190,19 @@ public class ProfileViewTab extends Fragment implements View.OnClickListener{
     // method to transform string to image
     public Bitmap StringToBitMap(String encodedString){
         byte[] bytes = Base64.decode(encodedString, Base64.DEFAULT);
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        BitmapFactory.Options scaleOptions = new BitmapFactory.Options();
+        scaleOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeByteArray(bytes, 0, bytes.length, scaleOptions);
+
+        int scale = 1;
+        while (scaleOptions.outWidth / scale / 2 >= 100
+                && scaleOptions.outHeight / scale / 2 >= 100) {
+            scale *= 2;
+        }
+
+        BitmapFactory.Options outOptions = new BitmapFactory.Options();
+        outOptions.inSampleSize = scale;
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length,outOptions);
     }
 
 

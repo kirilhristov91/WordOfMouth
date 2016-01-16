@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -146,6 +147,10 @@ public class AddItemView extends AppCompatActivity implements View.OnClickListen
             Bitmap image;
             try {
                 image = BitmapFactory.decodeStream(this.getContentResolver().openInputStream(targetUri));
+
+                while (image.getWidth() > 4096 || image.getHeight() > 4096) {
+                    image = Bitmap.createScaledBitmap(image,image.getWidth()/2, image.getHeight()/2, true);
+                }
                 photo = image;
                 addItemPhoto.setImageBitmap(image);
             } catch (FileNotFoundException e) {

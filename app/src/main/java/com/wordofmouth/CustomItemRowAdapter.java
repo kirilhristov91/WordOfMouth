@@ -3,9 +3,6 @@ package com.wordofmouth;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
-import android.util.Base64;
 import android.widget.ArrayAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +11,6 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.ImageView;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 public class CustomItemRowAdapter extends ArrayAdapter<String> {
@@ -56,6 +52,9 @@ public class CustomItemRowAdapter extends ArrayAdapter<String> {
         String image = itemsList.get(position).get_itemImage();
         if(!image.equals("")){
             viewHolder.itemImage.setImageBitmap(bitmaps.get(position));
+        }
+        else {
+            viewHolder.itemImage.setImageResource(R.drawable.logowom);
         }
         viewHolder.itemTitle.setText(singleItem);
         viewHolder.addedBy.setText(itemsList.get(position).get_creatorUsername());

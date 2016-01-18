@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity{
         super.onStart();
         System.out.println(userLocalStore.userLocalDatabase.getAll().toString());
         if(!authenticate()){
-            startActivity(new Intent(MainActivity.this, Login.class));
+            startActivity(new Intent(MainActivity.this, ActivityLogin.class));
             finish();
         }
     }
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity{
         if(id == R.id.action_logout){
             userLocalStore.clearUserData();
             userLocalStore.setUserLoggedIn(false);
-            startActivity(new Intent(this, Login.class));
+            startActivity(new Intent(this, ActivityLogin.class));
             finish();
         }
 

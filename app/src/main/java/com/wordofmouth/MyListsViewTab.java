@@ -50,7 +50,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
                         int idClicked;
                         String list = String.valueOf(parent.getItemAtPosition(position));
                         idClicked = myLists.get(position).get_listId();
-                        Intent myIntent = new Intent(mainActivity, ItemsOfAListView.class);
+                        Intent myIntent = new Intent(mainActivity, ActivityItemsOfAList.class);
                         myIntent.putExtra("listId", idClicked);
                         myIntent.putExtra("name", list);
                         startActivity(myIntent);
@@ -70,10 +70,10 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
                 userLocalStore.clearUserData();
                 userLocalStore.setUserLoggedIn(false);
 
-                startActivity(new Intent(this, Login.class));
+                startActivity(new Intent(this, ActivityLogin.class));
                 break;*/
             case R.id.createListText:
-                startActivity(new Intent(mainActivity, AddListView.class));
+                startActivity(new Intent(mainActivity, ActivityAddList.class));
                 break;
         }
     }

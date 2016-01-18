@@ -14,7 +14,7 @@ import android.widget.TextView;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class Login extends AppCompatActivity implements View.OnClickListener {
+public class ActivityLogin extends AppCompatActivity implements View.OnClickListener {
 
     Button loginButton;
     EditText usernameField, passwordField;
@@ -74,7 +74,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                 authenticate(user);
                 break;
             case R.id.registerNow:
-                startActivity(new Intent(this, Register.class));
+                startActivity(new Intent(this, ActivityRegister.class));
                 break;
         }
     }
@@ -96,7 +96,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     }
 
     private void showError(){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(Login.this);
+        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(ActivityLogin.this);
         allertBuilder.setMessage("Incorrect username or password");
         allertBuilder.setPositiveButton("OK", null);
         allertBuilder.show();

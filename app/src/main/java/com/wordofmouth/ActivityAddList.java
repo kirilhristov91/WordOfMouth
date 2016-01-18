@@ -12,7 +12,7 @@ import android.widget.EditText;
 import android.widget.Button;
 import android.widget.Spinner;
 
-public class AddListView extends AppCompatActivity implements View.OnClickListener{
+public class ActivityAddList extends AppCompatActivity implements View.OnClickListener{
 
     EditText listNameField;
     EditText listDescriptionField;
@@ -41,7 +41,7 @@ public class AddListView extends AppCompatActivity implements View.OnClickListen
 
         String[] items = new String[]{"private", "public"};
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<String>(AddListView.this, android.R.layout.simple_spinner_dropdown_item, items);
+                new ArrayAdapter<String>(ActivityAddList.this, android.R.layout.simple_spinner_dropdown_item, items);
         dropDown.setAdapter(adapter);
         dropDown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

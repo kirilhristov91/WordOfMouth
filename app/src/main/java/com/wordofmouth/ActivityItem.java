@@ -3,13 +3,10 @@ package com.wordofmouth;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 
-public class ItemView extends AppCompatActivity {
+public class ActivityItem extends AppCompatActivity {
 
     int listId;
     String listName;
@@ -35,7 +32,7 @@ public class ItemView extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(this, ItemsOfAListView.class);
+        Intent intent = new Intent(this, ActivityItemsOfAList.class);
         intent.putExtra("listId", listId);
         intent.putExtra("name", listName);
         startActivity(intent);

@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class ItemsOfAListView extends AppCompatActivity implements View.OnClickListener{
+public class ActivityItemsOfAList extends AppCompatActivity implements View.OnClickListener{
 
     TextView addItemText;
     ListView itemsListView;
@@ -60,6 +60,7 @@ public class ItemsOfAListView extends AppCompatActivity implements View.OnClickL
         });
     }
 
+    // method to display the items after fetching from database is done
     public void Display(ArrayList<Item> returnedItems){
         items = returnedItems;
         System.out.println("Number of elements in items " + items.size());
@@ -81,7 +82,7 @@ public class ItemsOfAListView extends AppCompatActivity implements View.OnClickL
                 System.out.println("Available heap size: " + usedMemInMB + " MB");
 
                 ArrayAdapter<String> womAdapter =
-                        new CustomItemRowAdapter(ItemsOfAListView.this, itemNames, items, result);
+                        new CustomItemRowAdapter(ActivityItemsOfAList.this, itemNames, items, result);
                 itemsListView.setAdapter(womAdapter);
             }
         });
@@ -93,7 +94,7 @@ public class ItemsOfAListView extends AppCompatActivity implements View.OnClickL
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         String itemName = String.valueOf(parent.getItemAtPosition(position));
                         int itemIdClicked = items.get(position).get_itemId();
-                        Intent myIntent = new Intent(ItemsOfAListView.this, ItemView.class);
+                        Intent myIntent = new Intent(ActivityItemsOfAList.this, ActivityItem.class);
                         myIntent.putExtra("listId", selectedListId);
                         myIntent.putExtra("listName", listName);
                         myIntent.putExtra("itemId", itemIdClicked);
@@ -117,7 +118,7 @@ public class ItemsOfAListView extends AppCompatActivity implements View.OnClickL
         // open addItemView
         switch(v.getId()) {
             case R.id.addItemText:
-                Intent intent = new Intent(this, AddItemView.class);
+                Intent intent = new Intent(this, ActivityAddItem.class);
                 intent.putExtra("listId", selectedListId);
                 intent.putExtra("name", listName);
                 startActivity(intent);

@@ -12,7 +12,6 @@ import java.util.ArrayList;
 public class DBHandler extends SQLiteOpenHelper{
 
     private static DBHandler sInstance;
-    UserLocalStore userLocalStore;
 
     //if updating the database change the version:
     private static final int DATABASE_VERSION = 9;

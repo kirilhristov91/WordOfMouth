@@ -8,7 +8,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -22,7 +21,7 @@ import android.widget.RatingBar;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 
-public class AddItemView extends AppCompatActivity implements View.OnClickListener{
+public class ActivityAddItem extends AppCompatActivity implements View.OnClickListener{
 
     EditText itemNameField;
     EditText itemDescriptionField;
@@ -116,7 +115,7 @@ public class AddItemView extends AppCompatActivity implements View.OnClickListen
                 }
                 Item i = new Item(itemNameField.getText().toString(), ratingSelected, itemDescriptionField.getText().toString(), imageToSave, userLocalStore.getUserLoggedIn().getUsername());
                 dbHandler.addItem(i, listId);
-                Intent intent = new Intent(this, ItemsOfAListView.class);
+                Intent intent = new Intent(this, ActivityItemsOfAList.class);
                 intent.putExtra("listId", listId);
                 intent.putExtra("name", listName);
                 startActivity(intent);
@@ -127,7 +126,7 @@ public class AddItemView extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(this, ItemsOfAListView.class);
+        Intent intent = new Intent(this, ActivityItemsOfAList.class);
         intent.putExtra("listId", listId);
         intent.putExtra("name", listName);
         startActivity(intent);

@@ -14,7 +14,7 @@ import android.widget.TextView;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class Register extends AppCompatActivity implements View.OnClickListener{
+public class ActivityRegister extends AppCompatActivity implements View.OnClickListener{
 
     Button registerButton;
     EditText regnameField, regusernameField, regemailField, regpasswordField;
@@ -85,7 +85,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
                 break;
 
             case R.id.loginme:
-                startActivity(new Intent(this, Login.class));
+                startActivity(new Intent(this, ActivityLogin.class));
 
         }
     }
@@ -95,14 +95,14 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
     }
 
     private void showError(){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(Register.this);
+        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(ActivityRegister.this);
         allertBuilder.setMessage("Invalid e-mail address!");
         allertBuilder.setPositiveButton("OK", null);
         allertBuilder.show();
     }
 
     private void showUserTakenError(){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(Register.this);
+        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(ActivityRegister.this);
         allertBuilder.setMessage("Username is already taken");
         allertBuilder.setPositiveButton("OK", null);
         allertBuilder.show();
@@ -117,7 +117,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener{
                 if(returnedUser!=null){
                     showUserTakenError();
                 }
-                else startActivity(new Intent(Register.this, Login.class));
+                else startActivity(new Intent(ActivityRegister.this, ActivityLogin.class));
             }
         });
     }

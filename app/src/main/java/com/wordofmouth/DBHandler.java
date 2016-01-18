@@ -14,7 +14,7 @@ public class DBHandler extends SQLiteOpenHelper{
     private static DBHandler sInstance;
 
     //if updating the database change the version:
-    private static final int DATABASE_VERSION = 9;
+    private static final int DATABASE_VERSION = 10;
     private static final String DATABASE_NAME = "WOM.db";
 
     //Lists table
@@ -68,7 +68,7 @@ public class DBHandler extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CreateListTableQuery = "CREATE TABLE " + TABLE_USER_LISTS + "(" +
-                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_ID + " INTEGER PRIMARY KEY, " +
                 COLUMN_CreatorID + " INTEGER, " +
                 COLUMN_Name + " TEXT, " +
                 COLUMN_Visibility + " INTEGER, " +
@@ -106,9 +106,10 @@ public class DBHandler extends SQLiteOpenHelper{
     }
 
     //Add a new row to table lists
-    public void addList(MyList ul, int userId){
+    public void addList(MyList ul){
         ContentValues values = new ContentValues();
-        values.put(COLUMN_CreatorID, userId);
+        values.put(COLUMN_ListID, ul.get_listId());
+        values.put(COLUMN_CreatorID, ul.get_creatorId());
         values.put(COLUMN_Name, ul.get_name());
         values.put(COLUMN_Visibility, ul.get_visibility());
         values.put(COLUMN_Description, ul.get_description());
@@ -246,9 +247,8 @@ public class DBHandler extends SQLiteOpenHelper{
                 des = c.getString(c.getColumnIndex("_description"));
             }
 
-            MyList ul = new MyList(listName, vis, des);
+            MyList ul = new MyList(userId, listName, vis, des);
             ul.set_listId(id);
-            ul.set_creatorId(creatorId);
             lists.add(ul);
             c.moveToNext();
         }

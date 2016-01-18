@@ -64,17 +64,25 @@ public class ActivityAddList extends AppCompatActivity implements View.OnClickLi
         switch(v.getId()) {
             //TODO set check for empty name field
             case R.id.createNewListButton:
+                int currentUserId = userLocalStore.userLocalDatabase.getInt("id",0);
                 int visibility;
                 if (dropDownChoice.equals("private")) visibility = 0;
                 else visibility = 1;
-                MyList list = new MyList(listNameField.getText().toString(), visibility, listDescriptionField.getText().toString());
-                int currentUserId = userLocalStore.userLocalDatabase.getInt("id",0);
-                dbHandler.addList(list, currentUserId);
-                //printdatabase();
-                //dbHandler.addList(list);
-                startActivity(new Intent(this, MainActivity.class));
-                finish();
+                MyList list = new MyList(currentUserId, listNameField.getText().toString(), visibility, listDescriptionField.getText().toString());
+                ServerRequests serverRequests = new ServerRequests(this);
+                serverRequests.UploadListAsyncTask(list, new GetListId() {
+                    @Override
+                    public void done(MyList returnedList) {
+                        dbHandler.addList(returnedList);
+                        closeActivity();
+                    }
+                });
         }
+    }
+
+    public void closeActivity(){
+        startActivity(new Intent(this, MainActivity.class));
+        finish();
     }
 
 }

@@ -10,10 +10,12 @@ public class MyList {
 
     public MyList(){}
 
-    public MyList(String name, int visibility, String description) {
+    public MyList(int _creatorId, String name, int visibility, String description) {
+        this._creatorId = _creatorId;
         this._name = name;
         this._visibility = visibility;
         this._description = description;
+
     }
 
     public void set_listId(int _listId) {

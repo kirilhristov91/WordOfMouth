@@ -174,8 +174,18 @@ public class ProfileViewTab extends Fragment implements View.OnClickListener{
         currentUser.getId();
         dbHandler.addProfilePicture(currentUser.getId(), imageToSave);
         dbHandler.deleteTemp();
-        Toast.makeText(mainActivity, "Your profile picture was updated!", Toast.LENGTH_SHORT).show();
 
+        ServerRequests serverRequests = new ServerRequests(mainActivity);
+        serverRequests.UploadProfilePictureAsyncTask(currentUser.getUsername(), imageToSave, new GetUserCallback() {
+            @Override
+            public void done(User returnedUser) {
+                if(returnedUser!=null){
+                    System.out.println("ERROR UPLOADING IMAGE TO SERVER");
+                }
+                else Toast.makeText(mainActivity, "Your profile picture was updated!", Toast.LENGTH_SHORT).show();
+
+            }
+        });
     }
 
     // method to transform image to string

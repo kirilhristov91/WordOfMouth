@@ -2,7 +2,12 @@ package com.wordofmouth;
 
 public class User {
     int id;
-    String name, username, email, password;
+    String name;
+    String username;
+    String email;
+    String password;
+
+    String picture;
 
     public User(int id, String name, String email, String username, String password){
         this.id = id;
@@ -58,5 +63,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 }

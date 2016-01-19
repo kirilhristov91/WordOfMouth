@@ -1,6 +1,7 @@
 package com.wordofmouth;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
@@ -108,21 +109,51 @@ public class ActivityAddItem extends AppCompatActivity implements View.OnClickLi
                 break;
 
             case R.id.addItemButton:
-                System.out.println(userLocalStore.userLocalDatabase.getAll().toString());
-                String imageToSave="";
-                if(photo!=null) {
-                   imageToSave = BitMapToString(photo,30);
+                if(itemNameField.getText().toString().equals("")){
+                    showErrorEmptyField();
                 }
-                Item i = new Item(listId, userLocalStore.getUserLoggedIn().getUsername(), itemNameField.getText().toString(), ratingSelected, itemDescriptionField.getText().toString(), imageToSave);
-                dbHandler.addItem(i);
-                Intent intent = new Intent(this, ActivityItemsOfAList.class);
-                intent.putExtra("listId", listId);
-                intent.putExtra("name", listName);
-                startActivity(intent);
-                finish();
+                else {
+                    System.out.println(userLocalStore.userLocalDatabase.getAll().toString());
+                    String imageToSave = "";
+                    if (photo != null) {
+                        imageToSave = BitMapToString(photo, 30);
+                    }
+                    Item i = new Item(listId, userLocalStore.getUserLoggedIn().getUsername(),
+                            itemNameField.getText().toString(), ratingSelected, itemDescriptionField.getText().toString(), imageToSave);
+
+                    ServerRequests serverRequests = new ServerRequests(this);
+                    serverRequests.UploadItemAsyncTask(i, new GetItemId() {
+                        @Override
+                        public void done(Item item) {
+                            if (item != null) {
+                                dbHandler.addItem(item);
+                                Intent intent = new Intent(ActivityAddItem.this, ActivityItemsOfAList.class);
+                                intent.putExtra("listId", listId);
+                                intent.putExtra("name", listName);
+                                startActivity(intent);
+                                finish();
+                            } else showError();
+                        }
+                    });
+                }
                 break;
         }
     }
+
+    private void showError(){
+        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
+        allertBuilder.setMessage("An item with that name for that list already exists!");
+        allertBuilder.setPositiveButton("OK", null);
+        allertBuilder.show();
+    }
+
+    private void showErrorEmptyField(){
+        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
+        allertBuilder.setMessage("Please enter a name for the item!");
+        allertBuilder.setPositiveButton("OK", null);
+        allertBuilder.show();
+    }
+
 
     @Override
     public void onBackPressed() {

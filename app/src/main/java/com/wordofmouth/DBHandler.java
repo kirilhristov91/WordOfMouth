@@ -120,6 +120,7 @@ public class DBHandler extends SQLiteOpenHelper{
 
     public void addItem(Item i){
         ContentValues values = new ContentValues();
+        values.put(COLUMN_ItemID, i.get_itemId());
         values.put(COLUMN_ListID, i.get_listId());
         values.put(COLUMN_ItemName, i.get_name());
         values.put(COLUMN_Rating, i.get_rating());

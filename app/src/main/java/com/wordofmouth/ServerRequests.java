@@ -54,6 +54,11 @@ public class ServerRequests {
         new UploadListAsyncTask(list, getListId).execute();
     }
 
+    public void UploadItemAsyncTask(Item item, GetItemId getItemId){
+        progressDialog.show();
+        progressDialog.setMessage("Uploading Item to Server...");
+        new UploadItemAsyncTask(item, getItemId).execute();
+    }
 
     public class StoreUserDataAsyncTask extends AsyncTask<Void, Void, User>{
         User user;
@@ -517,6 +522,141 @@ public class ServerRequests {
             progressDialog.dismiss();
             getListId.done(returnedList);
             super.onPostExecute(returnedList);
+        }
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////
+    public class UploadItemAsyncTask extends AsyncTask<Void, Void, Item>{
+        Item item;
+        GetItemId getItemId;
+
+        public UploadItemAsyncTask(Item item, GetItemId getItemId) {
+            this.item = item;
+            this.getItemId = getItemId;
+        }
+
+        @Override
+        protected Item doInBackground(Void... params) {
+
+            Map<String,String> dataToSend = new HashMap<>();
+            Integer listId = item.get_listId();
+            String listIdString = listId.toString();
+            Double rating = item.get_rating();
+            String ratingString = rating.toString();
+
+
+            dataToSend.put("listId", listIdString);
+            dataToSend.put("username", item.get_creatorUsername());
+            dataToSend.put("name", item.get_name());
+            dataToSend.put("rating", ratingString);
+            dataToSend.put("description", item.get_description());
+            dataToSend.put("picture", item.get_itemImage());
+
+            //Encoded String - we will have to encode string by our custom method (Very easy)
+            String encodedStr = getEncodedData(dataToSend);
+
+            //Will be used if we want to read some data from server
+            BufferedReader reader = null;
+
+            Item returnedItem = null;
+
+            //Connection Handling
+            try {
+                //Converting address String to URL
+                URL url = new URL(SERVER_ADDRESS + "uploadItem.php");
+                //Opening the connection (Not setting or using CONNECTION_TIMEOUT)
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+                //Post Method
+                con.setRequestMethod("POST");
+                //To enable inputting values using POST method
+                //(Basically, after this we can write the dataToSend to the body of POST method)
+                con.setDoOutput(true);
+                OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
+                //Writing dataToSend to outputstreamwriter
+                writer.write(encodedStr);
+                //Sending the data to the server - This much is enough to send data to server
+                //But to read the response of the server, you will have to implement the procedure below
+                writer.flush();
+
+
+                //Data Read Procedure - Basically reading the data comming line by line
+                StringBuilder sb = new StringBuilder();
+                reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                String line;
+                while((line = reader.readLine()) != null) { //Read till there is something available
+                    sb.append(line + "\n");     //Reading and saving line by line - not all at once
+                }
+                line = sb.toString();           //Saving complete data received in string, you can do it differently
+                //Just check to the values received in Logcat
+                Log.i("custom_ListUpload_check", "The values received are as follows:");
+                Log.i("custom_ListUpload_check",line);
+
+                if(line.equals("You have already created a list with that name!\n")){
+                    returnedItem = null;
+                }
+
+                else {
+                    JSONObject jResult = new JSONObject(line);
+
+                    if (jResult.length() == 0) {
+                        returnedItem = null;
+                    } else {
+                        int id = jResult.getInt("id");
+                        int lId = jResult.getInt("listId");
+                        String username = jResult.getString("username");
+                        String name = jResult.getString("name");
+                        double r = jResult.getDouble("rating");
+                        String description = jResult.getString("description");
+                        String image = jResult.getString("picture");
+                        returnedItem = new Item(lId, username, name, rating, description, image);
+                        returnedItem.set_itemId(id);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if(reader != null) {
+                    try {
+                        reader.close();     //Closing the
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            //Same return null, but if you want to return the read string (stored in line)
+            //then change the parameters of AsyncTask and return that type, by converting
+            //the string - to say JSON or user in your case
+            return returnedItem;
+
+        }
+
+        private String getEncodedData(Map<String,String> data) {
+            StringBuilder sb = new StringBuilder();
+            for(String key : data.keySet()) {
+                String value = null;
+                try {
+                    value = URLEncoder.encode(data.get(key),"UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+
+                if(sb.length()>0)
+                    sb.append("&");
+
+                sb.append(key + "=" + value);
+            }
+            return sb.toString();
+        }
+
+        @Override
+        protected void onPostExecute(Item returnedItem) {
+            progressDialog.dismiss();
+            getItemId.done(returnedItem);
+            super.onPostExecute(returnedItem);
         }
     }
 

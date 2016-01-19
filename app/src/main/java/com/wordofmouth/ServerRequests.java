@@ -407,12 +407,10 @@ public class ServerRequests {
         protected MyList doInBackground(Void... params) {
 
             Map<String,String> dataToSend = new HashMap<>();
-            Integer creator = list.get_creatorId();
-            String creatorString = creator.toString();
             Integer visibility = list.get_visibility();
             String visibilityString = visibility.toString();
 
-            dataToSend.put("creatorId", creatorString);
+            dataToSend.put("username", list.get_username());
             dataToSend.put("name", list.get_name());
             dataToSend.put("visibility", visibilityString);
             dataToSend.put("description", list.get_description());
@@ -469,11 +467,11 @@ public class ServerRequests {
                         returnedList = null;
                     } else {
                         int id = jResult.getInt("id");
-                        int creatorId = jResult.getInt("creatorId");
+                        String username = jResult.getString("username");
                         String name = jResult.getString("name");
                         int vis = jResult.getInt("visibility");
                         String description = jResult.getString("description");
-                        returnedList = new MyList(creatorId, name, vis, description);
+                        returnedList = new MyList(username, name, vis, description);
                         returnedList.set_listId(id);
                     }
                 }

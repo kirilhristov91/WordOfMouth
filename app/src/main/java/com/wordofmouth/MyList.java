@@ -3,15 +3,15 @@ package com.wordofmouth;
 
 public class MyList {
     private int _listId;
-    private int _creatorId;
+    private String _username;
     private String _name;
     private int _visibility;
     private String _description;
 
     public MyList(){}
 
-    public MyList(int _creatorId, String name, int visibility, String description) {
-        this._creatorId = _creatorId;
+    public MyList(String _username, String name, int visibility, String description) {
+        this._username = _username;
         this._name = name;
         this._visibility = visibility;
         this._description = description;
@@ -22,8 +22,8 @@ public class MyList {
         this._listId = _listId;
     }
 
-    public void set_creatorId(int _creatorId) {
-        this._creatorId = _creatorId;
+    public void set_username(String _username) {
+        this._username = _username;
     }
 
     public void set_name(String _name) {
@@ -42,8 +42,8 @@ public class MyList {
         return _listId;
     }
 
-    public int get_creatorId() {
-        return _creatorId;
+    public String get_username() {
+        return _username;
     }
 
     public String get_name() {

@@ -113,8 +113,8 @@ public class ActivityAddItem extends AppCompatActivity implements View.OnClickLi
                 if(photo!=null) {
                    imageToSave = BitMapToString(photo,30);
                 }
-                Item i = new Item(itemNameField.getText().toString(), ratingSelected, itemDescriptionField.getText().toString(), imageToSave, userLocalStore.getUserLoggedIn().getUsername());
-                dbHandler.addItem(i, listId);
+                Item i = new Item(listId, userLocalStore.getUserLoggedIn().getUsername(), itemNameField.getText().toString(), ratingSelected, itemDescriptionField.getText().toString(), imageToSave);
+                dbHandler.addItem(i);
                 Intent intent = new Intent(this, ActivityItemsOfAList.class);
                 intent.putExtra("listId", listId);
                 intent.putExtra("name", listName);

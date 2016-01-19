@@ -14,13 +14,13 @@ public class DBHandler extends SQLiteOpenHelper{
     private static DBHandler sInstance;
 
     //if updating the database change the version:
-    private static final int DATABASE_VERSION = 10;
+    private static final int DATABASE_VERSION = 13;
     private static final String DATABASE_NAME = "WOM.db";
 
     //Lists table
     public static final String TABLE_USER_LISTS = "UserLists";
     public static final String COLUMN_ID = "_listId";
-    public static final String COLUMN_CreatorID = "_creatorId";
+    public static final String COLUMN_Username = "_username";
     public static final String COLUMN_Name = "_name";
     public static final String COLUMN_Visibility = "_visibility";
     public static final String COLUMN_Description = "_description";
@@ -69,7 +69,7 @@ public class DBHandler extends SQLiteOpenHelper{
     public void onCreate(SQLiteDatabase db) {
         String CreateListTableQuery = "CREATE TABLE " + TABLE_USER_LISTS + "(" +
                 COLUMN_ID + " INTEGER PRIMARY KEY, " +
-                COLUMN_CreatorID + " INTEGER, " +
+                COLUMN_Username + " TEXT, " +
                 COLUMN_Name + " TEXT, " +
                 COLUMN_Visibility + " INTEGER, " +
                 COLUMN_Description + " TEXT " +
@@ -109,7 +109,7 @@ public class DBHandler extends SQLiteOpenHelper{
     public void addList(MyList ul){
         ContentValues values = new ContentValues();
         values.put(COLUMN_ListID, ul.get_listId());
-        values.put(COLUMN_CreatorID, ul.get_creatorId());
+        values.put(COLUMN_Username, ul.get_username());
         values.put(COLUMN_Name, ul.get_name());
         values.put(COLUMN_Visibility, ul.get_visibility());
         values.put(COLUMN_Description, ul.get_description());
@@ -118,9 +118,9 @@ public class DBHandler extends SQLiteOpenHelper{
         db.close();
     }
 
-    public void addItem(Item i, int listID){
+    public void addItem(Item i){
         ContentValues values = new ContentValues();
-        values.put(COLUMN_ListID, listID);
+        values.put(COLUMN_ListID, i.get_listId());
         values.put(COLUMN_ItemName, i.get_name());
         values.put(COLUMN_Rating, i.get_rating());
         values.put(COLUMN_Description, i.get_description());
@@ -218,10 +218,10 @@ public class DBHandler extends SQLiteOpenHelper{
     }*/
 
     // get the lists as list of objects
-    public ArrayList<MyList> getLists(int userId){
+    public ArrayList<MyList> getLists(String currentUserUsername){
         // prepare the variables to store a row
         int id;
-        int creatorId;
+        String username="";
         String listName = "";
         int vis;
         String des = "";
@@ -229,7 +229,7 @@ public class DBHandler extends SQLiteOpenHelper{
 
         SQLiteDatabase db = getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_USER_LISTS +
-                       " WHERE _creatorId = " + userId;
+                       " WHERE " + COLUMN_Username + "=\"" + currentUserUsername + "\";";
         // cursor points to a location in the results
         Cursor c = db.rawQuery(query, null);
         // move to the first row
@@ -238,7 +238,9 @@ public class DBHandler extends SQLiteOpenHelper{
         while (!c.isAfterLast()){
 
             id = c.getInt(c.getColumnIndex("_listId"));
-            creatorId = c.getInt(c.getColumnIndex("_creatorId"));
+            if(c.getString(c.getColumnIndex("_username")) != null){
+                username = c.getString(c.getColumnIndex("_username"));
+            }
             if(c.getString(c.getColumnIndex("_name")) != null){
                 listName = c.getString(c.getColumnIndex("_name"));
             }
@@ -247,7 +249,7 @@ public class DBHandler extends SQLiteOpenHelper{
                 des = c.getString(c.getColumnIndex("_description"));
             }
 
-            MyList ul = new MyList(userId, listName, vis, des);
+            MyList ul = new MyList(username, listName, vis, des);
             ul.set_listId(id);
             lists.add(ul);
             c.moveToNext();
@@ -296,9 +298,8 @@ public class DBHandler extends SQLiteOpenHelper{
                 image = c.getString(c.getColumnIndex(COLUMN_ItemImage));
             }
 
-            Item item = new Item(itemName, rating, des, image, creatorUsername);
+            Item item = new Item(listID, creatorUsername, itemName, rating, des, image);
             item.set_itemId(id);
-            item.set_listId(listID);
             itemsList.add(item);
             c.moveToNext();
         }

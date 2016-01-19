@@ -36,11 +36,12 @@ public class MainActivity extends AppCompatActivity{
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         //
         userLocalStore = new UserLocalStore(this);
-        int currentUserId = userLocalStore.userLocalDatabase.getInt("id",0);
+        String username = userLocalStore.userLocalDatabase.getString("username", "");
         // get the user`s lists to display on fragment
         dbHandler = DBHandler.getInstance(this);
         lists = new ArrayList<MyList>();
-        lists = dbHandler.getLists(currentUserId);
+        lists = dbHandler.getLists(username);
+
 
         // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
         adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,NumberOfTabs);

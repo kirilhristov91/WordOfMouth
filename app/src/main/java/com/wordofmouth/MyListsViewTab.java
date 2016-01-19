@@ -17,7 +17,6 @@ import java.util.ArrayList;
 public class MyListsViewTab extends Fragment implements View.OnClickListener{
 
     TextView createList;
-    //Button logoutButton;
     //UserLocalStore userLocalStore;
     ListView myListView;
     ArrayList<MyList> myLists;

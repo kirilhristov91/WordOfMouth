@@ -10,7 +10,8 @@ public class Item {
     private String _itemImage;
     private String _creatorUsername;
 
-    public Item(String name, double rating, String description, String itemImage, String username) {
+    public Item(int _listId, String username, String name, double rating, String description, String itemImage) {
+        this._listId = _listId;
         this._name = name;
         this._rating = rating;
         this._description = description;

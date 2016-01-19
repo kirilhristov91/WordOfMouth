@@ -36,6 +36,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
         String[] listNames = new String[myLists.size()];
         for (int i = 0; i < myLists.size(); i++) {
             listNames[i] = myLists.get(i).get_name();
+            System.out.println(myLists.get(i).get_listId());
         }
 
         ArrayAdapter<String> MyListsAdapter =

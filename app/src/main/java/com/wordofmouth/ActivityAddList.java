@@ -1,5 +1,6 @@
 package com.wordofmouth;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -62,27 +63,49 @@ public class ActivityAddList extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View v) {
         switch(v.getId()) {
-            //TODO set check for empty name field
+
             case R.id.createNewListButton:
-                int currentUserId = userLocalStore.userLocalDatabase.getInt("id",0);
-                int visibility;
-                if (dropDownChoice.equals("private")) visibility = 0;
-                else visibility = 1;
-                MyList list = new MyList(currentUserId, listNameField.getText().toString(), visibility, listDescriptionField.getText().toString());
-                ServerRequests serverRequests = new ServerRequests(this);
-                serverRequests.UploadListAsyncTask(list, new GetListId() {
-                    @Override
-                    public void done(MyList returnedList) {
-                        dbHandler.addList(returnedList);
-                        closeActivity();
-                    }
-                });
+                if(listNameField.getText().toString().equals("")){
+                    showErrorEmptyField();
+                }
+
+                else {
+                    int currentUserId = userLocalStore.userLocalDatabase.getInt("id", 0);
+                    int visibility;
+                    if (dropDownChoice.equals("private")) visibility = 0;
+                    else visibility = 1;
+                    MyList list = new MyList(currentUserId, listNameField.getText().toString(), visibility, listDescriptionField.getText().toString());
+                    ServerRequests serverRequests = new ServerRequests(this);
+                    serverRequests.UploadListAsyncTask(list, new GetListId() {
+                        @Override
+                        public void done(MyList returnedList) {
+                            if (returnedList != null) {
+                                dbHandler.addList(returnedList);
+                                closeActivity();
+                            } else showError();
+                        }
+                    });
+                }
         }
     }
 
     public void closeActivity(){
         startActivity(new Intent(this, MainActivity.class));
         finish();
+    }
+
+    private void showError(){
+        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
+        allertBuilder.setMessage("You have already created a list with that name!");
+        allertBuilder.setPositiveButton("OK", null);
+        allertBuilder.show();
+    }
+
+    private void showErrorEmptyField(){
+        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
+        allertBuilder.setMessage("Please enter a name for the list!");
+        allertBuilder.setPositiveButton("OK", null);
+        allertBuilder.show();
     }
 
 }

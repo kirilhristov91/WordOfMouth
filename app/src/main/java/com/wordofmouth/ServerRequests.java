@@ -407,10 +407,10 @@ public class ServerRequests {
         protected MyList doInBackground(Void... params) {
 
             Map<String,String> dataToSend = new HashMap<>();
-            Integer creator = (Integer)list.get_creatorId();
+            Integer creator = list.get_creatorId();
             String creatorString = creator.toString();
-            Integer visibility = (Integer)list.get_visibility();
-            String visibilityString = creator.toString();
+            Integer visibility = list.get_visibility();
+            String visibilityString = visibility.toString();
 
             dataToSend.put("creatorId", creatorString);
             dataToSend.put("name", list.get_name());
@@ -458,21 +458,25 @@ public class ServerRequests {
                 Log.i("custom_ListUpload_check", "The values received are as follows:");
                 Log.i("custom_ListUpload_check",line);
 
-                JSONObject jResult = new JSONObject(line);
-
-                if (jResult.length() == 0){
+                if(line.equals("You have already created a list with that name!\n")){
                     returnedList = null;
                 }
-                else{
-                    int id = jResult.getInt("id");
-                    int creatorId = jResult.getInt("creatorId");
-                    String name = jResult.getString("name");
-                    int vis = jResult.getInt("visibility");
-                    String description = jResult.getString("description");
-                    returnedList = new MyList(creatorId, name, vis, description);
-                    returnedList.set_listId(id);
-                }
 
+                else {
+                    JSONObject jResult = new JSONObject(line);
+
+                    if (jResult.length() == 0) {
+                        returnedList = null;
+                    } else {
+                        int id = jResult.getInt("id");
+                        int creatorId = jResult.getInt("creatorId");
+                        String name = jResult.getString("name");
+                        int vis = jResult.getInt("visibility");
+                        String description = jResult.getString("description");
+                        returnedList = new MyList(creatorId, name, vis, description);
+                        returnedList.set_listId(id);
+                    }
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {

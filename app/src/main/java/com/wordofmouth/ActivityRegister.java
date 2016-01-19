@@ -42,6 +42,7 @@ public class ActivityRegister extends AppCompatActivity implements View.OnClickL
     public void onClick(View v){
         switch(v.getId()){
             case R.id.registerButton:
+                //TODO set check for empty name field
                 int id=0;
                 String name = regnameField.getText().toString();
                 String email = regemailField.getText().toString();

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -15,8 +16,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.jar.JarEntry;
 
 public class ServerRequests {
 
@@ -47,7 +50,6 @@ public class ServerRequests {
         new UploadProfilePictureAsyncTask(username, image, userCallback).execute();
     }
 
-
     public void UploadListAsyncTask(MyList list, GetListId getListId){
         progressDialog.show();
         progressDialog.setMessage("Uploading List to Server...");
@@ -59,6 +61,14 @@ public class ServerRequests {
         progressDialog.setMessage("Uploading Item to Server...");
         new UploadItemAsyncTask(item, getItemId).execute();
     }
+
+    public void fetchUsersInBackground(String reuestedName, GetUsers getUsers){
+        progressDialog.show();
+        progressDialog.setMessage("Fetching users matching the name or username you entered...");
+        new FetchUsersAsyncTask(reuestedName,getUsers).execute();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
 
     public class StoreUserDataAsyncTask extends AsyncTask<Void, Void, User>{
         User user;
@@ -661,5 +671,108 @@ public class ServerRequests {
     }
 
 
+    public class FetchUsersAsyncTask extends AsyncTask<Void, Void, ArrayList<User>>{
+        String name;
+        GetUsers getUsers;
+
+        public FetchUsersAsyncTask(String query, GetUsers getUsers) {
+            this.name = query;
+            this.getUsers = getUsers;
+        }
+
+
+        @Override
+        protected ArrayList<User> doInBackground(Void... params) {
+
+            Map<String,String> dataToSend = new HashMap<>();
+            dataToSend.put("name", name);
+            System.out.println("V SERVER REQUEST" + name);
+            //Encoded String - we will have to encode string by our custom method (Very easy)
+            String encodedStr = getEncodedData(dataToSend);
+
+            //Will be used if we want to read some data from server
+            BufferedReader reader = null;
+
+            ArrayList<User> returnedUsers = new ArrayList<User>();
+
+            //Connection Handling
+            try {
+                URL url = new URL(SERVER_ADDRESS + "fetchUsers.php");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+                //Post Method
+                con.setRequestMethod("POST");
+                con.setDoOutput(true);
+                OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
+                writer.write(encodedStr);
+                writer.flush();
+
+                //Data Read Procedure - Basically reading the data comming line by line
+                StringBuilder sb = new StringBuilder();
+                reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                String line;
+                while((line = reader.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+                line = sb.toString();
+                Log.i("fetchUsers", "The values received are as follows:");
+                Log.i("fetchUsers",line);
+
+                if(!line.equals("null\n")) {
+                    JSONArray array = new JSONArray(line);
+                    System.out.println(array.length());
+                    for (int n = 0; n < array.length(); n++) {
+                        JSONObject jResult = array.getJSONObject(n);
+                        System.out.println(jResult);
+                        String user = jResult.getString("user");
+                        jResult = new JSONObject(user);
+                        int id = jResult.getInt("id");
+                        String username = jResult.getString("username");
+                        String name = jResult.getString("name");
+                        String picture = jResult.getString("picture");
+                        System.out.println(id + " " + username + " " + name);
+                        returnedUsers.add(new User(id, name, username, picture));
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if(reader != null) {
+                    try {
+                        reader.close();     //Closing the
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return returnedUsers;
+        }
+
+        private String getEncodedData(Map<String,String> data) {
+            StringBuilder sb = new StringBuilder();
+            for(String key : data.keySet()) {
+                String value = null;
+                try {
+                    value = URLEncoder.encode(data.get(key),"UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+
+                if(sb.length()>0)
+                    sb.append("&");
+
+                sb.append(key + "=" + value);
+            }
+            return sb.toString();
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<User> returnedUsers) {
+            progressDialog.dismiss();
+            getUsers.done(returnedUsers);
+            super.onPostExecute(returnedUsers);
+        }
+    }
 }
 

@@ -25,6 +25,13 @@ public class User {
         this.email = "";
     }
 
+    public User(int id, String name, String username, String picture){
+        this.id=id;
+        this.username = username;
+        this.name=name;
+        this.picture = picture;
+    }
+
     public void setId(int id){
         this.id = id;
     }

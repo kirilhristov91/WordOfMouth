@@ -20,6 +20,7 @@ import java.util.ArrayList;
 public class ActivityItemsOfAList extends AppCompatActivity implements View.OnClickListener{
 
     TextView addItemText;
+    TextView invitePeople;
     ListView itemsListView;
     ArrayList<Item> items;
     int selectedListId;
@@ -37,6 +38,8 @@ public class ActivityItemsOfAList extends AppCompatActivity implements View.OnCl
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         addItemText = (TextView) findViewById(R.id.addItemText);
         addItemText.setOnClickListener(this);
+        invitePeople = (TextView) findViewById(R.id.invitePeople);
+        invitePeople.setOnClickListener(this);
         itemsListView = (ListView) findViewById(R.id.itemsListView);
 
         // get the sent information from Another activity
@@ -122,6 +125,13 @@ public class ActivityItemsOfAList extends AppCompatActivity implements View.OnCl
                 intent.putExtra("listId", selectedListId);
                 intent.putExtra("name", listName);
                 startActivity(intent);
+                finish();
+                break;
+            case R.id.invitePeople:
+                Intent invite = new Intent(this, ActivityInvite.class);
+                invite.putExtra("listId", selectedListId);
+                invite.putExtra("name", listName);
+                startActivity(invite);
                 finish();
                 break;
         }

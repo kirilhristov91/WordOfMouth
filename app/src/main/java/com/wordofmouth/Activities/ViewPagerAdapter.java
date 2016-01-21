@@ -1,8 +1,12 @@
-package com.wordofmouth;
+package com.wordofmouth.Activities;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+
+import com.wordofmouth.Activities.MyListsViewTab;
+import com.wordofmouth.Activities.ProfileViewTab;
+import com.wordofmouth.Activities.SharedListsViewTab;
 
 
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {

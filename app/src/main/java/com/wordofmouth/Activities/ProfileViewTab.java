@@ -1,4 +1,4 @@
-package com.wordofmouth;
+package com.wordofmouth.Activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -19,6 +19,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.content.pm.PackageManager;
 import android.widget.Toast;
+
+import com.wordofmouth.Other.DBHandler;
+import com.wordofmouth.Interfaces.GetUserCallback;
+import com.wordofmouth.R;
+import com.wordofmouth.Other.ServerRequests;
+import com.wordofmouth.ObjectClasses.User;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;

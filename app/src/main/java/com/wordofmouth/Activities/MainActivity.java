@@ -1,4 +1,4 @@
-package com.wordofmouth;
+package com.wordofmouth.Activities;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -8,6 +8,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.wordofmouth.Other.DBHandler;
+import com.wordofmouth.ObjectClasses.MyList;
+import com.wordofmouth.R;
+import com.wordofmouth.SharedPreferences.UserLocalStore;
+
 import java.util.ArrayList;
 
 import TabLibraries.SlidingTabLayout;
@@ -36,7 +42,7 @@ public class MainActivity extends AppCompatActivity{
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         //
         userLocalStore = new UserLocalStore(this);
-        String username = userLocalStore.userLocalDatabase.getString("username", "");
+        String username = userLocalStore.getUserLocalDatabase().getString("username", "");
         // get the user`s lists to display on fragment
         dbHandler = DBHandler.getInstance(this);
         lists = new ArrayList<MyList>();
@@ -74,7 +80,7 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onStart() {
         super.onStart();
-        System.out.println(userLocalStore.userLocalDatabase.getAll().toString());
+        //System.out.println(userLocalStore.userLocalDatabase.getAll().toString());
         if(!authenticate()){
             startActivity(new Intent(MainActivity.this, ActivityLogin.class));
             finish();

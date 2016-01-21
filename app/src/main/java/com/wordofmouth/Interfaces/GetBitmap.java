@@ -1,4 +1,4 @@
-package com.wordofmouth;
+package com.wordofmouth.Interfaces;
 
 
 import android.graphics.Bitmap;

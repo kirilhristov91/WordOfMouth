@@ -1,10 +1,12 @@
-package com.wordofmouth;
+package com.wordofmouth.Activities;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+
+import com.wordofmouth.R;
 
 public class ActivityItem extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package com.wordofmouth;
+package com.wordofmouth.Activities;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -14,6 +14,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.wordofmouth.Other.DBGetItems;
+import com.wordofmouth.Other.DBHandler;
+import com.wordofmouth.Interfaces.GetBitmap;
+import com.wordofmouth.Interfaces.GetItems;
+import com.wordofmouth.ObjectClasses.Item;
+import com.wordofmouth.R;
+import com.wordofmouth.Other.StringToBitmapRequests;
 
 import java.util.ArrayList;
 

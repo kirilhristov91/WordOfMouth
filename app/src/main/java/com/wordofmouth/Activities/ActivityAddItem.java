@@ -1,4 +1,4 @@
-package com.wordofmouth;
+package com.wordofmouth.Activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -18,6 +18,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+
+import com.wordofmouth.Other.DBHandler;
+import com.wordofmouth.Interfaces.GetItemId;
+import com.wordofmouth.ObjectClasses.Item;
+import com.wordofmouth.R;
+import com.wordofmouth.Other.ServerRequests;
+import com.wordofmouth.SharedPreferences.UserLocalStore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -113,7 +120,7 @@ public class ActivityAddItem extends AppCompatActivity implements View.OnClickLi
                     showErrorEmptyField();
                 }
                 else {
-                    System.out.println(userLocalStore.userLocalDatabase.getAll().toString());
+                    System.out.println(userLocalStore.getUserLocalDatabase().getAll().toString());
                     String imageToSave = "";
                     if (photo != null) {
                         imageToSave = BitMapToString(photo, 30);

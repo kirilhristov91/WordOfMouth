@@ -1,9 +1,17 @@
-package com.wordofmouth;
+package com.wordofmouth.Other;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.wordofmouth.Interfaces.GetItemId;
+import com.wordofmouth.Interfaces.GetListId;
+import com.wordofmouth.Interfaces.GetUserCallback;
+import com.wordofmouth.Interfaces.GetUsers;
+import com.wordofmouth.ObjectClasses.Item;
+import com.wordofmouth.ObjectClasses.MyList;
+import com.wordofmouth.ObjectClasses.User;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -19,7 +27,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.jar.JarEntry;
 
 public class ServerRequests {
 
@@ -249,7 +256,7 @@ public class ServerRequests {
                     int id = jResult.getInt("id");
                     String name = jResult.getString("name");
                     String email = jResult.getString("email");
-                    returnedUser = new User(id,name, email, user.username, user.password);
+                    returnedUser = new User(id,name, email, user.getUsername(), user.getPassword());
                 }
 
             } catch (Exception e) {

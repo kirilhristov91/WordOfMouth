@@ -1,4 +1,4 @@
-package com.wordofmouth;
+package com.wordofmouth.ObjectClasses;
 
 
 public class MyList {

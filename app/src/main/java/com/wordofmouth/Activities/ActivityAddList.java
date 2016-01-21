@@ -1,4 +1,4 @@
-package com.wordofmouth;
+package com.wordofmouth.Activities;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -12,6 +12,13 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Button;
 import android.widget.Spinner;
+
+import com.wordofmouth.Other.DBHandler;
+import com.wordofmouth.Interfaces.GetListId;
+import com.wordofmouth.ObjectClasses.MyList;
+import com.wordofmouth.R;
+import com.wordofmouth.Other.ServerRequests;
+import com.wordofmouth.SharedPreferences.UserLocalStore;
 
 public class ActivityAddList extends AppCompatActivity implements View.OnClickListener{
 
@@ -70,7 +77,7 @@ public class ActivityAddList extends AppCompatActivity implements View.OnClickLi
                 }
 
                 else {
-                    String currentUserUsername = userLocalStore.userLocalDatabase.getString("username", "");
+                    String currentUserUsername = userLocalStore.getUserLocalDatabase().getString("username", "");
                     int visibility;
                     if (dropDownChoice.equals("private")) visibility = 0;
                     else visibility = 1;

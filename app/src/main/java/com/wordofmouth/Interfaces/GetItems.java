@@ -1,4 +1,6 @@
-package com.wordofmouth;
+package com.wordofmouth.Interfaces;
+
+import com.wordofmouth.ObjectClasses.Item;
 
 import java.util.ArrayList;
 

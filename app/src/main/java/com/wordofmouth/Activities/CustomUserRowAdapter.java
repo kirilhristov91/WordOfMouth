@@ -1,4 +1,4 @@
-package com.wordofmouth;
+package com.wordofmouth.Activities;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -9,8 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.TextView;
+
+import com.wordofmouth.ObjectClasses.User;
+import com.wordofmouth.R;
 
 import java.util.ArrayList;
 

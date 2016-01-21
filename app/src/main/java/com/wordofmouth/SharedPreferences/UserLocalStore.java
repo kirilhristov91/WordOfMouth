@@ -1,11 +1,18 @@
-package com.wordofmouth;
+package com.wordofmouth.SharedPreferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.wordofmouth.ObjectClasses.User;
+
 public class UserLocalStore {
 
     public static final String SP_NAME = "userDetails";
+
+    public SharedPreferences getUserLocalDatabase() {
+        return userLocalDatabase;
+    }
+
     SharedPreferences userLocalDatabase;
 
     public UserLocalStore(Context context){
@@ -14,11 +21,11 @@ public class UserLocalStore {
 
     public void storeUserData(User user){
         SharedPreferences.Editor editor = userLocalDatabase.edit();
-        editor.putInt("id", user.id);
-        editor.putString("name", user.name);
-        editor.putString("email", user.email);
-        editor.putString("username", user.username);
-        editor.putString("password", user.password);
+        editor.putInt("id", user.getId());
+        editor.putString("name", user.getName());
+        editor.putString("email", user.getEmail());
+        editor.putString("username", user.getUsername());
+        editor.putString("password", user.getPassword());
         editor.apply();
     }
 

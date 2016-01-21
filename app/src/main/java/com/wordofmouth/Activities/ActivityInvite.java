@@ -1,18 +1,24 @@
-package com.wordofmouth;
+package com.wordofmouth.Activities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
+
+import com.wordofmouth.Interfaces.GetUsers;
+import com.wordofmouth.R;
+import com.wordofmouth.Other.ServerRequests;
+import com.wordofmouth.ObjectClasses.User;
+import com.wordofmouth.SharedPreferences.UserLocalStore;
 
 import java.util.ArrayList;
 
@@ -52,6 +58,9 @@ public class ActivityInvite extends AppCompatActivity implements View.OnClickLis
         switch (v.getId()){
             case R.id.searchUsersButton:
                 //TODO prashtai i id-to za da ne vyrne syshtiq user (ko she se invite-va sebe si)
+                InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+
                 ServerRequests serverRequests = new ServerRequests(this);
                 System.out.println("GETQYERY TO STRING" + searchView.getQuery().toString());
                 serverRequests.fetchUsersInBackground(searchView.getQuery().toString(), new GetUsers() {
@@ -80,6 +89,7 @@ public class ActivityInvite extends AppCompatActivity implements View.OnClickLis
                 new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                         /*String itemName = String.valueOf(parent.getItemAtPosition(position));
                         int itemIdClicked = items.get(position).get_itemId();
                         Intent myIntent = new Intent(ActivityItemsOfAList.this, ActivityItem.class);

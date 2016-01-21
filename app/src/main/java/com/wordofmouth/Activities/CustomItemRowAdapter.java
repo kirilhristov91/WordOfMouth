@@ -1,4 +1,4 @@
-package com.wordofmouth;
+package com.wordofmouth.Activities;
 
 
 import android.content.Context;
@@ -10,6 +10,9 @@ import android.view.ViewGroup;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.ImageView;
+
+import com.wordofmouth.ObjectClasses.Item;
+import com.wordofmouth.R;
 
 import java.util.ArrayList;
 

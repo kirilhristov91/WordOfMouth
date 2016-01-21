@@ -1,4 +1,4 @@
-package com.wordofmouth;
+package com.wordofmouth.Other;
 
 
 import android.app.ProgressDialog;
@@ -7,6 +7,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Base64;
+
+import com.wordofmouth.Interfaces.GetBitmap;
+import com.wordofmouth.ObjectClasses.Item;
 
 import java.util.ArrayList;
 

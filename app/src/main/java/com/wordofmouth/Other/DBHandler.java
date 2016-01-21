@@ -1,10 +1,13 @@
-package com.wordofmouth;
+package com.wordofmouth.Other;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.Cursor;
 import android.content.Context;
 import android.content.ContentValues;
+
+import com.wordofmouth.ObjectClasses.Item;
+import com.wordofmouth.ObjectClasses.MyList;
 
 import java.util.ArrayList;
 

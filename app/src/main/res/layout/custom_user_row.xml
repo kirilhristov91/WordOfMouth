@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="5dp">
+
+    <ImageView
+        android:id="@+id/customRowPicture"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/profiledefault"
+        />
+
+    <TextView
+        android:id="@+id/customRowNameCaption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/customRowPicture"
+        android:layout_toEndOf="@+id/customRowPicture"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="Name: "
+        android:layout_marginLeft="5dp"
+
+        />
+
+    <TextView
+        android:id="@+id/customRowUsernameCaption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/customRowPicture"
+        android:layout_toEndOf="@+id/customRowPicture"
+        android:layout_below="@+id/customRowNameCaption"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="Username: "
+        android:layout_marginLeft="5dp" />
+
+    <TextView
+        android:id="@+id/customRowName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/customRowNameCaption"
+        android:layout_toEndOf="@+id/customRowNameCaption"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="Name: "
+        android:layout_marginLeft="2dp"
+        />
+
+    <TextView
+        android:id="@+id/customRowUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/customRowUsernameCaption"
+        android:layout_toEndOf="@+id/customRowUsernameCaption"
+        android:layout_below="@+id/customRowNameCaption"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="Username: "
+        android:layout_marginLeft="2dp" />
+
+</RelativeLayout>

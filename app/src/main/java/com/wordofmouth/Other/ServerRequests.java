@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.wordofmouth.Interfaces.GetItemId;
 import com.wordofmouth.Interfaces.GetListId;
 import com.wordofmouth.Interfaces.GetUserCallback;
@@ -33,8 +34,14 @@ public class ServerRequests {
     ProgressDialog progressDialog;
     //public static final int CONNECTION_TIMEOUT = 1000 * 15;
     public static final String SERVER_ADDRESS = "http://wordofmouth.netau.net/";
+    public static final String SENDER_ID = "260188412151";
+    Context context;
+    String gcmId;
+    String msg;
+    GoogleCloudMessaging gcm;
 
     public ServerRequests(Context context){
+        this.context = context;
         progressDialog = new ProgressDialog(context);
         progressDialog.setCancelable(false);
         progressDialog.setTitle("Processing");
@@ -91,9 +98,25 @@ public class ServerRequests {
         protected User doInBackground(Void... params) {
 
             User returnedUser = null;
+            try {
+
+                if (gcm == null) {
+                    gcm = GoogleCloudMessaging.getInstance(context);
+                }
+                gcmId = gcm.register(SENDER_ID);
+                msg = "Device registered, registration ID=" + gcmId;
+
+                user.setGcmId(gcmId);
+
+            } catch (IOException ex) {
+                msg = "Error :" + ex.getMessage();
+
+            }
+            System.out.println("SYOBSHTENIETO E :" + msg + " a regId e slednoto " + gcmId);
 
             Map<String,String> dataToSend = new HashMap<>();
             dataToSend.put("name",user.getName());
+            dataToSend.put("gcmId", gcmId);
             dataToSend.put("email",user.getEmail());
             dataToSend.put("username", user.getUsername());
             dataToSend.put("password", user.getPassword());
@@ -254,9 +277,11 @@ public class ServerRequests {
                 }
                 else{
                     int id = jResult.getInt("id");
+                    String gcmId = jResult.getString("gcmId");
                     String name = jResult.getString("name");
                     String email = jResult.getString("email");
                     returnedUser = new User(id,name, email, user.getUsername(), user.getPassword());
+                    returnedUser.setGcmId(gcmId);
                 }
 
             } catch (Exception e) {

@@ -7,6 +7,7 @@ public class User {
     String email;
     String password;
 
+    String gcmId;
     String picture;
 
     public User(int id, String name, String email, String username, String password){
@@ -30,6 +31,14 @@ public class User {
         this.username = username;
         this.name=name;
         this.picture = picture;
+    }
+
+    public String getGcmId() {
+        return gcmId;
+    }
+
+    public void setGcmId(String gcmId) {
+        this.gcmId = gcmId;
     }
 
     public void setId(int id){

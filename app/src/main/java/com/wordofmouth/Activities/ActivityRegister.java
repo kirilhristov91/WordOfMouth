@@ -19,6 +19,7 @@ import com.wordofmouth.ObjectClasses.User;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+
 public class ActivityRegister extends AppCompatActivity implements View.OnClickListener{
 
     Button registerButton;
@@ -120,12 +121,10 @@ public class ActivityRegister extends AppCompatActivity implements View.OnClickL
         serverRequests.storeUserDataInBackground(user, new GetUserCallback() {
             @Override
             public void done(User returnedUser) {
-                if(returnedUser!=null){
+                if (returnedUser != null) {
                     showUserTakenError();
-                }
-                else startActivity(new Intent(ActivityRegister.this, ActivityLogin.class));
+                } else startActivity(new Intent(ActivityRegister.this, ActivityLogin.class));
             }
         });
     }
-
 }

@@ -22,6 +22,7 @@ public class UserLocalStore {
     public void storeUserData(User user){
         SharedPreferences.Editor editor = userLocalDatabase.edit();
         editor.putInt("id", user.getId());
+        editor.putString("gcmId", user.getGcmId());
         editor.putString("name", user.getName());
         editor.putString("email", user.getEmail());
         editor.putString("username", user.getUsername());
@@ -31,6 +32,7 @@ public class UserLocalStore {
 
     public User getUserLoggedIn(){
         int id = userLocalDatabase.getInt("id", 0);
+        String gcmId = userLocalDatabase.getString("gcmId", "");
         String name = userLocalDatabase.getString("name", "");
         String email = userLocalDatabase.getString("email", "");
         String username = userLocalDatabase.getString("username", "");

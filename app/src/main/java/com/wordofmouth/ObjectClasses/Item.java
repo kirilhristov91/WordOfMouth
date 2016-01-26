@@ -4,13 +4,18 @@ package com.wordofmouth.ObjectClasses;
 public class Item {
     private int _itemId;
     private int _listId;
+
+
+
+    private int _creatorId;
     private String _name;
     private double _rating;
     private String _description;
     private String _itemImage;
     private String _creatorUsername;
 
-    public Item(int _listId, String username, String name, double rating, String description, String itemImage) {
+    public Item(int _listId, int creatorId, String username, String name, double rating, String description, String itemImage) {
+        this._creatorId = creatorId;
         this._listId = _listId;
         this._name = name;
         this._rating = rating;
@@ -73,5 +78,13 @@ public class Item {
 
     public void set_creatorUsername(String _creatorUsername) {
         this._creatorUsername = _creatorUsername;
+    }
+
+    public int get_creatorId() {
+        return _creatorId;
+    }
+
+    public void set_creatorId(int _creatorId) {
+        this._creatorId = _creatorId;
     }
 }

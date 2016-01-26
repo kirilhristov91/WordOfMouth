@@ -3,6 +3,8 @@ package com.wordofmouth.ObjectClasses;
 
 public class MyList {
     private int _listId;
+
+    private int userId;
     private String _username;
     private String _name;
     private int _visibility;
@@ -10,7 +12,8 @@ public class MyList {
 
     public MyList(){}
 
-    public MyList(String _username, String name, int visibility, String description) {
+    public MyList(int userId, String _username, String name, int visibility, String description) {
+        this.userId = userId;
         this._username = _username;
         this._name = name;
         this._visibility = visibility;
@@ -20,6 +23,14 @@ public class MyList {
 
     public void set_listId(int _listId) {
         this._listId = _listId;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public void set_username(String _username) {

@@ -38,7 +38,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
         String[] listNames = new String[myLists.size()];
         for (int i = 0; i < myLists.size(); i++) {
             listNames[i] = myLists.get(i).get_name();
-            System.out.println(myLists.get(i).get_listId());
+            //System.out.println(myLists.get(i).get_listId());
         }
 
         ArrayAdapter<String> MyListsAdapter =
@@ -69,12 +69,6 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
     @Override
     public void onClick(View view){
         switch(view.getId()){
-            /*case R.id.logoutButton:
-                userLocalStore.clearUserData();
-                userLocalStore.setUserLoggedIn(false);
-
-                startActivity(new Intent(this, ActivityLogin.class));
-                break;*/
             case R.id.createListText:
                 startActivity(new Intent(mainActivity, ActivityAddList.class));
                 break;

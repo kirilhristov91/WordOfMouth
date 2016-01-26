@@ -10,6 +10,7 @@ import com.wordofmouth.Interfaces.GetItemId;
 import com.wordofmouth.Interfaces.GetListId;
 import com.wordofmouth.Interfaces.GetUserCallback;
 import com.wordofmouth.Interfaces.GetUsers;
+import com.wordofmouth.Interfaces.SendInviteResponse;
 import com.wordofmouth.ObjectClasses.Item;
 import com.wordofmouth.ObjectClasses.MyList;
 import com.wordofmouth.ObjectClasses.User;
@@ -40,6 +41,7 @@ public class ServerRequests {
     String msg;
     GoogleCloudMessaging gcm;
 
+    // Constructor
     public ServerRequests(Context context){
         this.context = context;
         progressDialog = new ProgressDialog(context);
@@ -48,6 +50,7 @@ public class ServerRequests {
         progressDialog.setMessage("Please wait...");
     }
 
+    // methods
     public void storeUserDataInBackground(User user, GetUserCallback userCallback){
         progressDialog.show();
         new StoreUserDataAsyncTask(user, userCallback).execute();
@@ -82,6 +85,32 @@ public class ServerRequests {
         new FetchUsersAsyncTask(reuestedName,getUsers).execute();
     }
 
+    public void inviteInBackground(int listId, int userId, SendInviteResponse sendInviteResponse){
+        progressDialog.show();
+        progressDialog.setMessage("Inviting the selected user to the current list");
+        new inviteAsyncTask(listId, userId, sendInviteResponse).execute();
+    }
+
+
+    // method to encode the data needed to be sent o the server
+    public String getEncodedData(Map<String,String> data) {
+        StringBuilder sb = new StringBuilder();
+        for(String key : data.keySet()) {
+            String value = null;
+            try {
+                value = URLEncoder.encode(data.get(key),"UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+            if(sb.length()>0)
+                sb.append("&");
+
+            sb.append(key + "=" + value);
+        }
+        return sb.toString();
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////
 
     public class StoreUserDataAsyncTask extends AsyncTask<Void, Void, User>{
@@ -98,6 +127,8 @@ public class ServerRequests {
         protected User doInBackground(Void... params) {
 
             User returnedUser = null;
+
+            // get gcm registration ID
             try {
 
                 if (gcm == null) {
@@ -121,24 +152,20 @@ public class ServerRequests {
             dataToSend.put("username", user.getUsername());
             dataToSend.put("password", user.getPassword());
 
-            //Encoded String - we will have to encode string by our custom method (Very easy)
             String encodedStr = getEncodedData(dataToSend);
-
-            //Will be used if we want to read some data from server
             BufferedReader reader = null;
 
             //Connection Handling
             try {
                 //Converting address String to URL
                 URL url = new URL(SERVER_ADDRESS + "Register.php");
-                //Opening the connection (Not setting or using CONNECTION_TIMEOUT)
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                //con.setConnectTimeout(5000);
 
                 //Post Method
                 con.setRequestMethod("POST");
-                //To enable inputting values using POST method
-                //(Basically, after this we can write the dataToSend to the body of POST method)
                 con.setDoOutput(true);
+
                 OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
                 //Writing dataToSend to outputstreamwriter
                 writer.write(encodedStr);
@@ -176,30 +203,7 @@ public class ServerRequests {
                     }
                 }
             }
-
-            //Same return null, but if you want to return the read string (stored in line)
-            //then change the parameters of AsyncTask and return that type, by converting
-            //the string - to say JSON or user in your case
             return returnedUser;
-
-        }
-
-        private String getEncodedData(Map<String,String> data) {
-            StringBuilder sb = new StringBuilder();
-            for(String key : data.keySet()) {
-                String value = null;
-                try {
-                    value = URLEncoder.encode(data.get(key),"UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-
-                if(sb.length()>0)
-                    sb.append("&");
-
-                sb.append(key + "=" + value);
-            }
-            return sb.toString();
         }
 
         @Override
@@ -228,45 +232,31 @@ public class ServerRequests {
             Map<String,String> dataToSend = new HashMap<>();
             dataToSend.put("username", user.getUsername());
             dataToSend.put("password", user.getPassword());
-
-            //Encoded String - we will have to encode string by our custom method (Very easy)
             String encodedStr = getEncodedData(dataToSend);
-
-            //Will be used if we want to read some data from server
             BufferedReader reader = null;
 
             User returnedUser = null;
 
             //Connection Handling
             try {
-                //Converting address String to URL
                 URL url = new URL(SERVER_ADDRESS + "FetchCredentials.php");
-                //Opening the connection (Not setting or using CONNECTION_TIMEOUT)
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
                 //Post Method
                 con.setRequestMethod("POST");
-                //To enable inputting values using POST method
-                //(Basically, after this we can write the dataToSend to the body of POST method)
                 con.setDoOutput(true);
                 OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
-                //Writing dataToSend to outputstreamwriter
                 writer.write(encodedStr);
-                //Sending the data to the server - This much is enough to send data to server
-                //But to read the response of the server, you will have to implement the procedure below
                 writer.flush();
 
-
-                //Data Read Procedure - Basically reading the data comming line by line
                 StringBuilder sb = new StringBuilder();
                 reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
 
                 String line;
-                while((line = reader.readLine()) != null) { //Read till there is something available
-                    sb.append(line + "\n");     //Reading and saving line by line - not all at once
+                while((line = reader.readLine()) != null) {
+                    sb.append(line + "\n");
                 }
-                line = sb.toString();           //Saving complete data received in string, you can do it differently
-                //Just check to the values received in Logcat
+                line = sb.toString();
                 Log.i("custom_Login_check", "The values received are as follows:");
                 Log.i("custom_Login_check",line);
 
@@ -295,30 +285,8 @@ public class ServerRequests {
                     }
                 }
             }
-
-            //Same return null, but if you want to return the read string (stored in line)
-            //then change the parameters of AsyncTask and return that type, by converting
-            //the string - to say JSON or user in your case
             return returnedUser;
 
-        }
-
-        private String getEncodedData(Map<String,String> data) {
-            StringBuilder sb = new StringBuilder();
-            for(String key : data.keySet()) {
-                String value = null;
-                try {
-                    value = URLEncoder.encode(data.get(key),"UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-
-                if(sb.length()>0)
-                    sb.append("&");
-
-                sb.append(key + "=" + value);
-            }
-            return sb.toString();
         }
 
         @Override
@@ -349,44 +317,30 @@ public class ServerRequests {
             dataToSend.put("username", username);
             dataToSend.put("picture", image );
 
-            //Encoded String - we will have to encode string by our custom method (Very easy)
             String encodedStr = getEncodedData(dataToSend);
-
-            //Will be used if we want to read some data from server
             BufferedReader reader = null;
-
             User returnedUser = null;
 
             //Connection Handling
             try {
-                //Converting address String to URL
                 URL url = new URL(SERVER_ADDRESS + "updateProfilePicture.php");
-                //Opening the connection (Not setting or using CONNECTION_TIMEOUT)
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
                 //Post Method
                 con.setRequestMethod("POST");
-                //To enable inputting values using POST method
-                //(Basically, after this we can write the dataToSend to the body of POST method)
                 con.setDoOutput(true);
                 OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
-                //Writing dataToSend to outputstreamwriter
                 writer.write(encodedStr);
-                //Sending the data to the server - This much is enough to send data to server
-                //But to read the response of the server, you will have to implement the procedure below
                 writer.flush();
 
-
-                //Data Read Procedure - Basically reading the data comming line by line
                 StringBuilder sb = new StringBuilder();
                 reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
 
                 String line;
-                while((line = reader.readLine()) != null) { //Read till there is something available
-                    sb.append(line);     //Reading and saving line by line - not all at once
+                while((line = reader.readLine()) != null) {
+                    sb.append(line);
                 }
-                line = sb.toString();           //Saving complete data received in string, you can do it differently
-                //Just check to the values received in Logcat
+                line = sb.toString();
                 Log.i("UploadPicture_check", "The values received:");
                 Log.i("custom_check",line);
 
@@ -400,36 +354,13 @@ public class ServerRequests {
             } finally {
                 if(reader != null) {
                     try {
-                        reader.close();     //Closing the
+                        reader.close();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
             }
-
-            //Same return null, but if you want to return the read string (stored in line)
-            //then change the parameters of AsyncTask and return that type, by converting
-            //the string - to say JSON or user in your case
             return returnedUser;
-
-        }
-
-        private String getEncodedData(Map<String,String> data) {
-            StringBuilder sb = new StringBuilder();
-            for(String key : data.keySet()) {
-                String value = null;
-                try {
-                    value = URLEncoder.encode(data.get(key),"UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-
-                if(sb.length()>0)
-                    sb.append("&");
-
-                sb.append(key + "=" + value);
-            }
-            return sb.toString();
         }
 
         @Override
@@ -454,52 +385,40 @@ public class ServerRequests {
         protected MyList doInBackground(Void... params) {
 
             Map<String,String> dataToSend = new HashMap<>();
+            Integer uId = list.getUserId();
+            String userIdString = uId.toString();
             Integer visibility = list.get_visibility();
             String visibilityString = visibility.toString();
 
+
+            dataToSend.put("userId", userIdString);
             dataToSend.put("username", list.get_username());
             dataToSend.put("name", list.get_name());
             dataToSend.put("visibility", visibilityString);
             dataToSend.put("description", list.get_description());
-
-            //Encoded String - we will have to encode string by our custom method (Very easy)
             String encodedStr = getEncodedData(dataToSend);
-
-            //Will be used if we want to read some data from server
             BufferedReader reader = null;
-
             MyList returnedList = null;
 
-            //Connection Handling
             try {
-                //Converting address String to URL
                 URL url = new URL(SERVER_ADDRESS + "uploadList.php");
-                //Opening the connection (Not setting or using CONNECTION_TIMEOUT)
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
                 //Post Method
                 con.setRequestMethod("POST");
-                //To enable inputting values using POST method
-                //(Basically, after this we can write the dataToSend to the body of POST method)
                 con.setDoOutput(true);
                 OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
-                //Writing dataToSend to outputstreamwriter
                 writer.write(encodedStr);
-                //Sending the data to the server - This much is enough to send data to server
-                //But to read the response of the server, you will have to implement the procedure below
                 writer.flush();
 
-
-                //Data Read Procedure - Basically reading the data comming line by line
                 StringBuilder sb = new StringBuilder();
                 reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
 
                 String line;
-                while((line = reader.readLine()) != null) { //Read till there is something available
-                    sb.append(line + "\n");     //Reading and saving line by line - not all at once
+                while((line = reader.readLine()) != null) {
+                    sb.append(line + "\n");
                 }
-                line = sb.toString();           //Saving complete data received in string, you can do it differently
-                //Just check to the values received in Logcat
+                line = sb.toString();
                 Log.i("custom_ListUpload_check", "The values received are as follows:");
                 Log.i("custom_ListUpload_check",line);
 
@@ -514,11 +433,12 @@ public class ServerRequests {
                         returnedList = null;
                     } else {
                         int id = jResult.getInt("id");
+                        int userId = jResult.getInt("userId");
                         String username = jResult.getString("username");
                         String name = jResult.getString("name");
                         int vis = jResult.getInt("visibility");
                         String description = jResult.getString("description");
-                        returnedList = new MyList(username, name, vis, description);
+                        returnedList = new MyList(userId, username, name, vis, description);
                         returnedList.set_listId(id);
                     }
                 }
@@ -533,30 +453,7 @@ public class ServerRequests {
                     }
                 }
             }
-
-            //Same return null, but if you want to return the read string (stored in line)
-            //then change the parameters of AsyncTask and return that type, by converting
-            //the string - to say JSON or user in your case
             return returnedList;
-
-        }
-
-        private String getEncodedData(Map<String,String> data) {
-            StringBuilder sb = new StringBuilder();
-            for(String key : data.keySet()) {
-                String value = null;
-                try {
-                    value = URLEncoder.encode(data.get(key),"UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-
-                if(sb.length()>0)
-                    sb.append("&");
-
-                sb.append(key + "=" + value);
-            }
-            return sb.toString();
         }
 
         @Override
@@ -566,7 +463,6 @@ public class ServerRequests {
             super.onPostExecute(returnedList);
         }
     }
-
 
     ////////////////////////////////////////////////////////////////////////
     public class UploadItemAsyncTask extends AsyncTask<Void, Void, Item>{
@@ -582,12 +478,14 @@ public class ServerRequests {
         protected Item doInBackground(Void... params) {
 
             Map<String,String> dataToSend = new HashMap<>();
+            Integer uId = item.get_creatorId();
+            String userIdString = uId.toString();
             Integer listId = item.get_listId();
             String listIdString = listId.toString();
             Double rating = item.get_rating();
             String ratingString = rating.toString();
 
-
+            dataToSend.put("userId", userIdString);
             dataToSend.put("listId", listIdString);
             dataToSend.put("username", item.get_creatorUsername());
             dataToSend.put("name", item.get_name());
@@ -595,48 +493,35 @@ public class ServerRequests {
             dataToSend.put("description", item.get_description());
             dataToSend.put("picture", item.get_itemImage());
 
-            //Encoded String - we will have to encode string by our custom method (Very easy)
             String encodedStr = getEncodedData(dataToSend);
-
-            //Will be used if we want to read some data from server
             BufferedReader reader = null;
-
             Item returnedItem = null;
 
             //Connection Handling
             try {
-                //Converting address String to URL
                 URL url = new URL(SERVER_ADDRESS + "uploadItem.php");
-                //Opening the connection (Not setting or using CONNECTION_TIMEOUT)
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
                 //Post Method
                 con.setRequestMethod("POST");
-                //To enable inputting values using POST method
-                //(Basically, after this we can write the dataToSend to the body of POST method)
                 con.setDoOutput(true);
                 OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
-                //Writing dataToSend to outputstreamwriter
                 writer.write(encodedStr);
-                //Sending the data to the server - This much is enough to send data to server
-                //But to read the response of the server, you will have to implement the procedure below
                 writer.flush();
 
-
-                //Data Read Procedure - Basically reading the data comming line by line
+                //Data Read Procedure
                 StringBuilder sb = new StringBuilder();
                 reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
 
                 String line;
-                while((line = reader.readLine()) != null) { //Read till there is something available
-                    sb.append(line + "\n");     //Reading and saving line by line - not all at once
+                while((line = reader.readLine()) != null) {
+                    sb.append(line + "\n");
                 }
-                line = sb.toString();           //Saving complete data received in string, you can do it differently
-                //Just check to the values received in Logcat
+                line = sb.toString();
                 Log.i("custom_ListUpload_check", "The values received are as follows:");
                 Log.i("custom_ListUpload_check",line);
 
-                if(line.equals("You have already created a list with that name!\n")){
+                if(line.equals("An item with that name for that list already exists!\n")){
                     returnedItem = null;
                 }
 
@@ -648,12 +533,13 @@ public class ServerRequests {
                     } else {
                         int id = jResult.getInt("id");
                         int lId = jResult.getInt("listId");
+                        int creatorId = jResult.getInt("userId");
                         String username = jResult.getString("username");
                         String name = jResult.getString("name");
                         double r = jResult.getDouble("rating");
                         String description = jResult.getString("description");
                         String image = jResult.getString("picture");
-                        returnedItem = new Item(lId, username, name, rating, description, image);
+                        returnedItem = new Item(lId, creatorId, username, name, rating, description, image);
                         returnedItem.set_itemId(id);
                     }
                 }
@@ -668,30 +554,7 @@ public class ServerRequests {
                     }
                 }
             }
-
-            //Same return null, but if you want to return the read string (stored in line)
-            //then change the parameters of AsyncTask and return that type, by converting
-            //the string - to say JSON or user in your case
             return returnedItem;
-
-        }
-
-        private String getEncodedData(Map<String,String> data) {
-            StringBuilder sb = new StringBuilder();
-            for(String key : data.keySet()) {
-                String value = null;
-                try {
-                    value = URLEncoder.encode(data.get(key),"UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-
-                if(sb.length()>0)
-                    sb.append("&");
-
-                sb.append(key + "=" + value);
-            }
-            return sb.toString();
         }
 
         @Override
@@ -702,7 +565,7 @@ public class ServerRequests {
         }
     }
 
-
+    ////////////////////////////////////////////////////////////////////////////////
     public class FetchUsersAsyncTask extends AsyncTask<Void, Void, ArrayList<User>>{
         String name;
         GetUsers getUsers;
@@ -718,11 +581,7 @@ public class ServerRequests {
 
             Map<String,String> dataToSend = new HashMap<>();
             dataToSend.put("name", name);
-            System.out.println("V SERVER REQUEST" + name);
-            //Encoded String - we will have to encode string by our custom method (Very easy)
             String encodedStr = getEncodedData(dataToSend);
-
-            //Will be used if we want to read some data from server
             BufferedReader reader = null;
 
             ArrayList<User> returnedUsers = new ArrayList<User>();
@@ -739,7 +598,7 @@ public class ServerRequests {
                 writer.write(encodedStr);
                 writer.flush();
 
-                //Data Read Procedure - Basically reading the data comming line by line
+                //Data Read Procedure
                 StringBuilder sb = new StringBuilder();
                 reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
 
@@ -772,31 +631,13 @@ public class ServerRequests {
             } finally {
                 if(reader != null) {
                     try {
-                        reader.close();     //Closing the
+                        reader.close();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
             }
             return returnedUsers;
-        }
-
-        private String getEncodedData(Map<String,String> data) {
-            StringBuilder sb = new StringBuilder();
-            for(String key : data.keySet()) {
-                String value = null;
-                try {
-                    value = URLEncoder.encode(data.get(key),"UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-
-                if(sb.length()>0)
-                    sb.append("&");
-
-                sb.append(key + "=" + value);
-            }
-            return sb.toString();
         }
 
         @Override
@@ -806,5 +647,82 @@ public class ServerRequests {
             super.onPostExecute(returnedUsers);
         }
     }
-}
 
+
+    ////////////////////////////////////////////////////////////////////////////////
+    public class inviteAsyncTask extends AsyncTask<Void, Void, String>{
+        //new inviteAsyncTask(listId, userId, sendInviteResponse).execute();
+        int listId;
+        int userId;
+        SendInviteResponse sendInviteResponse;
+
+        public inviteAsyncTask(int listId, int userId, SendInviteResponse sendInviteResponse) {
+            this.listId = listId;
+            this.userId = userId;
+            this.sendInviteResponse = sendInviteResponse;
+        }
+
+
+        @Override
+        protected String doInBackground(Void... params) {
+
+            Map<String,String> dataToSend = new HashMap<>();
+            Integer lid = listId;
+            String lidString = lid.toString();
+            Integer uid = userId;
+            String uidString = uid.toString();
+
+            dataToSend.put("listId", lidString);
+            dataToSend.put("userId", uidString);
+            String encodedStr = getEncodedData(dataToSend);
+            BufferedReader reader = null;
+
+            String response="";
+
+            //Connection Handling
+            try {
+                URL url = new URL(SERVER_ADDRESS + "invite.php");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+                //Post Method
+                con.setRequestMethod("POST");
+                con.setDoOutput(true);
+                OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
+                writer.write(encodedStr);
+                writer.flush();
+
+                //Data Read Procedure
+                StringBuilder sb = new StringBuilder();
+                reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                String line;
+                while((line = reader.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+                line = sb.toString();
+                Log.i("fetchUsers", "The values received are as follows:");
+                Log.i("fetchUsers",line);
+
+                response = line;
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if(reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            progressDialog.dismiss();
+            sendInviteResponse.done(response);
+            super.onPostExecute(response);
+        }
+    }
+}

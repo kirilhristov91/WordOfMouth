@@ -125,7 +125,7 @@ public class ActivityAddItem extends AppCompatActivity implements View.OnClickLi
                     if (photo != null) {
                         imageToSave = BitMapToString(photo, 30);
                     }
-                    Item i = new Item(listId, userLocalStore.getUserLoggedIn().getUsername(),
+                    Item i = new Item(listId, userLocalStore.getUserLoggedIn().getId() ,userLocalStore.getUserLoggedIn().getUsername(),
                             itemNameField.getText().toString(), ratingSelected, itemDescriptionField.getText().toString(), imageToSave);
 
                     ServerRequests serverRequests = new ServerRequests(this);

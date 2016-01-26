@@ -77,11 +77,12 @@ public class ActivityAddList extends AppCompatActivity implements View.OnClickLi
                 }
 
                 else {
-                    String currentUserUsername = userLocalStore.getUserLocalDatabase().getString("username", "");
+                    int currentUserId = userLocalStore.getUserLoggedIn().getId();
+                    String currentUserUsername = userLocalStore.getUserLoggedIn().getUsername();
                     int visibility;
                     if (dropDownChoice.equals("private")) visibility = 0;
                     else visibility = 1;
-                    MyList list = new MyList(currentUserUsername, listNameField.getText().toString(), visibility, listDescriptionField.getText().toString());
+                    MyList list = new MyList(currentUserId, currentUserUsername, listNameField.getText().toString(), visibility, listDescriptionField.getText().toString());
                     ServerRequests serverRequests = new ServerRequests(this);
                     serverRequests.UploadListAsyncTask(list, new GetListId() {
                         @Override

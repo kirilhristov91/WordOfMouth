@@ -13,12 +13,13 @@ import android.util.Log;
 import com.wordofmouth.Activities.*;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.wordofmouth.R;
 
 public class GcmIntentService extends IntentService {
     public static final int NOTIFICATION_ID = 1;
     private NotificationManager mNotificationManager;
     NotificationCompat.Builder builder;
-    String TAG="pavan";
+    String TAG="wom";
 
     public GcmIntentService() {
         super("GcmIntentService");
@@ -32,8 +33,8 @@ public class GcmIntentService extends IntentService {
         // in your BroadcastReceiver.
         String messageType = gcm.getMessageType(intent);
 
-        Log.d("pavan","in gcm intent message "+messageType);
-        Log.d("pavan","in gcm intent message bundle "+extras);
+        Log.d("wom","in gcm intent message "+messageType);
+        Log.d("wom","in gcm intent message bundle "+extras);
 
         if (!extras.isEmpty()) {  // has effect of unparcelling Bundle
             /*
@@ -54,7 +55,7 @@ public class GcmIntentService extends IntentService {
                     MESSAGE_TYPE_MESSAGE.equals(messageType)) {
 
                 String recieved_message=intent.getStringExtra("text_message");
-                sendNotification("message recieved :" +recieved_message);
+                sendNotification("notification :" +recieved_message);
 
                 Intent sendIntent =new Intent("message_recieved");
                 sendIntent.putExtra("message",recieved_message);
@@ -78,8 +79,8 @@ public class GcmIntentService extends IntentService {
 
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
-                        .setSmallIcon(android.support.design.R.drawable.notification_template_icon_bg)
-                        .setContentTitle("GCM Notification")
+                        .setSmallIcon(R.drawable.logowom)
+                        .setContentTitle("WoM")
                         .setStyle(new NotificationCompat.BigTextStyle()
                                 .bigText(msg))
                         .setContentText(msg);

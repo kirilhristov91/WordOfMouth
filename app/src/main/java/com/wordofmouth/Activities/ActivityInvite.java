@@ -15,6 +15,7 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.wordofmouth.Interfaces.GetUsers;
+import com.wordofmouth.Interfaces.SendInviteResponse;
 import com.wordofmouth.R;
 import com.wordofmouth.Other.ServerRequests;
 import com.wordofmouth.ObjectClasses.User;
@@ -89,21 +90,25 @@ public class ActivityInvite extends AppCompatActivity implements View.OnClickLis
                 new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        // list id, sharedWithId
 
-                        /*String itemName = String.valueOf(parent.getItemAtPosition(position));
-                        int itemIdClicked = items.get(position).get_itemId();
-                        Intent myIntent = new Intent(ActivityItemsOfAList.this, ActivityItem.class);
-                        myIntent.putExtra("listId", selectedListId);
-                        myIntent.putExtra("listName", listName);
-                        myIntent.putExtra("itemId", itemIdClicked);
-                        myIntent.putExtra("itemName", itemName);
-                        startActivity(myIntent);
-                        finish();*/
+                        int sharedWithId = users.get(position).getId();
+                        ServerRequests serverRequests = new ServerRequests(ActivityInvite.this);
+                        serverRequests.inviteInBackground(selectedListId, sharedWithId, new SendInviteResponse() {
+                            @Override
+                            public void done(String response) {
+                                System.out.println("Otgovoryt na invite e : " + response);
+                                Intent myIntent = new Intent(ActivityInvite.this, ActivityItemsOfAList.class);
+                                myIntent.putExtra("listId", selectedListId);
+                                myIntent.putExtra("listName", listName);
+                                startActivity(myIntent);
+                                finish();
+                            }
+                        });
                     }
                 }
         );
     }
-
 
     @Override
     public void onBackPressed() {

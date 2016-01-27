@@ -85,10 +85,10 @@ public class ServerRequests {
         new FetchUsersAsyncTask(reuestedName,getUsers).execute();
     }
 
-    public void inviteInBackground(int listId, int userId, SendInviteResponse sendInviteResponse){
+    public void inviteInBackground(int listId, int currentUserId, int invitedUserId, SendInviteResponse sendInviteResponse){
         progressDialog.show();
         progressDialog.setMessage("Inviting the selected user to the current list");
-        new inviteAsyncTask(listId, userId, sendInviteResponse).execute();
+        new inviteAsyncTask(listId, currentUserId, invitedUserId, sendInviteResponse).execute();
     }
 
 
@@ -653,12 +653,14 @@ public class ServerRequests {
     public class inviteAsyncTask extends AsyncTask<Void, Void, String>{
         //new inviteAsyncTask(listId, userId, sendInviteResponse).execute();
         int listId;
-        int userId;
+        int currentUserId;
+        int invitedUserId;
         SendInviteResponse sendInviteResponse;
 
-        public inviteAsyncTask(int listId, int userId, SendInviteResponse sendInviteResponse) {
+        public inviteAsyncTask(int listId, int currentUserId, int invitedUserId, SendInviteResponse sendInviteResponse) {
             this.listId = listId;
-            this.userId = userId;
+            this.currentUserId = currentUserId;
+            this.invitedUserId = invitedUserId;
             this.sendInviteResponse = sendInviteResponse;
         }
 
@@ -669,11 +671,14 @@ public class ServerRequests {
             Map<String,String> dataToSend = new HashMap<>();
             Integer lid = listId;
             String lidString = lid.toString();
-            Integer uid = userId;
-            String uidString = uid.toString();
+            Integer cuid = currentUserId;
+            String currentIdString = cuid.toString();
+            Integer iuid = invitedUserId;
+            String invitedIdString = iuid.toString();
 
             dataToSend.put("listId", lidString);
-            dataToSend.put("userId", uidString);
+            dataToSend.put("currentUserId", currentIdString);
+            dataToSend.put("invitedUserId", invitedIdString);
             String encodedStr = getEncodedData(dataToSend);
             BufferedReader reader = null;
 

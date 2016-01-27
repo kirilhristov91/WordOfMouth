@@ -1,6 +1,7 @@
 package com.wordofmouth.Activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -45,6 +46,8 @@ public class ActivityInvite extends AppCompatActivity implements View.OnClickLis
         selectedListId = intent.getIntExtra("listId", 0);
         listName = intent.getStringExtra("name");
         getSupportActionBar().setTitle("Invite people to: " + listName);
+
+        userLocalStore = new UserLocalStore(this);
 
         searchView = (SearchView) findViewById(R.id.searchUsersField);
         searchButton = (Button) findViewById(R.id.searchUsersButton);
@@ -93,21 +96,34 @@ public class ActivityInvite extends AppCompatActivity implements View.OnClickLis
                         // list id, sharedWithId
 
                         int sharedWithId = users.get(position).getId();
+                        int currentUserId = userLocalStore.getUserLoggedIn().getId();
                         ServerRequests serverRequests = new ServerRequests(ActivityInvite.this);
-                        serverRequests.inviteInBackground(selectedListId, sharedWithId, new SendInviteResponse() {
+                        serverRequests.inviteInBackground(selectedListId, currentUserId, sharedWithId, new SendInviteResponse() {
                             @Override
                             public void done(String response) {
                                 System.out.println("Otgovoryt na invite e : " + response);
-                                Intent myIntent = new Intent(ActivityInvite.this, ActivityItemsOfAList.class);
-                                myIntent.putExtra("listId", selectedListId);
-                                myIntent.putExtra("listName", listName);
-                                startActivity(myIntent);
-                                finish();
+                                if(response.equals("That person has already been invited to that list!\n")){
+                                    showError();
+                                }
+                                else{
+                                    Intent myIntent = new Intent(ActivityInvite.this, ActivityItemsOfAList.class);
+                                    myIntent.putExtra("listId", selectedListId);
+                                    myIntent.putExtra("name", listName);
+                                    startActivity(myIntent);
+                                    finish();
+                                }
                             }
                         });
                     }
                 }
         );
+    }
+
+    private void showError(){
+        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
+        allertBuilder.setMessage("That person has already been invited to list '" + listName +"'!");
+        allertBuilder.setPositiveButton("OK", null);
+        allertBuilder.show();
     }
 
     @Override

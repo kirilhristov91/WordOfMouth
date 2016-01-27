@@ -79,14 +79,20 @@ public class GcmIntentService extends IntentService {
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, MainActivity.class), 0);
 
+        int index = msg.length()-1;
+        while(msg.charAt(index)!=' '){
+            index--;
+        }
+        String notification = msg.substring(0,index);
+
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.logowom)
                         .setContentTitle("WoM")
                         .setStyle(new NotificationCompat.BigTextStyle()
-                                .bigText(msg))
-                        .setContentText(msg)
+                                .bigText(notification))
+                        .setContentText(notification)
                         .setSound(alarmSound);
 
         mBuilder.setContentIntent(contentIntent);

@@ -3,6 +3,7 @@ package com.wordofmouth.Activities;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -38,6 +39,7 @@ public class ActivityInvite extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_activity_invite);
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
@@ -50,6 +52,13 @@ public class ActivityInvite extends AppCompatActivity implements View.OnClickLis
         userLocalStore = new UserLocalStore(this);
 
         searchView = (SearchView) findViewById(R.id.searchUsersField);
+        searchView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchView.onActionViewExpanded();
+            }
+        });
+
         searchButton = (Button) findViewById(R.id.searchUsersButton);
         searchButton.setOnClickListener(this);
 

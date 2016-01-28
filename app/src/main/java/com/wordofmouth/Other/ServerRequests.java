@@ -2,6 +2,8 @@ package com.wordofmouth.Other;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -33,7 +35,7 @@ import java.util.Map;
 public class ServerRequests {
 
     ProgressDialog progressDialog;
-    //public static final int CONNECTION_TIMEOUT = 1000 * 15;
+    public static final int CONNECTION_TIMEOUT = 1000 * 6;
     public static final String SERVER_ADDRESS = "http://wordofmouth.netau.net/";
     public static final String SENDER_ID = "260188412151";
     Context context;
@@ -91,6 +93,12 @@ public class ServerRequests {
         new inviteAsyncTask(listId, currentUserId, invitedUserId, sendInviteResponse).execute();
     }
 
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
 
     // method to encode the data needed to be sent o the server
     public String getEncodedData(Map<String,String> data) {
@@ -128,23 +136,25 @@ public class ServerRequests {
 
             User returnedUser = null;
 
+            if(!isNetworkAvailable()){
+                System.out.println("VLQZAH TUKA na avalable network");
+                return new User(-1, "Timeout", "Timeout", "Timeout", "Timeout");
+            }
             // get gcm registration ID
             try {
 
                 if (gcm == null) {
                     gcm = GoogleCloudMessaging.getInstance(context);
                 }
+                gcmId = null;
                 gcmId = gcm.register(SENDER_ID);
                 msg = "Device registered, registration ID=" + gcmId;
-
-                user.setGcmId(gcmId);
-
             } catch (IOException ex) {
                 msg = "Error :" + ex.getMessage();
 
             }
-            System.out.println("SYOBSHTENIETO E :" + msg + " a regId e slednoto " + gcmId);
 
+            // prepare the data to send
             Map<String,String> dataToSend = new HashMap<>();
             dataToSend.put("name",user.getName());
             dataToSend.put("gcmId", gcmId);
@@ -164,6 +174,7 @@ public class ServerRequests {
 
                 //Post Method
                 con.setRequestMethod("POST");
+                con.setConnectTimeout(CONNECTION_TIMEOUT);
                 con.setDoOutput(true);
 
                 OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
@@ -172,24 +183,31 @@ public class ServerRequests {
                 //Sending the data to the server
                 writer.flush();
 
-                //Data Read Procedure
-                StringBuilder sb = new StringBuilder();
-                reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
 
-                String line;
-                while((line = reader.readLine()) != null) {
-                    sb.append(line);
+                    //Data Read Procedure
+                    StringBuilder sb = new StringBuilder();
+                    reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    line = sb.toString();
+
+                    //Just check to the values received in Logcat
+                    Log.i("custom_Register_check", "The values received in the store part are as follows:");
+                    Log.i("custom_check", line);
+
+                    // if username exists
+                    if (line.equals("Username Already Exists")) {
+                        Log.i("ZAETO", "VLQZAH");
+                        returnedUser = new User(-1, "Exists", "Exists", "Exists", "Exists");
+                    }
                 }
-                line = sb.toString();
 
-                //Just check to the values received in Logcat
-                Log.i("custom_Register_check", "The values received in the store part are as follows:");
-                Log.i("custom_check",line);
-
-                // if username exists
-                if(line.equals("Username Already Exists")){
-                    Log.i("ZAETO","VLQZAH");
-                    returnedUser = new User(-1,"Exists","Exists","Exists","Exists");
+                else {
+                    returnedUser = new User(-1, "Timeout", "Timeout", "Timeout", "Timeout");
                 }
 
             } catch (Exception e) {

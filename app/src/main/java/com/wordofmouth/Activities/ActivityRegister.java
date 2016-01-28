@@ -108,6 +108,13 @@ public class ActivityRegister extends AppCompatActivity implements View.OnClickL
         allertBuilder.show();
     }
 
+    private void showConnectionError(){
+        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(ActivityRegister.this);
+        allertBuilder.setMessage("Network error! Check your internet connection and try again!");
+        allertBuilder.setPositiveButton("OK", null);
+        allertBuilder.show();
+    }
+
     private void showUserTakenError(){
         AlertDialog.Builder allertBuilder = new AlertDialog.Builder(ActivityRegister.this);
         allertBuilder.setMessage("Username is already taken");
@@ -122,7 +129,10 @@ public class ActivityRegister extends AppCompatActivity implements View.OnClickL
             @Override
             public void done(User returnedUser) {
                 if (returnedUser != null) {
-                    showUserTakenError();
+                    if(returnedUser.getUsername().equals("Timeout")){
+                        showConnectionError();
+                    }
+                    else{showUserTakenError();}
                 } else startActivity(new Intent(ActivityRegister.this, ActivityLogin.class));
             }
         });

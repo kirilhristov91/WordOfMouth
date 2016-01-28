@@ -75,8 +75,7 @@ public class ActivityInvite extends AppCompatActivity implements View.OnClickLis
                 imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
 
                 ServerRequests serverRequests = new ServerRequests(this);
-                System.out.println("GETQYERY TO STRING" + searchView.getQuery().toString());
-                serverRequests.fetchUsersInBackground(searchView.getQuery().toString(), new GetUsers() {
+                serverRequests.fetchUsersInBackground(searchView.getQuery().toString(), userLocalStore.getUserLoggedIn().getId(), new GetUsers() {
                     @Override
                     public void done(ArrayList<User> returnedUsers) {
                         if(returnedUsers.size()>0) {

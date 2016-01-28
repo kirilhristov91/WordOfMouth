@@ -79,10 +79,10 @@ public class ServerRequests {
         new UploadItemAsyncTask(item, getItemId).execute();
     }
 
-    public void fetchUsersInBackground(String reuestedName, GetUsers getUsers){
+    public void fetchUsersInBackground(String requestedName, int currentUserId, GetUsers getUsers){
         progressDialog.show();
         progressDialog.setMessage("Fetching users matching the name or username you entered...");
-        new FetchUsersAsyncTask(reuestedName,getUsers).execute();
+        new FetchUsersAsyncTask(requestedName, currentUserId, getUsers).execute();
     }
 
     public void inviteInBackground(int listId, int currentUserId, int invitedUserId, SendInviteResponse sendInviteResponse){
@@ -569,9 +569,11 @@ public class ServerRequests {
     public class FetchUsersAsyncTask extends AsyncTask<Void, Void, ArrayList<User>>{
         String name;
         GetUsers getUsers;
+        int currentUserId;
 
-        public FetchUsersAsyncTask(String query, GetUsers getUsers) {
+        public FetchUsersAsyncTask(String query, int currentUserId, GetUsers getUsers) {
             this.name = query;
+            this.currentUserId = currentUserId;
             this.getUsers = getUsers;
         }
 
@@ -580,7 +582,11 @@ public class ServerRequests {
         protected ArrayList<User> doInBackground(Void... params) {
 
             Map<String,String> dataToSend = new HashMap<>();
+            Integer cuid = currentUserId;
+            String cuidString = cuid.toString();
+
             dataToSend.put("name", name);
+            dataToSend.put("id", cuidString);
             String encodedStr = getEncodedData(dataToSend);
             BufferedReader reader = null;
 

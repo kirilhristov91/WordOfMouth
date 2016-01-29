@@ -36,6 +36,8 @@ public class ActivityInvite extends AppCompatActivity implements View.OnClickLis
     ArrayList<User> users;
     String[] usernames;
 
+    //override useToolbar to return false
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

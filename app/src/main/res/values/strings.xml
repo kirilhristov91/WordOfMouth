@@ -24,4 +24,12 @@
     <string name="RegisterButtonText">Register</string>
     <string name="RegisterAlreadyRegisteredText">Already registered? Login!</string>
     <string name="title_activity_activity_invite">ActivityInvite</string>
+
+    <string-array name="menu_items">
+        <item>Home</item>
+        <item>Profile</item>
+        <item>Feedback</item>
+        <item>About</item>
+        <item>Log out</item>
+    </string-array>
 </resources>

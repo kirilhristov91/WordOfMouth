@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 import TabLibraries.SlidingTabLayout;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends BaseActivity{
 
     ArrayList<MyList> lists;
     UserLocalStore userLocalStore;
@@ -36,9 +36,9 @@ public class MainActivity extends AppCompatActivity{
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        /*Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
-        toolbar.setLogo(R.mipmap.ic_launcher);
+        toolbar.setLogo(R.mipmap.ic_launcher);*/
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         //
         userLocalStore = new UserLocalStore(this);
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity{
     private boolean authenticate(){
         return userLocalStore.getIfLoggedIn();
     }
-
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -118,5 +118,5 @@ public class MainActivity extends AppCompatActivity{
         }
 
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 }

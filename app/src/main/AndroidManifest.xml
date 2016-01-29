@@ -87,11 +87,6 @@
             android:theme="@style/AppTheme" >
         </activity>
         <activity
-            android:name=".Activities.ActivityProfile"
-            android:label="@string/title_activity_activity_profile"
-            android:theme="@style/AppTheme" >
-        </activity>
-        <activity
             android:name=".Activities.ActivityAbout"
             android:label="@string/title_activity_activity_about"
             android:theme="@style/AppTheme" >
@@ -99,6 +94,11 @@
         <activity
             android:name=".Activities.ActivityFeedback"
             android:label="@string/title_activity_activity_feedback"
+            android:theme="@style/AppTheme" >
+        </activity>
+        <activity
+            android:name=".Activities.ActivityProfile"
+            android:label="@string/title_activity_activity_profile"
             android:theme="@style/AppTheme" >
         </activity>
     </application>

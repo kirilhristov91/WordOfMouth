@@ -27,8 +27,8 @@ public class MainActivity extends BaseActivity{
     ViewPager pager;
     ViewPagerAdapter adapter;
     SlidingTabLayout tabs;
-    CharSequence Titles[]={"My Lists","Shared With Me","Profile"};
-    int NumberOfTabs =3;
+    CharSequence Titles[]={"My Lists","Shared With Me"};
+    int NumberOfTabs =2;
     DBHandler dbHandler;
 
     @Override
@@ -90,33 +90,4 @@ public class MainActivity extends BaseActivity{
     private boolean authenticate(){
         return userLocalStore.getIfLoggedIn();
     }
-    /*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        if(id == R.id.action_logout){
-            userLocalStore.clearUserData();
-            userLocalStore.setUserLoggedIn(false);
-            startActivity(new Intent(this, ActivityLogin.class));
-            finish();
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
 }

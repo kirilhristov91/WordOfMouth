@@ -4,10 +4,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.wordofmouth.Activities.MyListsViewTab;
-import com.wordofmouth.Activities.ProfileViewTab;
-import com.wordofmouth.Activities.SharedListsViewTab;
-
 
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
@@ -33,16 +29,10 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
             MyListsViewTab myListsViewTab = new MyListsViewTab();
             return myListsViewTab;
         }
-        else if(position == 1)
+        else
         {
             SharedListsViewTab sharedListsViewTab = new SharedListsViewTab();
             return sharedListsViewTab;
-        }
-
-        else
-        {
-            ProfileViewTab profileViewTab = new ProfileViewTab();
-            return profileViewTab;
         }
 
     }

@@ -1,67 +1,160 @@
 package com.wordofmouth.Activities;
 
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.wordofmouth.ObjectClasses.User;
+import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.R;
+import com.wordofmouth.SharedPreferences.UserLocalStore;
 
 
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity{
+
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
+    private Context context;
+    private ImageView menuProfilePicture;
+    UserLocalStore userLocalStore;
+    DBHandler dbHandler;
 
     protected boolean useToolbar() {
         return true;
     }
 
-    ListView menuListView;
-    private String[] drawerListViewItems;
-    DrawerLayout mDrawerLayout;
-    FrameLayout actContent;
-
     @Override
     public void setContentView(int layoutResID) {
         LinearLayout baseLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.base_layout, null);
         mDrawerLayout = (DrawerLayout) baseLayout.findViewById(R.id.drawer_layout);
-        actContent = (FrameLayout) mDrawerLayout.findViewById(R.id.frame_container);
+        FrameLayout actContent = (FrameLayout) mDrawerLayout.findViewById(R.id.frame_container);
 
         View view = getLayoutInflater().inflate(layoutResID, null);
+        context = view.getContext();
         actContent.addView(view);
+        userLocalStore = new UserLocalStore(context);
+        dbHandler = DBHandler.getInstance(context);
         if (useToolbar()) {
             Toolbar toolbar = (Toolbar) baseLayout.findViewById(R.id.tool_bar);
             setSupportActionBar(toolbar);
             toolbar.setLogo(R.mipmap.ic_launcher);
 
-            menuListView = (ListView) mDrawerLayout.findViewById(R.id.list_slidermenu);
-            drawerListViewItems = getResources().getStringArray(R.array.menu_items);
-            menuListView.setAdapter(new ArrayAdapter<String>(view.getContext(), R.layout.drawer_listview_item, drawerListViewItems));
+            ListView menuListView = (ListView) mDrawerLayout.findViewById(R.id.list_slidermenu);
+            String[] drawerListViewItems = getResources().getStringArray(R.array.menu_items);
+            ArrayAdapter<String> menuAdapter= new CustomMenuItemAdapter(context, drawerListViewItems);
+            menuListView.setAdapter(menuAdapter);
+            menuListView.setOnItemClickListener(new DrawerItemClickListener());
+
+            actionBarDrawerToggle = new ActionBarDrawerToggle(
+                     this,                  /* host Activity */
+                     mDrawerLayout,         /* DrawerLayout object */
+                     R.string.drawer_open,  /* "open drawer" description */
+                     R.string.drawer_close  /* "close drawer" description */
+            );
+
+            menuProfilePicture = (ImageView) mDrawerLayout.findViewById(R.id.menuProfilePicture);
+            menuProfilePicture.setOnClickListener(new ProfilePictureClickListener());
+
+            User currentUser = userLocalStore.getUserLoggedIn();
+            String pic = dbHandler.getProfilePicture(currentUser.getId());
+            if (pic != null) {
+                Bitmap bitmap = StringToBitMap(pic);
+                menuProfilePicture.setImageBitmap(getRoundedCornerBitmap(bitmap,100));
+            }
+
+            // Set actionBarDrawerToggle as the DrawerListener
+            mDrawerLayout.setDrawerListener(actionBarDrawerToggle);
         }
 
         setContentView(baseLayout);
-
-
-////        // set the drawer layout as main content view of Activity.
-////        setContentView(mDrawerLayout);
-////        // add layout of BaseActivities inside framelayout.i.e. frame_container
-//        getLayoutInflater().inflate(layoutResID, actContent, true);
-//        if(useToolbar()) {
-//            View view = getLayoutInflater().inflate(layoutResID, null);
-//            Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
-//            setSupportActionBar(toolbar);
-//            super.setContentView(view);
-//        } else {
-//            super.setContentView(layoutResID);
-//        }
     }
 
+    private class ProfilePictureClickListener implements View.OnClickListener{
+
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.menuProfilePicture:
+                    Intent myIntent = new Intent(context, ActivityProfile.class);
+                    myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                    startActivity(myIntent);
+                    break;
+            }
+        }
+    }
+
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView parent, View view, int position, long id) {
+           switch (position){
+               case 0:
+                   Intent home = new Intent(context, MainActivity.class);
+                   home.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                   startActivity(home);
+                   break;
+               case 1:
+                   Intent notifications = new Intent(context, ActivityNotifications.class);
+                   notifications.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                   startActivity(notifications);
+                   break;
+               case 2:
+                   Intent feedback = new Intent(context, ActivityFeedback.class);
+                   feedback.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                   startActivity(feedback);
+                   break;
+               case 3:
+                   Intent about = new Intent(context, ActivityAbout.class);
+                   about.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                   startActivity(about);
+                   break;
+               case 4:
+                   Intent logout = new Intent(context, ActivityLogin.class);
+                   logout.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                   userLocalStore.clearUserData();
+                   userLocalStore.setUserLoggedIn(false);
+                   startActivity(logout);
+                   break;
+           }
+
+        }
+    }
+/*
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        actionBarDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        actionBarDrawerToggle.syncState();
+    }
+*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -70,16 +163,52 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        boolean taken = false;
+        boolean drawerOpened = false;
         switch (item.getItemId()) {
             case R.id.action_vili:
-                taken = true;
+                drawerOpened = true;
                 mDrawerLayout.openDrawer(GravityCompat.START);
-
-
-
                 break;
         }
-        return taken;
+        return drawerOpened;
+    }
+
+    public Bitmap StringToBitMap(String encodedString){
+        byte[] bytes = Base64.decode(encodedString, Base64.DEFAULT);
+        BitmapFactory.Options scaleOptions = new BitmapFactory.Options();
+        scaleOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeByteArray(bytes, 0, bytes.length, scaleOptions);
+
+        int scale = 1;
+        while (scaleOptions.outWidth / scale / 2 >= 100
+                && scaleOptions.outHeight / scale / 2 >= 100) {
+            scale *= 2;
+        }
+
+        BitmapFactory.Options outOptions = new BitmapFactory.Options();
+        outOptions.inSampleSize = scale;
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length,outOptions);
+    }
+
+    public static Bitmap getRoundedCornerBitmap(Bitmap bitmap, int pixels) {
+        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap
+                .getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+
+        final int color = 0xff424242;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        final RectF rectF = new RectF(rect);
+        final float roundPx = pixels;
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+
+        return output;
     }
 }

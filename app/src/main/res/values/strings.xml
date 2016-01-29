@@ -24,12 +24,18 @@
     <string name="RegisterButtonText">Register</string>
     <string name="RegisterAlreadyRegisteredText">Already registered? Login!</string>
     <string name="title_activity_activity_invite">ActivityInvite</string>
-
+    <string name="title_activity_activity_notifications">ActivityNotifications</string>
     <string-array name="menu_items">
         <item>Home</item>
-        <item>Profile</item>
+        <item>Notifications</item>
         <item>Feedback</item>
         <item>About</item>
         <item>Log out</item>
     </string-array>
+
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="title_activity_activity_profile">ActivityProfile</string>
+    <string name="title_activity_activity_about">ActivityAbout</string>
+    <string name="title_activity_activity_feedback">ActivityFeedback</string>
 </resources>

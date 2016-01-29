@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -35,6 +36,7 @@ public class ActivityItemsOfAList extends AppCompatActivity implements View.OnCl
     String listName;
     DBHandler dbHandler;
     String[] itemNames;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

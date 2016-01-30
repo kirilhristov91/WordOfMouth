@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.view.LayoutInflater;
@@ -45,20 +46,23 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
     Button chooseFromGallery;
     Button saveChanges;
     int angle = 0;
-    Bitmap toSave;
+    Bitmap toSave =null;
     boolean fromGallery = false;
     DBHandler dbHandler;
     UserLocalStore userLocalStore;
+
+
+    //@Override
+    //public boolean useMainToolbar(){
+      //  return false;
+    //}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_activity_profile);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Eidt Profile");
+        getSupportActionBar().setTitle("Editt Profile");
 
         profilePicture = (ImageView) this.findViewById(R.id.profilePicture);
         updatePicture = (Button) this.findViewById(R.id.updatePictureButton);
@@ -129,7 +133,7 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
                 toSave = bm2;
                 break;
             case R.id.saveProfileChanges:
-                saveImageToDB();
+                if (toSave != null) saveImageToDB();
                 break;
 
         }
@@ -156,7 +160,10 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
     // dealing with the result
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        System.out.println("VLIZA V ACTIVITY RESULT");
         super.onActivityResult(requestCode, resultCode, data);
+
+
 
         if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK){
             Bundle extras = data.getExtras();
@@ -169,6 +176,7 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
             Uri targetUri = data.getData();
             System.out.println(targetUri.toString());
             Bitmap image;
+            System.out.println("VLIZA V ACTIVITY RESULT BROWSE GALLERY");
             try {
                 image = BitmapFactory.decodeStream(this.getContentResolver().openInputStream(targetUri));
                 while (image.getWidth() > 4096 || image.getHeight() > 4096) {

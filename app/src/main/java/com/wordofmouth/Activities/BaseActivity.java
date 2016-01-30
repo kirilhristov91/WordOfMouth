@@ -1,7 +1,9 @@
 package com.wordofmouth.Activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -10,6 +12,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -42,7 +45,7 @@ public abstract class BaseActivity extends AppCompatActivity{
     UserLocalStore userLocalStore;
     DBHandler dbHandler;
 
-    protected boolean useToolbar() {
+    protected boolean useMainToolbar() {
         return true;
     }
 
@@ -57,7 +60,8 @@ public abstract class BaseActivity extends AppCompatActivity{
         actContent.addView(view);
         userLocalStore = new UserLocalStore(context);
         dbHandler = DBHandler.getInstance(context);
-        if (useToolbar()) {
+        System.out.println("POLZVAM LI MAINABAR " + useMainToolbar());
+        if (useMainToolbar()) {
             Toolbar toolbar = (Toolbar) baseLayout.findViewById(R.id.tool_bar);
             setSupportActionBar(toolbar);
             toolbar.setLogo(R.mipmap.ic_launcher);
@@ -89,6 +93,37 @@ public abstract class BaseActivity extends AppCompatActivity{
             mDrawerLayout.setDrawerListener(actionBarDrawerToggle);
         }
 
+        else{
+            Toolbar toolbar = (Toolbar) baseLayout.findViewById(R.id.tool_bar);
+            setSupportActionBar(toolbar);
+
+            ListView menuListView = (ListView) mDrawerLayout.findViewById(R.id.list_slidermenu);
+            String[] drawerListViewItems = getResources().getStringArray(R.array.menu_items);
+            ArrayAdapter<String> menuAdapter= new CustomMenuItemAdapter(context, drawerListViewItems);
+            menuListView.setAdapter(menuAdapter);
+            menuListView.setOnItemClickListener(new DrawerItemClickListener());
+
+            actionBarDrawerToggle = new ActionBarDrawerToggle(
+                    this,                  /* host Activity */
+                    mDrawerLayout,         /* DrawerLayout object */
+                    R.string.drawer_open,  /* "open drawer" description */
+                    R.string.drawer_close  /* "close drawer" description */
+            );
+
+            menuProfilePicture = (ImageView) mDrawerLayout.findViewById(R.id.menuProfilePicture);
+            menuProfilePicture.setOnClickListener(new ProfilePictureClickListener());
+
+            User currentUser = userLocalStore.getUserLoggedIn();
+            String pic = dbHandler.getProfilePicture(currentUser.getId());
+            if (pic != null) {
+                Bitmap bitmap = StringToBitMap(pic);
+                menuProfilePicture.setImageBitmap(getRoundedCornerBitmap(bitmap,100));
+            }
+
+            // Set actionBarDrawerToggle as the DrawerListener
+            mDrawerLayout.setDrawerListener(actionBarDrawerToggle);
+        }
+
         setContentView(baseLayout);
     }
 
@@ -99,8 +134,9 @@ public abstract class BaseActivity extends AppCompatActivity{
             switch (v.getId()){
                 case R.id.menuProfilePicture:
                     Intent myIntent = new Intent(context, ActivityProfile.class);
-                    myIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                     startActivity(myIntent);
+                    //obmisli go tova
+                    //((Activity)context).finish();
                     break;
             }
         }
@@ -112,27 +148,27 @@ public abstract class BaseActivity extends AppCompatActivity{
            switch (position){
                case 0:
                    Intent home = new Intent(context, MainActivity.class);
-                   home.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                   //home.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                    startActivity(home);
                    break;
                case 1:
                    Intent notifications = new Intent(context, ActivityNotifications.class);
-                   notifications.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                   //notifications.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                    startActivity(notifications);
                    break;
                case 2:
                    Intent feedback = new Intent(context, ActivityFeedback.class);
-                   feedback.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                   //feedback.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                    startActivity(feedback);
                    break;
                case 3:
                    Intent about = new Intent(context, ActivityAbout.class);
-                   about.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                   //about.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                    startActivity(about);
                    break;
                case 4:
                    Intent logout = new Intent(context, ActivityLogin.class);
-                   logout.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                   //logout.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                    userLocalStore.clearUserData();
                    userLocalStore.setUserLoggedIn(false);
                    startActivity(logout);
@@ -141,7 +177,7 @@ public abstract class BaseActivity extends AppCompatActivity{
 
         }
     }
-/*
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -154,7 +190,7 @@ public abstract class BaseActivity extends AppCompatActivity{
         // Sync the toggle state after onRestoreInstanceState has occurred.
         actionBarDrawerToggle.syncState();
     }
-*/
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -171,6 +207,11 @@ public abstract class BaseActivity extends AppCompatActivity{
                 break;
         }
         return drawerOpened;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     public Bitmap StringToBitMap(String encodedString){

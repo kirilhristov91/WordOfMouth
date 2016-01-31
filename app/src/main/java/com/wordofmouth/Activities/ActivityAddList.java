@@ -115,10 +115,19 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
                     serverRequests.UploadListAsyncTask(list, new GetListId() {
                         @Override
                         public void done(MyList returnedList) {
-                            if (returnedList != null) {
-                                dbHandler.addList(returnedList);
-                                closeActivity();
-                            } else showError();
+                            if(returnedList == null){
+                                showAlreadyExistError();
+                            }
+
+                            else{
+                                if(returnedList.get_username().equals("Timeout")){
+                                    showConnectionError();
+                                }
+                                else {
+                                    dbHandler.addList(returnedList);
+                                    closeActivity();
+                                }
+                            }
                         }
                     });
                 }
@@ -162,7 +171,14 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
         finish();
     }
 
-    private void showError(){
+    private void showConnectionError(){
+        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(ActivityAddList.this);
+        allertBuilder.setMessage("Network error! Check your internet connection and try again!");
+        allertBuilder.setPositiveButton("OK", null);
+        allertBuilder.show();
+    }
+
+    private void showAlreadyExistError(){
         AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
         allertBuilder.setMessage("You have already created a list with that name!");
         allertBuilder.setPositiveButton("OK", null);

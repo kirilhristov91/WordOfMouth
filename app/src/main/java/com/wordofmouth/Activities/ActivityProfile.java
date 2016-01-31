@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -197,7 +198,12 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
             @Override
             public void done(User returnedUser) {
                 if (returnedUser != null) {
-                    System.out.println("ERROR UPLOADING IMAGE TO SERVER");
+                    if(returnedUser.getUsername().equals("Timeout")){
+                        showConnectionError();
+                    }
+                    else if(returnedUser.getUsername().equals("failure")){
+                        showUploadError();
+                    }
                 } else {
                     Toast.makeText(ActivityProfile.this, "Your profile picture was updated!", Toast.LENGTH_SHORT).show();
                     //napravi neshto da refreshva meniuto
@@ -206,6 +212,20 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
 
             }
         });
+    }
+
+    private void showConnectionError(){
+        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(ActivityProfile.this);
+        allertBuilder.setMessage("Network error! Check your internet connection and try again!");
+        allertBuilder.setPositiveButton("OK", null);
+        allertBuilder.show();
+    }
+
+    private void showUploadError(){
+        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(ActivityProfile.this);
+        allertBuilder.setMessage("Server Error! Failed to upload your picture!");
+        allertBuilder.setPositiveButton("OK", null);
+        allertBuilder.show();
     }
 
     // method to transform image to string

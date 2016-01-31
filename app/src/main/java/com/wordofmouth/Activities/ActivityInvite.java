@@ -78,7 +78,12 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
                     @Override
                     public void done(ArrayList<User> returnedUsers) {
                         if(returnedUsers.size()>0) {
-                            display(returnedUsers);
+                            if(returnedUsers.get(0).getUsername().equals("Timeout")){
+                                showConnectionError();
+                            }
+                            else {
+                                display(returnedUsers);
+                            }
                         }
                         else Toast.makeText(ActivityInvite.this, "No users were found matching this criteria", Toast.LENGTH_SHORT).show();
                     }
@@ -115,6 +120,9 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
                                 if(response.equals("That person has already been invited to that list!\n")){
                                     showError();
                                 }
+                                else if(response.equals("Timeout")){
+                                    showConnectionError();
+                                }
                                 else{
                                     Intent myIntent = new Intent(ActivityInvite.this, ActivityItemsOfAList.class);
                                     myIntent.putExtra("listId", selectedListId);
@@ -127,6 +135,13 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
                     }
                 }
         );
+    }
+
+    private void showConnectionError(){
+        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(ActivityInvite.this);
+        allertBuilder.setMessage("Network error! Check your internet connection and try again!");
+        allertBuilder.setPositiveButton("OK", null);
+        allertBuilder.show();
     }
 
     private void showError(){

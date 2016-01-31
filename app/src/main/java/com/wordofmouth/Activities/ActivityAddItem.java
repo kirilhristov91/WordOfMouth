@@ -52,14 +52,10 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_item_view);
-        /*Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        setSupportActionBar(toolbar);
-        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);*/
 
         Intent intent = getIntent();
         listId = intent.getIntExtra("listId", 0);
         listName = intent.getStringExtra("name");
-        //System.out.println("V ADD ITEM VIEW SYM: " + listId + " " + listName);
 
         ratingSelected = 0.0;
         photo = null;
@@ -132,14 +128,22 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
                     serverRequests.UploadItemAsyncTask(i, new GetItemId() {
                         @Override
                         public void done(Item item) {
-                            if (item != null) {
-                                dbHandler.addItem(item);
-                                Intent intent = new Intent(ActivityAddItem.this, ActivityItemsOfAList.class);
-                                intent.putExtra("listId", listId);
-                                intent.putExtra("name", listName);
-                                startActivity(intent);
-                                finish();
-                            } else showError();
+                            if(item == null){
+                                showAlreadyExistError();
+                            }
+                            else {
+                                if(item.get_creatorUsername().equals("Timeout")){
+                                    showConnectionError();
+                                }
+                                else {
+                                    dbHandler.addItem(item);
+                                    Intent intent = new Intent(ActivityAddItem.this, ActivityItemsOfAList.class);
+                                    intent.putExtra("listId", listId);
+                                    intent.putExtra("name", listName);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            }
                         }
                     });
                 }
@@ -147,7 +151,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
         }
     }
 
-    private void showError(){
+    private void showAlreadyExistError(){
         AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
         allertBuilder.setMessage("An item with that name for that list already exists!");
         allertBuilder.setPositiveButton("OK", null);
@@ -194,6 +198,13 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
                 e.printStackTrace();
             }
         }
+    }
+
+    private void showConnectionError(){
+        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(ActivityAddItem.this);
+        allertBuilder.setMessage("Network error! Check your internet connection and try again!");
+        allertBuilder.setPositiveButton("OK", null);
+        allertBuilder.show();
     }
 
     public String BitMapToString(Bitmap bitmap, int compressFactor){

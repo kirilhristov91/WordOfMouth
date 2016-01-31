@@ -247,6 +247,10 @@ public class ServerRequests {
         @Override
         protected User doInBackground(Void... params) {
 
+            if(!isNetworkAvailable()){
+                return new User(-1, "Timeout", "Timeout", "Timeout", "Timeout");
+            }
+
             Map<String,String> dataToSend = new HashMap<>();
             dataToSend.put("username", user.getUsername());
             dataToSend.put("password", user.getPassword());
@@ -262,34 +266,39 @@ public class ServerRequests {
 
                 //Post Method
                 con.setRequestMethod("POST");
+                con.setConnectTimeout(CONNECTION_TIMEOUT);
                 con.setDoOutput(true);
                 OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
                 writer.write(encodedStr);
                 writer.flush();
+                if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    StringBuilder sb = new StringBuilder();
+                    reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
 
-                StringBuilder sb = new StringBuilder();
-                reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line + "\n");
+                    }
+                    line = sb.toString();
+                    Log.i("custom_Login_check", "The values received are as follows:");
+                    Log.i("custom_Login_check", line);
 
-                String line;
-                while((line = reader.readLine()) != null) {
-                    sb.append(line + "\n");
+                    JSONObject jResult = new JSONObject(line);
+
+                    if (jResult.length() == 0) {
+                        returnedUser = null;
+                    } else {
+                        int id = jResult.getInt("id");
+                        String gcmId = jResult.getString("gcmId");
+                        String name = jResult.getString("name");
+                        String email = jResult.getString("email");
+                        returnedUser = new User(id, name, email, user.getUsername(), user.getPassword());
+                        returnedUser.setGcmId(gcmId);
+                    }
                 }
-                line = sb.toString();
-                Log.i("custom_Login_check", "The values received are as follows:");
-                Log.i("custom_Login_check",line);
 
-                JSONObject jResult = new JSONObject(line);
-
-                if (jResult.length() == 0){
-                    returnedUser = null;
-                }
-                else{
-                    int id = jResult.getInt("id");
-                    String gcmId = jResult.getString("gcmId");
-                    String name = jResult.getString("name");
-                    String email = jResult.getString("email");
-                    returnedUser = new User(id,name, email, user.getUsername(), user.getPassword());
-                    returnedUser.setGcmId(gcmId);
+                else {
+                    returnedUser = new User(-1, "Timeout", "Timeout", "Timeout", "Timeout");
                 }
 
             } catch (Exception e) {
@@ -331,6 +340,10 @@ public class ServerRequests {
         @Override
         protected User doInBackground(Void... params) {
 
+            if(!isNetworkAvailable()){
+                return new User(-1, "Timeout", "Timeout", "Timeout", "Timeout");
+            }
+
             Map<String,String> dataToSend = new HashMap<>();
             dataToSend.put("username", username);
             dataToSend.put("picture", image );
@@ -346,25 +359,32 @@ public class ServerRequests {
 
                 //Post Method
                 con.setRequestMethod("POST");
+                con.setConnectTimeout(CONNECTION_TIMEOUT);
                 con.setDoOutput(true);
                 OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
                 writer.write(encodedStr);
                 writer.flush();
 
-                StringBuilder sb = new StringBuilder();
-                reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    StringBuilder sb = new StringBuilder();
+                    reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
 
-                String line;
-                while((line = reader.readLine()) != null) {
-                    sb.append(line);
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    line = sb.toString();
+                    Log.i("UploadPicture_check", "The values received:");
+                    Log.i("custom_check", line);
+
+                    if (line.equals("failure")) {
+                        Log.i("Fail", "could not upload the picture");
+                        returnedUser = new User(-1, "failure", "failure", "failure", "failure");
+                    }
                 }
-                line = sb.toString();
-                Log.i("UploadPicture_check", "The values received:");
-                Log.i("custom_check",line);
 
-                if(line.equals("failure")){
-                    Log.i("Fail","could not upload the picture");
-                    returnedUser = new User(-1,"failure","failure","failure","failure");
+                else {
+                    returnedUser = new User(-1, "Timeout", "Timeout", "Timeout", "Timeout");
                 }
 
             } catch (Exception e) {
@@ -402,6 +422,10 @@ public class ServerRequests {
         @Override
         protected MyList doInBackground(Void... params) {
 
+            if(!isNetworkAvailable()){
+                return new MyList(-1, "Timeout", "Timeout", "Timeout", "Timeout");
+            }
+
             Map<String,String> dataToSend = new HashMap<>();
             Integer uId = list.getUserId();
             String userIdString = uId.toString();
@@ -422,42 +446,48 @@ public class ServerRequests {
 
                 //Post Method
                 con.setRequestMethod("POST");
+                con.setConnectTimeout(CONNECTION_TIMEOUT);
                 con.setDoOutput(true);
                 OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
                 writer.write(encodedStr);
                 writer.flush();
 
-                StringBuilder sb = new StringBuilder();
-                reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    StringBuilder sb = new StringBuilder();
+                    reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
 
-                String line;
-                while((line = reader.readLine()) != null) {
-                    sb.append(line + "\n");
-                }
-                line = sb.toString();
-                Log.i("custom_ListUpload_check", "The values received are as follows:");
-                Log.i("custom_ListUpload_check",line);
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line + "\n");
+                    }
+                    line = sb.toString();
+                    Log.i("custom_ListUpload_check", "The values received are as follows:");
+                    Log.i("custom_ListUpload_check", line);
 
-                if(line.equals("You have already created a list with that name!\n")){
-                    returnedList = null;
+                    if (line.equals("You have already created a list with that name!\n")) {
+                        returnedList = null;
+                    } else {
+                        JSONObject jResult = new JSONObject(line);
+
+                        if (jResult.length() == 0) {
+                            returnedList = null;
+                        } else {
+                            int id = jResult.getInt("id");
+                            int userId = jResult.getInt("userId");
+                            String username = jResult.getString("username");
+                            String name = jResult.getString("name");
+                            String description = jResult.getString("description");
+                            String image = jResult.getString("image");
+                            returnedList = new MyList(userId, username, name, description, image);
+                            returnedList.set_listId(id);
+                        }
+                    }
                 }
 
                 else {
-                    JSONObject jResult = new JSONObject(line);
-
-                    if (jResult.length() == 0) {
-                        returnedList = null;
-                    } else {
-                        int id = jResult.getInt("id");
-                        int userId = jResult.getInt("userId");
-                        String username = jResult.getString("username");
-                        String name = jResult.getString("name");
-                        String description = jResult.getString("description");
-                        String image = jResult.getString("image");
-                        returnedList = new MyList(userId, username, name, description, image);
-                        returnedList.set_listId(id);
-                    }
+                    returnedList = new MyList(-1, "Timeout", "Timeout", "Timeout", "Timeout");
                 }
+
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -493,6 +523,11 @@ public class ServerRequests {
         @Override
         protected Item doInBackground(Void... params) {
 
+            if(!isNetworkAvailable()){
+                return new Item(-1, -1, "Timeout", "Timeout", -1, "Timeout", "Timeout");
+            }
+
+
             Map<String,String> dataToSend = new HashMap<>();
             Integer uId = item.get_creatorId();
             String userIdString = uId.toString();
@@ -520,45 +555,47 @@ public class ServerRequests {
 
                 //Post Method
                 con.setRequestMethod("POST");
+                con.setConnectTimeout(CONNECTION_TIMEOUT);
                 con.setDoOutput(true);
                 OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
                 writer.write(encodedStr);
                 writer.flush();
 
-                //Data Read Procedure
-                StringBuilder sb = new StringBuilder();
-                reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    //Data Read Procedure
+                    StringBuilder sb = new StringBuilder();
+                    reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
 
-                String line;
-                while((line = reader.readLine()) != null) {
-                    sb.append(line + "\n");
-                }
-                line = sb.toString();
-                Log.i("custom_ListUpload_check", "The values received are as follows:");
-                Log.i("custom_ListUpload_check",line);
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line + "\n");
+                    }
+                    line = sb.toString();
+                    Log.i("custom_ListUpload_check", "The values received are as follows:");
+                    Log.i("custom_ListUpload_check", line);
 
-                if(line.equals("An item with that name for that list already exists!\n")){
-                    returnedItem = null;
-                }
-
-                else {
-                    JSONObject jResult = new JSONObject(line);
-
-                    if (jResult.length() == 0) {
+                    if (line.equals("An item with that name for that list already exists!\n")) {
                         returnedItem = null;
                     } else {
-                        int id = jResult.getInt("id");
-                        int lId = jResult.getInt("listId");
-                        int creatorId = jResult.getInt("userId");
-                        String username = jResult.getString("username");
-                        String name = jResult.getString("name");
-                        double r = jResult.getDouble("rating");
-                        String description = jResult.getString("description");
-                        String image = jResult.getString("picture");
-                        returnedItem = new Item(lId, creatorId, username, name, rating, description, image);
-                        returnedItem.set_itemId(id);
+                        JSONObject jResult = new JSONObject(line);
+
+                        if (jResult.length() == 0) {
+                            returnedItem = null;
+                        } else {
+                            int id = jResult.getInt("id");
+                            int lId = jResult.getInt("listId");
+                            int creatorId = jResult.getInt("userId");
+                            String username = jResult.getString("username");
+                            String name = jResult.getString("name");
+                            double r = jResult.getDouble("rating");
+                            String description = jResult.getString("description");
+                            String image = jResult.getString("picture");
+                            returnedItem = new Item(lId, creatorId, username, name, rating, description, image);
+                            returnedItem.set_itemId(id);
+                        }
                     }
                 }
+                else return new Item(-1, -1, "Timeout", "Timeout", -1, "Timeout", "Timeout");
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -597,6 +634,14 @@ public class ServerRequests {
         @Override
         protected ArrayList<User> doInBackground(Void... params) {
 
+            ArrayList<User> returnedUsers = new ArrayList<User>();
+
+            if(!isNetworkAvailable()){
+                System.out.println("VLQZAH TUKA na avalable network");
+                returnedUsers.add(new User(-1, "Timeout", "Timeout", "Timeout", "Timeout"));
+                return returnedUsers;
+            }
+
             Map<String,String> dataToSend = new HashMap<>();
             Integer cuid = currentUserId;
             String cuidString = cuid.toString();
@@ -606,8 +651,6 @@ public class ServerRequests {
             String encodedStr = getEncodedData(dataToSend);
             BufferedReader reader = null;
 
-            ArrayList<User> returnedUsers = new ArrayList<User>();
-
             //Connection Handling
             try {
                 URL url = new URL(SERVER_ADDRESS + "fetchUsers.php");
@@ -615,38 +658,44 @@ public class ServerRequests {
 
                 //Post Method
                 con.setRequestMethod("POST");
+                con.setConnectTimeout(CONNECTION_TIMEOUT);
                 con.setDoOutput(true);
                 OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
                 writer.write(encodedStr);
                 writer.flush();
+                if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    //Data Read Procedure
+                    StringBuilder sb = new StringBuilder();
+                    reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
 
-                //Data Read Procedure
-                StringBuilder sb = new StringBuilder();
-                reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
-
-                String line;
-                while((line = reader.readLine()) != null) {
-                    sb.append(line + "\n");
-                }
-                line = sb.toString();
-                Log.i("fetchUsers", "The values received are as follows:");
-                Log.i("fetchUsers",line);
-
-                if(!line.equals("null\n")) {
-                    JSONArray array = new JSONArray(line);
-                    System.out.println(array.length());
-                    for (int n = 0; n < array.length(); n++) {
-                        JSONObject jResult = array.getJSONObject(n);
-                        System.out.println(jResult);
-                        String user = jResult.getString("user");
-                        jResult = new JSONObject(user);
-                        int id = jResult.getInt("id");
-                        String username = jResult.getString("username");
-                        String name = jResult.getString("name");
-                        String picture = jResult.getString("picture");
-                        System.out.println(id + " " + username + " " + name);
-                        returnedUsers.add(new User(id, name, username, picture));
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line + "\n");
                     }
+                    line = sb.toString();
+                    Log.i("fetchUsers", "The values received are as follows:");
+                    Log.i("fetchUsers", line);
+
+                    if (!line.equals("null\n")) {
+                        JSONArray array = new JSONArray(line);
+                        System.out.println(array.length());
+                        for (int n = 0; n < array.length(); n++) {
+                            JSONObject jResult = array.getJSONObject(n);
+                            System.out.println(jResult);
+                            String user = jResult.getString("user");
+                            jResult = new JSONObject(user);
+                            int id = jResult.getInt("id");
+                            String username = jResult.getString("username");
+                            String name = jResult.getString("name");
+                            String picture = jResult.getString("picture");
+                            System.out.println(id + " " + username + " " + name);
+                            returnedUsers.add(new User(id, name, username, picture));
+                        }
+                    }
+                }
+                else{
+                    returnedUsers.add(new User(-1, "Timeout", "Timeout", "Timeout", "Timeout"));
+                    return returnedUsers;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -690,6 +739,11 @@ public class ServerRequests {
         @Override
         protected String doInBackground(Void... params) {
 
+            if(!isNetworkAvailable()){
+                System.out.println("VLQZAH TUKA na avalable network");
+                return "Timeout";
+            }
+
             Map<String,String> dataToSend = new HashMap<>();
             Integer lid = listId;
             String lidString = lid.toString();
@@ -713,24 +767,30 @@ public class ServerRequests {
 
                 //Post Method
                 con.setRequestMethod("POST");
+                con.setConnectTimeout(CONNECTION_TIMEOUT);
                 con.setDoOutput(true);
                 OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
                 writer.write(encodedStr);
                 writer.flush();
 
-                //Data Read Procedure
-                StringBuilder sb = new StringBuilder();
-                reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    //Data Read Procedure
+                    StringBuilder sb = new StringBuilder();
+                    reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
 
-                String line;
-                while((line = reader.readLine()) != null) {
-                    sb.append(line + "\n");
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line + "\n");
+                    }
+                    line = sb.toString();
+                    Log.i("fetchUsers", "The values received are as follows:");
+                    Log.i("fetchUsers", line);
+
+                    response = line;
                 }
-                line = sb.toString();
-                Log.i("fetchUsers", "The values received are as follows:");
-                Log.i("fetchUsers",line);
-
-                response = line;
+                else {
+                    return "Timeout";
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {

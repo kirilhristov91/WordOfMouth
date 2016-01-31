@@ -50,6 +50,7 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
     public void onClick(View v){
         switch(v.getId()){
             case R.id.loginButton:
+                //TODO set check for empty name field
                 String username = usernameField.getText().toString();
                 String password = passwordField.getText().toString();
 
@@ -100,14 +101,24 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
         serverRequests.fetchUserDataInBackground(user, new GetUserCallback() {
             @Override
             public void done(User returnedUser) {
-                if(returnedUser == null){
+                if (returnedUser == null) {
                     showError();
-                }else{
-                    System.out.println("NA LOGIN SLED SERVER RESULT - " + returnedUser.getUsername() + " " + returnedUser.getPassword());
-                    logUserIn(returnedUser);
+                } else {
+                    if(returnedUser.getUsername().equals("Timeout")){
+                        showConnectionError();
+                    }
+                    else {
+                        logUserIn(returnedUser);
+                    }
                 }
             }
         });
+    }
+
+    private void logUserIn(User user){
+        userLocalStore.storeUserData(user);
+        userLocalStore.setUserLoggedIn(true);
+        startActivity(new Intent(this, MainActivity.class));
     }
 
     private void showError(){
@@ -117,10 +128,13 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
         allertBuilder.show();
     }
 
-    private void logUserIn(User user){
-        userLocalStore.storeUserData(user);
-        userLocalStore.setUserLoggedIn(true);
-        startActivity(new Intent(this, MainActivity.class));
+    private void showConnectionError(){
+        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(ActivityLogin.this);
+        allertBuilder.setMessage("Network error! Check your internet connection and try again!");
+        allertBuilder.setPositiveButton("OK", null);
+        allertBuilder.show();
     }
+
+
 
 }

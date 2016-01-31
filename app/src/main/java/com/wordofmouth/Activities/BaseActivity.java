@@ -3,6 +3,7 @@ package com.wordofmouth.Activities;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -58,6 +59,7 @@ public abstract class BaseActivity extends AppCompatActivity{
         View view = getLayoutInflater().inflate(layoutResID, null);
         context = view.getContext();
         actContent.addView(view);
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         userLocalStore = new UserLocalStore(context);
         dbHandler = DBHandler.getInstance(context);
         System.out.println("POLZVAM LI MAINABAR " + useMainToolbar());
@@ -104,6 +106,7 @@ public abstract class BaseActivity extends AppCompatActivity{
                 case R.id.menuProfilePicture:
                     Intent myIntent = new Intent(context, ActivityProfile.class);
                     startActivity(myIntent);
+                    mDrawerLayout.closeDrawers();
                     //obmisli go tova
                     //((Activity)context).finish();
                     break;
@@ -119,21 +122,25 @@ public abstract class BaseActivity extends AppCompatActivity{
                    Intent home = new Intent(context, MainActivity.class);
                    //home.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                    startActivity(home);
+                   mDrawerLayout.closeDrawers();
                    break;
                case 1:
                    Intent notifications = new Intent(context, ActivityNotifications.class);
                    //notifications.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                    startActivity(notifications);
+                   mDrawerLayout.closeDrawers();
                    break;
                case 2:
                    Intent feedback = new Intent(context, ActivityFeedback.class);
                    //feedback.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                    startActivity(feedback);
+                   mDrawerLayout.closeDrawers();
                    break;
                case 3:
                    Intent about = new Intent(context, ActivityAbout.class);
                    //about.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                    startActivity(about);
+                   mDrawerLayout.closeDrawers();
                    break;
                case 4:
                    Intent logout = new Intent(context, ActivityLogin.class);
@@ -141,6 +148,7 @@ public abstract class BaseActivity extends AppCompatActivity{
                    userLocalStore.clearUserData();
                    userLocalStore.setUserLoggedIn(false);
                    startActivity(logout);
+                   mDrawerLayout.closeDrawers();
                    break;
            }
 

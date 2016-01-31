@@ -57,6 +57,8 @@ public class GcmIntentService extends IntentService {
                     MESSAGE_TYPE_MESSAGE.equals(messageType)) {
 
                 String recieved_message=intent.getStringExtra("text_message");
+
+                // ako e invite ...
                 sendNotification(recieved_message);
 
                 Intent sendIntent =new Intent("message_recieved");
@@ -77,7 +79,7 @@ public class GcmIntentService extends IntentService {
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
 
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, MainActivity.class), 0);
+                new Intent(this, ActivityNotifications.class), 0);
 
         int index = msg.length()-1;
         while(msg.charAt(index)!=' '){

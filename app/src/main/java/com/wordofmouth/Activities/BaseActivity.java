@@ -46,7 +46,7 @@ public abstract class BaseActivity extends AppCompatActivity{
     UserLocalStore userLocalStore;
     DBHandler dbHandler;
 
-    protected boolean useMainToolbar() {
+    protected boolean useToolbar() {
         return true;
     }
 
@@ -62,11 +62,9 @@ public abstract class BaseActivity extends AppCompatActivity{
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         userLocalStore = new UserLocalStore(context);
         dbHandler = DBHandler.getInstance(context);
-        System.out.println("POLZVAM LI MAINABAR " + useMainToolbar());
-        if (useMainToolbar()) {
+        if (useToolbar()) {
             Toolbar toolbar = (Toolbar) baseLayout.findViewById(R.id.tool_bar);
             setSupportActionBar(toolbar);
-            toolbar.setLogo(R.mipmap.ic_launcher);
 
             ListView menuListView = (ListView) mDrawerLayout.findViewById(R.id.list_slidermenu);
             String[] drawerListViewItems = getResources().getStringArray(R.array.menu_items);

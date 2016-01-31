@@ -44,7 +44,7 @@ public class MainActivity extends BaseActivity{
         dbHandler = DBHandler.getInstance(this);
         lists = new ArrayList<MyList>();
         lists = dbHandler.getLists(username);
-
+        getSupportActionBar().setLogo(R.mipmap.ic_launcher);
 
         // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
         adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,NumberOfTabs);

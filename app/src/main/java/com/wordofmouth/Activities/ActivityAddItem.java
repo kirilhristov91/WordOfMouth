@@ -29,7 +29,7 @@ import com.wordofmouth.SharedPreferences.UserLocalStore;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 
-public class ActivityAddItem extends AppCompatActivity implements View.OnClickListener{
+public class ActivityAddItem extends BaseActivity implements View.OnClickListener{
 
     EditText itemNameField;
     EditText itemDescriptionField;
@@ -52,14 +52,14 @@ public class ActivityAddItem extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_item_view);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        /*Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
-        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);*/
 
         Intent intent = getIntent();
         listId = intent.getIntExtra("listId", 0);
         listName = intent.getStringExtra("name");
-        System.out.println("V ADD ITEM VIEW SYM: " + listId + " " + listName);
+        //System.out.println("V ADD ITEM VIEW SYM: " + listId + " " + listName);
 
         ratingSelected = 0.0;
         photo = null;

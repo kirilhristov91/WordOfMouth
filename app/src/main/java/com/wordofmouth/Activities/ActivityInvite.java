@@ -25,7 +25,7 @@ import com.wordofmouth.SharedPreferences.UserLocalStore;
 
 import java.util.ArrayList;
 
-public class ActivityInvite extends AppCompatActivity implements View.OnClickListener{
+public class ActivityInvite extends BaseActivity implements View.OnClickListener{
 
     int selectedListId;
     String listName;
@@ -36,15 +36,13 @@ public class ActivityInvite extends AppCompatActivity implements View.OnClickLis
     ArrayList<User> users;
     String[] usernames;
 
-    //override useToolbar to return false
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_activity_invite);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        setSupportActionBar(toolbar);
+        /*Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        setSupportActionBar(toolbar);*/
 
         Intent intent = getIntent();
         selectedListId = intent.getIntExtra("listId", 0);
@@ -72,7 +70,6 @@ public class ActivityInvite extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.searchUsersButton:
-                //TODO prashtai i id-to za da ne vyrne syshtiq user (ko she se invite-va sebe si)
                 InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
                 imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
 

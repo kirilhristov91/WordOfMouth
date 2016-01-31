@@ -26,7 +26,7 @@ import com.wordofmouth.Other.StringToBitmapRequests;
 
 import java.util.ArrayList;
 
-public class ActivityItemsOfAList extends AppCompatActivity implements View.OnClickListener{
+public class ActivityItemsOfAList extends BaseActivity implements View.OnClickListener{
 
     TextView addItemText;
     TextView invitePeople;
@@ -42,10 +42,6 @@ public class ActivityItemsOfAList extends AppCompatActivity implements View.OnCl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_items_of_alist_view);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        setSupportActionBar(toolbar);
-
-        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         addItemText = (TextView) findViewById(R.id.addItemText);
         addItemText.setOnClickListener(this);
         invitePeople = (TextView) findViewById(R.id.invitePeople);

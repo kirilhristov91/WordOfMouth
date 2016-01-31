@@ -20,7 +20,7 @@ import com.wordofmouth.R;
 import com.wordofmouth.Other.ServerRequests;
 import com.wordofmouth.SharedPreferences.UserLocalStore;
 
-public class ActivityAddList extends AppCompatActivity implements View.OnClickListener{
+public class ActivityAddList extends BaseActivity implements View.OnClickListener{
 
     EditText listNameField;
     EditText listDescriptionField;
@@ -35,10 +35,10 @@ public class ActivityAddList extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_list);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        /*Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
 
-        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);*/
 
         dbHandler= DBHandler.getInstance(this);
         userLocalStore = new UserLocalStore(this);

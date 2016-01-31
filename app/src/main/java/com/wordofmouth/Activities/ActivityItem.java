@@ -8,7 +8,7 @@ import android.support.v7.widget.Toolbar;
 
 import com.wordofmouth.R;
 
-public class ActivityItem extends AppCompatActivity {
+public class ActivityItem extends BaseActivity {
 
     int listId;
     String listName;
@@ -18,10 +18,7 @@ public class ActivityItem extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_item_view);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        setSupportActionBar(toolbar);
 
         Intent intent = getIntent();
         listId = intent.getIntExtra("listId", 0);

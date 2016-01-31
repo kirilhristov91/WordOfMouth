@@ -20,7 +20,7 @@ import com.wordofmouth.SharedPreferences.UserLocalStore;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class ActivityLogin extends AppCompatActivity implements View.OnClickListener {
+public class ActivityLogin extends BaseActivity implements View.OnClickListener {
 
     Button loginButton;
     EditText usernameField, passwordField;
@@ -28,10 +28,12 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
     UserLocalStore userLocalStore;
 
     @Override
+    protected boolean useToolbar(){return false;}
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         usernameField = (EditText) findViewById(R.id.usernameField);
         passwordField = (EditText) findViewById(R.id.passwordField);

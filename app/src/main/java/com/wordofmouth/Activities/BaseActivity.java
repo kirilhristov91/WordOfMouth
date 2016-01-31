@@ -46,9 +46,9 @@ public abstract class BaseActivity extends AppCompatActivity{
     UserLocalStore userLocalStore;
     DBHandler dbHandler;
 
-    protected boolean useToolbar() {
+    /*protected boolean useToolbar() {
         return true;
-    }
+    }*/
 
     @Override
     public void setContentView(int layoutResID) {
@@ -62,36 +62,36 @@ public abstract class BaseActivity extends AppCompatActivity{
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         userLocalStore = new UserLocalStore(context);
         dbHandler = DBHandler.getInstance(context);
-        if (useToolbar()) {
-            Toolbar toolbar = (Toolbar) baseLayout.findViewById(R.id.tool_bar);
-            setSupportActionBar(toolbar);
+        //if (useToolbar()) {
+        Toolbar toolbar = (Toolbar) baseLayout.findViewById(R.id.tool_bar);
+        setSupportActionBar(toolbar);
 
-            ListView menuListView = (ListView) mDrawerLayout.findViewById(R.id.list_slidermenu);
-            String[] drawerListViewItems = getResources().getStringArray(R.array.menu_items);
-            ArrayAdapter<String> menuAdapter= new CustomMenuItemAdapter(context, drawerListViewItems);
-            menuListView.setAdapter(menuAdapter);
-            menuListView.setOnItemClickListener(new DrawerItemClickListener());
+        ListView menuListView = (ListView) mDrawerLayout.findViewById(R.id.list_slidermenu);
+        String[] drawerListViewItems = getResources().getStringArray(R.array.menu_items);
+        ArrayAdapter<String> menuAdapter= new CustomMenuItemAdapter(context, drawerListViewItems);
+        menuListView.setAdapter(menuAdapter);
+        menuListView.setOnItemClickListener(new DrawerItemClickListener());
 
-            actionBarDrawerToggle = new ActionBarDrawerToggle(
-                     this,                  /* host Activity */
-                     mDrawerLayout,         /* DrawerLayout object */
-                     R.string.drawer_open,  /* "open drawer" description */
-                     R.string.drawer_close  /* "close drawer" description */
-            );
+        actionBarDrawerToggle = new ActionBarDrawerToggle(
+                 this,                  /* host Activity */
+                 mDrawerLayout,         /* DrawerLayout object */
+                 R.string.drawer_open,  /* "open drawer" description */
+                 R.string.drawer_close  /* "close drawer" description */
+        );
 
-            menuProfilePicture = (ImageView) mDrawerLayout.findViewById(R.id.menuProfilePicture);
-            menuProfilePicture.setOnClickListener(new ProfilePictureClickListener());
+        menuProfilePicture = (ImageView) mDrawerLayout.findViewById(R.id.menuProfilePicture);
+        menuProfilePicture.setOnClickListener(new ProfilePictureClickListener());
 
-            User currentUser = userLocalStore.getUserLoggedIn();
-            String pic = dbHandler.getProfilePicture(currentUser.getId());
-            if (pic != null) {
-                Bitmap bitmap = StringToBitMap(pic);
-                menuProfilePicture.setImageBitmap(getRoundedCornerBitmap(bitmap,100));
-            }
-
-            // Set actionBarDrawerToggle as the DrawerListener
-            mDrawerLayout.setDrawerListener(actionBarDrawerToggle);
+        User currentUser = userLocalStore.getUserLoggedIn();
+        String pic = dbHandler.getProfilePicture(currentUser.getId());
+        if (pic != null) {
+            Bitmap bitmap = StringToBitMap(pic);
+            menuProfilePicture.setImageBitmap(getRoundedCornerBitmap(bitmap,100));
         }
+
+        // Set actionBarDrawerToggle as the DrawerListener
+        mDrawerLayout.setDrawerListener(actionBarDrawerToggle);
+        //}
 
         setContentView(baseLayout);
     }

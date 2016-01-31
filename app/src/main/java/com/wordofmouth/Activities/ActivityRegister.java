@@ -20,14 +20,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 
-public class ActivityRegister extends BaseActivity implements View.OnClickListener{
+public class ActivityRegister extends AppCompatActivity implements View.OnClickListener{
 
     Button registerButton;
     EditText regnameField, regusernameField, regemailField, regpasswordField;
     TextView loginme;
-
-    @Override
-    protected boolean useToolbar(){return false;}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

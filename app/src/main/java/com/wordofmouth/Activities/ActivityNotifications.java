@@ -9,7 +9,7 @@ import android.view.View;
 
 import com.wordofmouth.R;
 
-public class ActivityNotifications extends AppCompatActivity {
+public class ActivityNotifications extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

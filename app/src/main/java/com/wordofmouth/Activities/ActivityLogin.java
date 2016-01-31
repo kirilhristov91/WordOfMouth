@@ -20,15 +20,12 @@ import com.wordofmouth.SharedPreferences.UserLocalStore;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class ActivityLogin extends BaseActivity implements View.OnClickListener {
+public class ActivityLogin extends AppCompatActivity implements View.OnClickListener {
 
     Button loginButton;
     EditText usernameField, passwordField;
     TextView registerNow;
     UserLocalStore userLocalStore;
-
-    @Override
-    protected boolean useToolbar(){return false;}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -52,11 +52,6 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
     DBHandler dbHandler;
     UserLocalStore userLocalStore;
 
-    /*@Override
-    public boolean useMainToolbar(){
-        return false;
-    }*/
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -94,6 +94,9 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
             usernames[i] = users.get(i).getUsername();
         }
 
+        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+
         ArrayAdapter<String> userAdapter = new CustomUserRowAdapter(ActivityInvite.this, usernames, users);
         fetchedUserList.setAdapter(userAdapter);
         fetchedUserList.setOnItemClickListener(

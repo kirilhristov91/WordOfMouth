@@ -9,6 +9,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.wordofmouth.Interfaces.GetLists;
+import com.wordofmouth.Other.DBGetData;
 import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.ObjectClasses.MyList;
 import com.wordofmouth.R;
@@ -20,7 +22,6 @@ import TabLibraries.SlidingTabLayout;
 
 public class MainActivity extends BaseActivity{
 
-    ArrayList<MyList> lists;
     UserLocalStore userLocalStore;
 
     // Tabs variables
@@ -29,22 +30,15 @@ public class MainActivity extends BaseActivity{
     SlidingTabLayout tabs;
     CharSequence Titles[]={"My Lists","Shared With Me"};
     int NumberOfTabs =2;
-    DBHandler dbHandler;
+    ArrayList<MyList> myLists;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        //
-        userLocalStore = new UserLocalStore(this);
-        String username = userLocalStore.getUserLocalDatabase().getString("username", "");
-        // get the user`s lists to display on fragment
-        dbHandler = DBHandler.getInstance(this);
-        lists = new ArrayList<MyList>();
-        lists = dbHandler.getLists(username);
         getSupportActionBar().setLogo(R.mipmap.ic_launcher);
+        userLocalStore = new UserLocalStore(this);
 
         // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
         adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,NumberOfTabs);
@@ -67,12 +61,8 @@ public class MainActivity extends BaseActivity{
 
         // Setting the ViewPager For the SlidingTabsLayout
         tabs.setViewPager(pager);
-    }
 
-    public ArrayList<MyList> getMyLists() {
-        return lists;
     }
-
 
     @Override
     protected void onStart() {

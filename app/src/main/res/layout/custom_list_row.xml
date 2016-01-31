@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp">
 
     <ImageView
         android:id="@+id/listImage"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:src="@drawable/bg"
-        android:layout_centerVertical="true"/>
+        />
 
     <TextView
         android:id="@+id/listTitle"
@@ -16,11 +18,11 @@
         android:text="Title"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:layout_alignTop="@+id/listImage"
+        android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/listImage"
         android:layout_toEndOf="@+id/listImage"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"/>
+        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp" />
 
     <TextView
         android:id="@+id/descriptionTitle"
@@ -29,12 +31,9 @@
         android:text="Description:"
         android:textSize="15sp"
         android:textStyle="bold"
-        android:layout_alignTop="@+id/listForwardImage"
-        android:layout_alignBottom="@+id/listTitle"
-        android:layout_toRightOf="@+id/listImage"
-        android:layout_toEndOf="@+id/listImage"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"/>
+        android:layout_below="@+id/listAddedBy"
+        android:layout_alignLeft="@+id/listAddedBy"
+        android:layout_alignStart="@+id/listAddedBy" />
 
     <TextView
         android:id="@+id/descriptionText"
@@ -42,12 +41,9 @@
         android:layout_height="wrap_content"
         android:text="desctext:"
         android:textSize="15sp"
-        android:layout_alignBaseline="@+id/descriptionTitle"
-        android:layout_alignBottom="@+id/descriptionTitle"
-        android:layout_toRightOf="@+id/descriptionTitle"
-        android:layout_toEndOf="@+id/descriptionTitle"
-        android:layout_marginLeft="3dp"
-        android:layout_marginStart="3dp" />
+        android:layout_below="@+id/descriptionTitle"
+        android:layout_alignLeft="@+id/descriptionTitle"
+        android:layout_alignStart="@+id/descriptionTitle" />
 
     <TextView
         android:id="@+id/listAddedBy"
@@ -56,10 +52,9 @@
         android:text="Added by:"
         android:textStyle="bold"
         android:textSize="15sp"
-        android:layout_alignTop="@+id/listAddedByUsername"
-        android:layout_toRightOf="@+id/listImage"
-        android:layout_toEndOf="@+id/listImage"
-        />
+        android:layout_below="@+id/listTitle"
+        android:layout_alignLeft="@+id/listTitle"
+        android:layout_alignStart="@+id/listTitle" />
 
     <TextView
         android:id="@+id/listAddedByUsername"
@@ -67,20 +62,12 @@
         android:layout_height="wrap_content"
         android:text="username:"
         android:textSize="15sp"
-        android:layout_alignBottom="@+id/listImage"
-        android:layout_toRightOf="@+id/listAddedBy"
-        android:layout_toEndOf="@+id/listAddedBy"
+
         android:layout_marginLeft="3dp"
-        android:layout_marginStart="3dp"/>
+        android:layout_marginStart="3dp"
+        android:layout_alignTop="@+id/listAddedBy"
+        android:layout_toRightOf="@+id/listAddedBy"
+        android:layout_toEndOf="@+id/listAddedBy" />
 
-
-    <ImageView
-        android:id="@+id/listForwardImage"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/forward"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

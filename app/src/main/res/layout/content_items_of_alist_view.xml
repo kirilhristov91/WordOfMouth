@@ -18,6 +18,7 @@
         android:text="@string/AddItemTextView"
         android:textSize="20sp"
         android:layout_alignParentTop="true"
+        android:textColor="@color/colorPrimary"
         />
 
     <TextView
@@ -30,6 +31,7 @@
         android:layout_marginLeft="90dp"
         android:textSize="20sp"
         android:layout_alignParentTop="true"
+        android:textColor="@color/colorPrimary"
         />
 
     <ListView

@@ -1,22 +1,16 @@
 package com.wordofmouth.Activities;
 
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.wordofmouth.Other.DBGetItems;
+import com.wordofmouth.Other.DBGetData;
 import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.Interfaces.GetBitmap;
 import com.wordofmouth.Interfaces.GetItems;
@@ -59,8 +53,8 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
         dbHandler = DBHandler.getInstance(this);
         items = new ArrayList<Item>();
 
-        DBGetItems dbGetItems = new DBGetItems(this);
-        dbGetItems.GetItemsInBackground(selectedListId, new GetItems() {
+        DBGetData dbGetData = new DBGetData(this);
+        dbGetData.GetItemsInBackground(selectedListId, new GetItems() {
             @Override
             public void done(ArrayList<Item> returnedItems) {
                 System.out.println("Number of elements " + returnedItems.size());

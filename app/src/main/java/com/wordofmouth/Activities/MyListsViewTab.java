@@ -14,9 +14,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.wordofmouth.Interfaces.GetBitmap;
+import com.wordofmouth.Interfaces.GetLists;
 import com.wordofmouth.ObjectClasses.MyList;
+import com.wordofmouth.ObjectClasses.User;
+import com.wordofmouth.Other.DBGetData;
+import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.Other.StringToBitmapRequests;
 import com.wordofmouth.R;
+import com.wordofmouth.SharedPreferences.UserLocalStore;
 
 import java.util.ArrayList;
 
@@ -24,8 +29,9 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
 
     TextView createList;
     ListView myListView;
-    ArrayList<MyList> myLists;
     MainActivity mainActivity;
+    ArrayList<MyList> myLists;
+    UserLocalStore userLocalStore;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -34,9 +40,28 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
         mainActivity = (MainActivity) getActivity();
         createList = (TextView) v.findViewById(R.id.createListText);
         myListView = (ListView) v.findViewById(R.id.myListsListView);
+        createList.setOnClickListener(this);
+
+        userLocalStore = new UserLocalStore(mainActivity);
+        String username = userLocalStore.getUserLoggedIn().getUsername();
+        // get the user`s lists to display on fragment
         myLists = new ArrayList<MyList>();
 
-        myLists = mainActivity.getMyLists();
+        DBGetData dbGetData = new DBGetData(mainActivity);
+        dbGetData.GetListsInBackground(username, new GetLists() {
+            @Override
+            public void done(ArrayList<MyList> lists) {
+                System.out.println("KOLKO LISTA IMA V BAZATA " + lists.size());
+                display(lists);
+            }
+        });
+        return v;
+    }
+
+    public void display(ArrayList<MyList> lists){
+
+        myLists = lists;
+        System.out.println("size of mylists " + myLists.size());
         final String[] listNames = new String[myLists.size()];
         for (int i = 0; i < myLists.size(); i++) {
             listNames[i] = myLists.get(i).get_name();
@@ -44,7 +69,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
         }
 
         StringToBitmapRequests stbr = new StringToBitmapRequests(mainActivity);
-        stbr.ListsStringToBitmapInBackground(myLists, new GetBitmap(){
+        stbr.ListsStringToBitmapInBackground(myLists, new GetBitmap() {
             @Override
             public void done(ArrayList<Bitmap> result) {
                 /*final Runtime runtime = Runtime.getRuntime();
@@ -74,9 +99,6 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
                     }
                 }
         );
-
-        createList.setOnClickListener(this);
-        return v;
     }
 
     @Override

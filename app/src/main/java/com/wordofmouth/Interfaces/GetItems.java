@@ -6,6 +6,6 @@ import java.util.ArrayList;
 
 public interface GetItems {
 
-    public abstract void done(ArrayList<Item> items);
+    void done(ArrayList<Item> items);
 
 }

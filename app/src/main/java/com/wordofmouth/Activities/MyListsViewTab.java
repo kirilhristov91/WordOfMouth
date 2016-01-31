@@ -1,6 +1,7 @@
 package com.wordofmouth.Activities;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,7 +13,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.wordofmouth.Interfaces.GetBitmap;
 import com.wordofmouth.ObjectClasses.MyList;
+import com.wordofmouth.Other.StringToBitmapRequests;
 import com.wordofmouth.R;
 
 import java.util.ArrayList;
@@ -20,7 +23,6 @@ import java.util.ArrayList;
 public class MyListsViewTab extends Fragment implements View.OnClickListener{
 
     TextView createList;
-    //UserLocalStore userLocalStore;
     ListView myListView;
     ArrayList<MyList> myLists;
     MainActivity mainActivity;
@@ -35,21 +37,32 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
         myLists = new ArrayList<MyList>();
 
         myLists = mainActivity.getMyLists();
-        String[] listNames = new String[myLists.size()];
+        final String[] listNames = new String[myLists.size()];
         for (int i = 0; i < myLists.size(); i++) {
             listNames[i] = myLists.get(i).get_name();
             //System.out.println(myLists.get(i).get_listId());
         }
 
-        ArrayAdapter<String> MyListsAdapter =
-                new ArrayAdapter<String>(mainActivity, android.R.layout.simple_list_item_1, listNames);
-        myListView.setAdapter(MyListsAdapter);
+        StringToBitmapRequests stbr = new StringToBitmapRequests(mainActivity);
+        stbr.ListsStringToBitmapInBackground(myLists, new GetBitmap(){
+            @Override
+            public void done(ArrayList<Bitmap> result) {
+                /*final Runtime runtime = Runtime.getRuntime();
+                final long usedMemInMB = (runtime.totalMemory() - runtime.freeMemory()) / 1048576L;
+                final long maxHeapSizeInMB = runtime.maxMemory() / 1048576L;
+                System.out.println("Total heap size: " + maxHeapSizeInMB + " MB");
+                System.out.println("Available heap size: " + usedMemInMB + " MB");*/
+
+                ArrayAdapter<String> listAdapter =
+                        new CustomListRowAdapter(mainActivity, listNames, myLists, result);
+                myListView.setAdapter(listAdapter);
+            }
+        });
 
         myListView.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        String text = "";
                         int idClicked;
                         String list = String.valueOf(parent.getItemAtPosition(position));
                         idClicked = myLists.get(position).get_listId();

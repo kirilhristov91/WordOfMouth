@@ -30,6 +30,7 @@
         android:textSize="15sp"
         android:textStyle="bold"
         android:layout_alignTop="@+id/listForwardImage"
+        android:layout_alignBottom="@+id/listTitle"
         android:layout_toRightOf="@+id/listImage"
         android:layout_toEndOf="@+id/listImage"
         android:layout_marginLeft="5dp"
@@ -58,8 +59,7 @@
         android:layout_alignTop="@+id/listAddedByUsername"
         android:layout_toRightOf="@+id/listImage"
         android:layout_toEndOf="@+id/listImage"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"/>
+        />
 
     <TextView
         android:id="@+id/listAddedByUsername"

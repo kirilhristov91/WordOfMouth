@@ -9,23 +9,42 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_add_list" tools:context="com.wordofmouth.Activities.ActivityAddList">
 
+    <ImageView
+        android:id="@+id/addImageToList"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/add_file"/>
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/rotateRightList"
+        android:src="@drawable/rotate_right"
+        android:layout_alignBottom="@+id/addImageToList"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="29dp" />
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/rotateLeftList"
+        android:src="@drawable/rotate_left"
+        android:layout_alignTop="@+id/rotateRightList"
+        android:layout_alignRight="@+id/listNameField"
+        android:layout_alignEnd="@+id/listNameField" />
+
     <EditText
         android:id="@+id/listNameField"
-        android:layout_marginTop="120dp"
+        android:layout_marginTop="180dp"
         android:hint="Name"
         android:textColor="#FFF"
         android:background="#d3d3d3"
         android:layout_width="match_parent"
         android:layout_height="40dp" />
 
-    <Spinner
-        android:id="@+id/dropDown"
-        android:layout_marginTop="10dp"
-        android:layout_below="@+id/listDescriptionField"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:drawable/btn_dropdown"
-        android:spinnerMode="dropdown" />
 
     <EditText
         android:id="@+id/listDescriptionField"
@@ -43,6 +62,6 @@
         android:layout_marginTop="30dp"
         android:id="@+id/createNewListButton"
         android:text="Create"
-        android:layout_below="@+id/dropDown" />
+        android:layout_below="@+id/listDescriptionField" />
 
 </RelativeLayout>

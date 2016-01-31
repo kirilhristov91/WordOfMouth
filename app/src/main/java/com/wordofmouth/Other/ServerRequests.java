@@ -405,15 +405,13 @@ public class ServerRequests {
             Map<String,String> dataToSend = new HashMap<>();
             Integer uId = list.getUserId();
             String userIdString = uId.toString();
-            Integer visibility = list.get_visibility();
-            String visibilityString = visibility.toString();
 
 
             dataToSend.put("userId", userIdString);
             dataToSend.put("username", list.get_username());
             dataToSend.put("name", list.get_name());
-            dataToSend.put("visibility", visibilityString);
             dataToSend.put("description", list.get_description());
+            dataToSend.put("image", list.getImage());
             String encodedStr = getEncodedData(dataToSend);
             BufferedReader reader = null;
             MyList returnedList = null;
@@ -454,9 +452,9 @@ public class ServerRequests {
                         int userId = jResult.getInt("userId");
                         String username = jResult.getString("username");
                         String name = jResult.getString("name");
-                        int vis = jResult.getInt("visibility");
                         String description = jResult.getString("description");
-                        returnedList = new MyList(userId, username, name, vis, description);
+                        String image = jResult.getString("image");
+                        returnedList = new MyList(userId, username, name, description, image);
                         returnedList.set_listId(id);
                     }
                 }

@@ -25,19 +25,20 @@
         android:id="@+id/rotateRightItem"
         android:src="@drawable/rotate_right"
 
-        android:layout_alignBottom="@+id/addImageToItem"
-        android:layout_toRightOf="@+id/ratingBar"
-        android:layout_toEndOf="@+id/ratingBar"
-        android:layout_marginBottom="27dp" />
+        android:layout_alignTop="@+id/rotateLeftItem"
+        android:layout_toLeftOf="@+id/ratingBar"
+        android:layout_toStartOf="@+id/ratingBar" />
 
     <ImageView
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:id="@+id/rotateLeftItem"
         android:src="@drawable/rotate_left"
-        android:layout_alignTop="@+id/rotateRightItem"
-        android:layout_toLeftOf="@+id/ratingBar"
-        android:layout_toStartOf="@+id/ratingBar" />
+        android:layout_alignBottom="@+id/addImageToItem"
+        android:layout_toRightOf="@+id/ratingBar"
+        android:layout_toEndOf="@+id/ratingBar"
+        android:layout_marginBottom="27dp"
+        />
 
     <EditText
         android:id="@+id/itemNameField"

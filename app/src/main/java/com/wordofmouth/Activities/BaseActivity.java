@@ -156,6 +156,7 @@ public abstract class BaseActivity extends AppCompatActivity{
         }
     }
 
+    // not working for some reason
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.

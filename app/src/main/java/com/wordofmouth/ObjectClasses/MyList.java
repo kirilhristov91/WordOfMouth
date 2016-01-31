@@ -7,16 +7,16 @@ public class MyList {
     private int userId;
     private String _username;
     private String _name;
-    private int _visibility;
+    private String image;
     private String _description;
 
     public MyList(){}
 
-    public MyList(int userId, String _username, String name, int visibility, String description) {
+    public MyList(int userId, String _username, String name, String description, String image) {
         this.userId = userId;
         this._username = _username;
         this._name = name;
-        this._visibility = visibility;
+        this.image = image;
         this._description = description;
 
     }
@@ -37,12 +37,16 @@ public class MyList {
         this._username = _username;
     }
 
-    public void set_name(String _name) {
-        this._name = _name;
+    public String getImage() {
+        return image;
     }
 
-    public void set_visibility(int _visibility) {
-        this._visibility = _visibility;
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public void set_name(String _name) {
+        this._name = _name;
     }
 
     public void set_description(String _description) {
@@ -59,10 +63,6 @@ public class MyList {
 
     public String get_name() {
         return _name;
-    }
-
-    public int get_visibility() {
-        return _visibility;
     }
 
     public String get_description() {

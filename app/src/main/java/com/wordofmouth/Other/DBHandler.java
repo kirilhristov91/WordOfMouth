@@ -17,7 +17,7 @@ public class DBHandler extends SQLiteOpenHelper{
     private static DBHandler sInstance;
 
     //if updating the database change the version:
-    private static final int DATABASE_VERSION = 14;
+    private static final int DATABASE_VERSION = 15;
     private static final String DATABASE_NAME = "WOM.db";
 
     //Lists table
@@ -26,8 +26,8 @@ public class DBHandler extends SQLiteOpenHelper{
     public static final String COLUMN_UserId = "_userId";
     public static final String COLUMN_Username = "_username";
     public static final String COLUMN_Name = "_name";
-    public static final String COLUMN_Visibility = "_visibility";
     public static final String COLUMN_Description = "_description";
+    public static final String COLUMN_ListImage = "_listImage";
 
     // Items table
     public static final String TABLE_Items = "Items";
@@ -78,8 +78,8 @@ public class DBHandler extends SQLiteOpenHelper{
                 COLUMN_UserId + " INTEGER, " +
                 COLUMN_Username + " TEXT, " +
                 COLUMN_Name + " TEXT, " +
-                COLUMN_Visibility + " INTEGER, " +
-                COLUMN_Description + " TEXT " +
+                COLUMN_Description + " TEXT, " +
+                COLUMN_ListImage + " TEXT " +
                 ");";
 
         String CreateItemsTableQuery = "CREATE TABLE " + TABLE_Items + "(" +
@@ -120,8 +120,8 @@ public class DBHandler extends SQLiteOpenHelper{
         values.put(COLUMN_UserId, ul.getUserId());
         values.put(COLUMN_Username, ul.get_username());
         values.put(COLUMN_Name, ul.get_name());
-        values.put(COLUMN_Visibility, ul.get_visibility());
         values.put(COLUMN_Description, ul.get_description());
+        values.put(COLUMN_ListImage, ul.getImage());
         SQLiteDatabase db = getWritableDatabase();
         db.insert(TABLE_USER_LISTS, null, values);
         db.close();
@@ -235,7 +235,7 @@ public class DBHandler extends SQLiteOpenHelper{
         int userId;
         String username="";
         String listName = "";
-        int vis;
+        String image="";
         String des = "";
         ArrayList<MyList> lists = new ArrayList<MyList>();
 
@@ -257,12 +257,14 @@ public class DBHandler extends SQLiteOpenHelper{
             if(c.getString(c.getColumnIndex("_name")) != null){
                 listName = c.getString(c.getColumnIndex("_name"));
             }
-            vis = c.getInt(c.getColumnIndex("_visibility"));
             if(c.getString(c.getColumnIndex("_description")) != null){
                 des = c.getString(c.getColumnIndex("_description"));
             }
+            if(c.getString(c.getColumnIndex(COLUMN_ListImage)) != null){
+                image = c.getString(c.getColumnIndex(COLUMN_ListImage));
+            }
 
-            MyList ul = new MyList(userId, username, listName, vis, des);
+            MyList ul = new MyList(userId, username, listName, des, image);
             ul.set_listId(id);
             lists.add(ul);
             c.moveToNext();

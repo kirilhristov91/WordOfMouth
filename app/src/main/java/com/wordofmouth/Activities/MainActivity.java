@@ -1,17 +1,9 @@
 package com.wordofmouth.Activities;
 
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
-
-import com.wordofmouth.Interfaces.GetLists;
-import com.wordofmouth.Other.DBGetData;
-import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.ObjectClasses.MyList;
 import com.wordofmouth.R;
 import com.wordofmouth.SharedPreferences.UserLocalStore;
@@ -61,7 +53,6 @@ public class MainActivity extends BaseActivity{
 
         // Setting the ViewPager For the SlidingTabsLayout
         tabs.setViewPager(pager);
-
     }
 
     @Override

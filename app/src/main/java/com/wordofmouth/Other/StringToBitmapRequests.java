@@ -15,7 +15,7 @@ import com.wordofmouth.ObjectClasses.MyList;
 import java.util.ArrayList;
 
 public class StringToBitmapRequests {
-    ProgressDialog progressDialog;
+    private static ProgressDialog progressDialog;
 
     public StringToBitmapRequests(Context context){
         progressDialog = new ProgressDialog(context);
@@ -35,7 +35,7 @@ public class StringToBitmapRequests {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////
-    public class ListStringToBitmapAsyncTask extends AsyncTask<Void, Void, ArrayList<Bitmap>> {
+    private static class ListStringToBitmapAsyncTask extends AsyncTask<Void, Void, ArrayList<Bitmap>> {
         ArrayList<MyList> lists;
         GetBitmap getBitmap;
         ArrayList<Bitmap> bitmaps;
@@ -82,7 +82,7 @@ public class StringToBitmapRequests {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////
-    public class StringToBitmapAsyncTask extends AsyncTask<Void, Void, ArrayList<Bitmap>> {
+    private static class StringToBitmapAsyncTask extends AsyncTask<Void, Void, ArrayList<Bitmap>> {
         ArrayList<Item> items;
         GetBitmap getBitmap;
         ArrayList<Bitmap> bitmaps;

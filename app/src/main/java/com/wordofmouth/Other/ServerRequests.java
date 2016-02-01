@@ -34,19 +34,19 @@ import java.util.Map;
 
 public class ServerRequests {
 
-    ProgressDialog progressDialog;
-    public static final int CONNECTION_TIMEOUT = 1000 * 6;
-    public static final String SERVER_ADDRESS = "http://wordofmouth.netau.net/";
-    public static final String SENDER_ID = "260188412151";
-    Context context;
-    String gcmId;
-    String msg;
-    GoogleCloudMessaging gcm;
+    private static ProgressDialog progressDialog;
+    private static final int CONNECTION_TIMEOUT = 1000 * 6;
+    private static final String SERVER_ADDRESS = "http://wordofmouth.netau.net/";
+    private static final String SENDER_ID = "260188412151";
+    private static Context context;
+    private static String gcmId;
+    private static String msg;
+    private static GoogleCloudMessaging gcm;
 
     // Constructor
     public ServerRequests(Context context){
         this.context = context;
-        progressDialog = new ProgressDialog(context);
+        progressDialog = new ProgressDialog(this.context);
         progressDialog.setCancelable(false);
         progressDialog.setTitle("Processing");
         progressDialog.setMessage("Please wait...");
@@ -93,7 +93,7 @@ public class ServerRequests {
         new inviteAsyncTask(listId, currentUserId, invitedUserId, sendInviteResponse).execute();
     }
 
-    public boolean isNetworkAvailable() {
+    private static boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
@@ -101,7 +101,7 @@ public class ServerRequests {
     }
 
     // method to encode the data needed to be sent o the server
-    public String getEncodedData(Map<String,String> data) {
+    private static String getEncodedData(Map<String,String> data) {
         StringBuilder sb = new StringBuilder();
         for(String key : data.keySet()) {
             String value = null;
@@ -121,7 +121,7 @@ public class ServerRequests {
 
     ////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class StoreUserDataAsyncTask extends AsyncTask<Void, Void, User>{
+    private static class StoreUserDataAsyncTask extends AsyncTask<Void, Void, User>{
         User user;
         GetUserCallback userCallback;
 
@@ -234,7 +234,7 @@ public class ServerRequests {
 
     /////////////////////////////////////////////////////////////////////////////////////////////
 
-    public class FetchUserDataAsyncTask extends AsyncTask<Void, Void, User>{
+    private static class FetchUserDataAsyncTask extends AsyncTask<Void, Void, User>{
         User user;
         GetUserCallback userCallback;
 
@@ -325,7 +325,7 @@ public class ServerRequests {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////
-    public class UploadProfilePictureAsyncTask extends AsyncTask<Void, Void, User>{
+    private static class UploadProfilePictureAsyncTask extends AsyncTask<Void, Void, User>{
         String username;
         GetUserCallback userCallback;
         String image;
@@ -410,7 +410,7 @@ public class ServerRequests {
     }
 
     ////////////////////////////////////////////////////////////////////////
-    public class UploadListAsyncTask extends AsyncTask<Void, Void, MyList>{
+    private static class UploadListAsyncTask extends AsyncTask<Void, Void, MyList>{
         MyList list;
         GetListId getListId;
 
@@ -511,7 +511,7 @@ public class ServerRequests {
     }
 
     ////////////////////////////////////////////////////////////////////////
-    public class UploadItemAsyncTask extends AsyncTask<Void, Void, Item>{
+    private static class UploadItemAsyncTask extends AsyncTask<Void, Void, Item>{
         Item item;
         GetItemId getItemId;
 
@@ -619,7 +619,7 @@ public class ServerRequests {
     }
 
     ////////////////////////////////////////////////////////////////////////////////
-    public class FetchUsersAsyncTask extends AsyncTask<Void, Void, ArrayList<User>>{
+    private static class FetchUsersAsyncTask extends AsyncTask<Void, Void, ArrayList<User>>{
         String name;
         GetUsers getUsers;
         int currentUserId;
@@ -721,7 +721,7 @@ public class ServerRequests {
 
 
     ////////////////////////////////////////////////////////////////////////////////
-    public class inviteAsyncTask extends AsyncTask<Void, Void, String>{
+    private static class inviteAsyncTask extends AsyncTask<Void, Void, String>{
         //new inviteAsyncTask(listId, userId, sendInviteResponse).execute();
         int listId;
         int currentUserId;

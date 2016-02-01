@@ -13,8 +13,8 @@ import java.util.ArrayList;
 
 public class DBGetData {
 
-    DBHandler dbHandler;
-    ProgressDialog progressDialog;
+    private static DBHandler dbHandler;
+    private static ProgressDialog progressDialog;
 
     public DBGetData(Context context) {
         progressDialog = new ProgressDialog(context);
@@ -34,7 +34,7 @@ public class DBGetData {
         new getListsAsyncTask(username, getLists).execute();
     }
 
-    public class getListsAsyncTask extends AsyncTask<Void, Void, ArrayList<MyList>> {
+    private static class getListsAsyncTask extends AsyncTask<Void, Void, ArrayList<MyList>> {
         String username;
         GetLists getLists;
         ArrayList<MyList> result;
@@ -61,7 +61,7 @@ public class DBGetData {
     }
 
     ///////////////////////////////////////////////////////////////////////////////
-    public class getItemsAsyncTask extends AsyncTask<Void, Void, ArrayList<Item>> {
+    private static class getItemsAsyncTask extends AsyncTask<Void, Void, ArrayList<Item>> {
         int listId;
         GetItems getItems;
         ArrayList<Item> result;

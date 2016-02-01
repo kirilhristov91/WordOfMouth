@@ -59,8 +59,6 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
         //this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         getSupportActionBar().setTitle("Edit Profile");
 
-
-
         profilePicture = (ImageView) this.findViewById(R.id.profilePicture);
         updatePicture = (Button) this.findViewById(R.id.updatePictureButton);
         chooseFromGallery = (Button) this.findViewById(R.id.chooseFromGallery);

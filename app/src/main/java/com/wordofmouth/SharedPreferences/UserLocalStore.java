@@ -16,7 +16,7 @@ public class UserLocalStore {
     SharedPreferences userLocalDatabase;
 
     public UserLocalStore(Context context){
-        userLocalDatabase = context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
+        userLocalDatabase = context.getApplicationContext().getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
     }
 
     public void storeUserData(User user){

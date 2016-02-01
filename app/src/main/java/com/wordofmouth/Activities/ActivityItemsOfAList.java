@@ -1,5 +1,6 @@
 package com.wordofmouth.Activities;
 
+import android.app.ActivityManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
@@ -77,16 +78,17 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
         stbr.stringToBitmapInBackground(items, new GetBitmap() {
             @Override
             public void done(ArrayList<Bitmap> result) {
-                System.out.println("SIZE OF BITMAPS " + result.size());
+                /*System.out.println("SIZE OF BITMAPS " + result.size());
                 final Runtime runtime = Runtime.getRuntime();
                 final long usedMemInMB = (runtime.totalMemory() - runtime.freeMemory()) / 1048576L;
                 final long maxHeapSizeInMB = runtime.maxMemory() / 1048576L;
                 System.out.println("Total heap size: " + maxHeapSizeInMB + " MB");
-                System.out.println("Available heap size: " + usedMemInMB + " MB");
+                System.out.println("Available heap size: " + usedMemInMB + " MB");*/
 
                 ArrayAdapter<String> womAdapter =
                         new CustomItemRowAdapter(ActivityItemsOfAList.this, itemNames, items, result);
                 itemsListView.setAdapter(womAdapter);
+
             }
         });
 

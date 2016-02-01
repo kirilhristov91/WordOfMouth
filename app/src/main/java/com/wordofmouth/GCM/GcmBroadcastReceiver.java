@@ -1,16 +1,10 @@
 package com.wordofmouth.GCM;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v4.content.WakefulBroadcastReceiver;
-import android.util.Log;
-
-import java.util.Iterator;
-import java.util.Set;
 
 
 public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {

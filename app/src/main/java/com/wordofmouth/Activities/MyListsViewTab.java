@@ -1,5 +1,6 @@
 package com.wordofmouth.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
     MainActivity mainActivity;
     ArrayList<MyList> myLists;
     UserLocalStore userLocalStore;
+    //Context context;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -41,7 +43,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
         createList = (TextView) v.findViewById(R.id.createListText);
         myListView = (ListView) v.findViewById(R.id.myListsListView);
         createList.setOnClickListener(this);
-
+        //context = container.getContext();
         userLocalStore = new UserLocalStore(mainActivity);
         String username = userLocalStore.getUserLoggedIn().getUsername();
         // get the user`s lists to display on fragment
@@ -94,7 +96,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
                         myIntent.putExtra("listId", idClicked);
                         myIntent.putExtra("name", list);
                         startActivity(myIntent);
-                        mainActivity.finish();
+                        //mainActivity.finish();
                     }
                 }
         );
@@ -105,7 +107,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
         switch(view.getId()){
             case R.id.createListText:
                 startActivity(new Intent(mainActivity, ActivityAddList.class));
-                mainActivity.finish();
+                //mainActivity.finish();
                 break;
         }
     }

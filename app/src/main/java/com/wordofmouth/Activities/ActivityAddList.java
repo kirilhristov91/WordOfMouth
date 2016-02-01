@@ -105,7 +105,7 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
                 else {
                     image ="";
                     if (photo != null) {
-                        image = BitMapToString(photo, 30);
+                        image = BitMapToString(photo);
                     }
 
                     int currentUserId = userLocalStore.getUserLoggedIn().getId();
@@ -148,9 +148,15 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
             try {
                 image = BitmapFactory.decodeStream(this.getContentResolver().openInputStream(targetUri));
 
-                while (image.getWidth() > 4096 || image.getHeight() > 4096) {
-                    image = Bitmap.createScaledBitmap(image,image.getWidth()/2, image.getHeight()/2, true);
+                int desiredWidth = image.getWidth();
+                int desiredHeight = image.getHeight();
+                while(desiredWidth/2 >= 100 || desiredHeight/2 >=100){
+                    desiredWidth = desiredWidth/2;
+                    desiredHeight = desiredHeight/2;
                 }
+
+                image = Bitmap.createScaledBitmap(image,desiredWidth, desiredHeight, true);
+
                 photo = image;
                 addImageToList.setImageBitmap(image);
             } catch (FileNotFoundException e) {
@@ -159,10 +165,9 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
         }
     }
 
-    public String BitMapToString(Bitmap bitmap, int compressFactor){
+    public String BitMapToString(Bitmap bitmap){
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        // shrink the file size of the image - nz kolko da e pomisli si
-        bitmap.compress(Bitmap.CompressFormat.JPEG, compressFactor, stream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         return Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);
     }
 

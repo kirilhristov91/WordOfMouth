@@ -119,6 +119,7 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
         userLocalStore.storeUserData(user);
         userLocalStore.setUserLoggedIn(true);
         startActivity(new Intent(this, MainActivity.class));
+        finish();
     }
 
     private void showError(){

@@ -54,7 +54,6 @@ public class DBGetData {
 
         @Override
         protected void onPostExecute(ArrayList<MyList> result) {
-            System.out.println("VLQZAH V ON POST EXEC i ima tolkova list " +result.size() );
             progressDialog.dismiss();
             getLists.done(result);
             super.onPostExecute(result);

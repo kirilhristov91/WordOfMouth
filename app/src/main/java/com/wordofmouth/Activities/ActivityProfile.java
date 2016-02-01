@@ -49,7 +49,6 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
     Button saveChanges;
     int angle = 0;
     Bitmap toSave =null;
-    boolean fromGallery = false;
     DBHandler dbHandler;
     UserLocalStore userLocalStore;
 
@@ -158,28 +157,30 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
     // dealing with the result
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        System.out.println("VLIZA V ACTIVITY RESULT");
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK){
             Bundle extras = data.getExtras();
             Bitmap image = (Bitmap) extras.get("data");
-            dbHandler.setTemp(BitMapToString(image,100));
-            fromGallery = false;
+            dbHandler.setTemp(BitMapToString(image));
         }
 
         if (requestCode == REQUEST_BROWSE_GALLERY && resultCode == Activity.RESULT_OK) {
             Uri targetUri = data.getData();
             System.out.println(targetUri.toString());
             Bitmap image;
-            System.out.println("VLIZA V ACTIVITY RESULT BROWSE GALLERY");
             try {
                 image = BitmapFactory.decodeStream(this.getContentResolver().openInputStream(targetUri));
-                while (image.getWidth() > 4096 || image.getHeight() > 4096) {
-                    image = Bitmap.createScaledBitmap(image,image.getWidth()/2, image.getHeight()/2, true);
+
+                int desiredWidth = image.getWidth();
+                int desiredHeight = image.getHeight();
+                while(desiredWidth/2 >= 250 || desiredHeight/2 >= 250){
+                    desiredWidth = desiredWidth/2;
+                    desiredHeight = desiredHeight/2;
                 }
+
+                image = Bitmap.createScaledBitmap(image,desiredWidth, desiredHeight, true);
                 profilePicture.setImageBitmap(image);
-                fromGallery = true;
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -188,7 +189,7 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
 
     public void saveImageToDB(){
         User currentUser = userLocalStore.getUserLoggedIn();
-        String imageToSave = BitMapToString(toSave, 100);
+        String imageToSave = BitMapToString(toSave);
         currentUser.getId();
         dbHandler.addProfilePicture(currentUser.getId(), imageToSave);
         dbHandler.deleteTemp();
@@ -206,7 +207,8 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
                     }
                 } else {
                     Toast.makeText(ActivityProfile.this, "Your profile picture was updated!", Toast.LENGTH_SHORT).show();
-                    //napravi neshto da refreshva meniuto
+                    startActivity(new Intent(ActivityProfile.this, MainActivity.class));
+                    finish();
 
                 }
 
@@ -229,11 +231,10 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
     }
 
     // method to transform image to string
-    public String BitMapToString(Bitmap bitmap, int compressFactor){
+    public String BitMapToString(Bitmap bitmap){
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        if (fromGallery) compressFactor = 80;
         // shrink the file size of the image - nz kolko da e pomisli si
-        bitmap.compress(Bitmap.CompressFormat.JPEG, compressFactor, stream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         return Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);
     }
 
@@ -245,8 +246,8 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
         BitmapFactory.decodeByteArray(bytes, 0, bytes.length, scaleOptions);
 
         int scale = 1;
-        while (scaleOptions.outWidth / scale / 2 >= 100
-                && scaleOptions.outHeight / scale / 2 >= 100) {
+        while (scaleOptions.outWidth / scale / 2 >= 250
+                && scaleOptions.outHeight / scale / 2 >= 250) {
             scale *= 2;
         }
 

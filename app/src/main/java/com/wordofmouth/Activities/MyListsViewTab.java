@@ -51,7 +51,6 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
         dbGetData.GetListsInBackground(username, new GetLists() {
             @Override
             public void done(ArrayList<MyList> lists) {
-                System.out.println("KOLKO LISTA IMA V BAZATA " + lists.size());
                 display(lists);
             }
         });
@@ -61,7 +60,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
     public void display(ArrayList<MyList> lists){
 
         myLists = lists;
-        System.out.println("size of mylists " + myLists.size());
+        //System.out.println("size of mylists " + myLists.size());
         final String[] listNames = new String[myLists.size()];
         for (int i = 0; i < myLists.size(); i++) {
             listNames[i] = myLists.get(i).get_name();
@@ -106,6 +105,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
         switch(view.getId()){
             case R.id.createListText:
                 startActivity(new Intent(mainActivity, ActivityAddList.class));
+                mainActivity.finish();
                 break;
         }
     }

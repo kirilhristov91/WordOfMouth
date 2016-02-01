@@ -15,13 +15,19 @@ import android.util.Log;
 import com.wordofmouth.Activities.*;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.wordofmouth.ObjectClasses.Notification;
+import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.R;
+import com.wordofmouth.SharedPreferences.UserLocalStore;
 
 public class GcmIntentService extends IntentService {
     public static final int NOTIFICATION_ID = 1;
     private NotificationManager mNotificationManager;
     NotificationCompat.Builder builder;
     String TAG="wom";
+    UserLocalStore userLocalStore;
+    DBHandler dbHandler;
+
 
     public GcmIntentService() {
         super("GcmIntentService");
@@ -57,14 +63,33 @@ public class GcmIntentService extends IntentService {
                     MESSAGE_TYPE_MESSAGE.equals(messageType)) {
 
                 String recieved_message=intent.getStringExtra("text_message");
+                userLocalStore = new UserLocalStore(this);
+                dbHandler = DBHandler.getInstance(this);
 
-                // ako e invite ...
-                sendNotification(recieved_message);
+                if(recieved_message.contains("invited")) {
+
+                    int userId = userLocalStore.getUserLoggedIn().getId();
+                    int index = recieved_message.length()-1;
+                    while(recieved_message.charAt(index)!=' '){
+                        index--;
+                    }
+
+                    // remove the list id from the message
+                    String preparedMessage = recieved_message.substring(0, index);
+
+                    // get the list id and and save the notification object in db
+                    String idString = recieved_message.substring(index+1, recieved_message.length());
+                    System.out.println("Received id after cutting the string is: " + idString);
+                    Integer listId = Integer.parseInt(idString);
+                    Notification n = new Notification(listId, userId, preparedMessage, 0);
+                    dbHandler.addNotification(n);
+
+                    sendNotification(preparedMessage);
+                }
 
                 Intent sendIntent =new Intent("message_recieved");
                 sendIntent.putExtra("message",recieved_message);
                 LocalBroadcastManager.getInstance(this).sendBroadcast(sendIntent);
-
             }
         }
         // Release the wake lock provided by the WakefulBroadcastReceiver.
@@ -81,11 +106,7 @@ public class GcmIntentService extends IntentService {
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, ActivityNotifications.class), 0);
 
-        int index = msg.length()-1;
-        while(msg.charAt(index)!=' '){
-            index--;
-        }
-        String notification = msg.substring(0,index);
+
 
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder mBuilder =
@@ -93,8 +114,8 @@ public class GcmIntentService extends IntentService {
                         .setSmallIcon(R.drawable.logowom)
                         .setContentTitle("WoM")
                         .setStyle(new NotificationCompat.BigTextStyle()
-                                .bigText(notification))
-                        .setContentText(notification)
+                                .bigText(msg))
+                        .setContentText(msg)
                         .setSound(alarmSound);
 
         mBuilder.setContentIntent(contentIntent);

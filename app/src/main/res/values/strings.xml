@@ -25,6 +25,7 @@
     <string name="RegisterAlreadyRegisteredText">Already registered? Login!</string>
     <string name="title_activity_activity_invite">ActivityInvite</string>
     <string name="title_activity_activity_notifications">ActivityNotifications</string>
+    <string name="google_app_id">260188412151</string>
     <string-array name="menu_items">
         <item>Home</item>
         <item>Notifications</item>

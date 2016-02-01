@@ -8,6 +8,7 @@ import android.content.ContentValues;
 
 import com.wordofmouth.ObjectClasses.Item;
 import com.wordofmouth.ObjectClasses.MyList;
+import com.wordofmouth.ObjectClasses.Notification;
 
 import java.util.ArrayList;
 
@@ -17,7 +18,7 @@ public class DBHandler extends SQLiteOpenHelper{
     private static DBHandler sInstance;
 
     //if updating the database change the version:
-    private static final int DATABASE_VERSION = 15;
+    private static final int DATABASE_VERSION = 18;
     private static final String DATABASE_NAME = "WOM.db";
 
     //Lists table
@@ -40,12 +41,18 @@ public class DBHandler extends SQLiteOpenHelper{
     public static final String COLUMN_ItemDescription = "_description";
     public static final String COLUMN_ItemImage = "_itemImage";
 
-
-    //Profile image table
+    //Profile image table (only local)
     public static final String TABLE_Profile_Image = "ProfileImage";
     public static final String COLUMN_UserID = "_userId";
     public static final String COLUMN_Image = "_image";
 
+    //Notification table (only local)
+    public static final String TABLE_Notifications = "Notifications";
+    public static final String COLUMN_NotificationID = "_notificationId";
+    public static final String COLUMN_NotificationListId = "_notificationListId";
+    public static final String COLUMN_NotificationUserId = "_notificationUsertId";
+    public static final String COLUMN_NotificationMsg = "_notificationMsg";
+    public static final String COLUMN_NotificationAccepter = "_notificationAccepted";
 
     /*public DBHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, DATABASE_NAME, factory, DATABASE_VERSION);
@@ -100,9 +107,18 @@ public class DBHandler extends SQLiteOpenHelper{
                 COLUMN_Image + " TEXT " +
                 ");";
 
+        String CreateNoticationsTableQuery = "CREATE TABLE " + TABLE_Notifications + "(" +
+                COLUMN_NotificationID + " INTEGER PRIMARY KEY, " +
+                COLUMN_NotificationListId + " INTEGER, " +
+                COLUMN_NotificationUserId + " INTEGER, " +
+                COLUMN_NotificationMsg + " TEXT, " +
+                COLUMN_NotificationAccepter + " INTEGER " +
+                ");";
+
         db.execSQL(CreateListTableQuery);
         db.execSQL(CreateItemsTableQuery);
         db.execSQL(CreateProfileImageTableQuery);
+        db.execSQL(CreateNoticationsTableQuery);
     }
 
     @Override
@@ -110,6 +126,7 @@ public class DBHandler extends SQLiteOpenHelper{
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_Items);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER_LISTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_Profile_Image);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_Notifications);
         onCreate(db);
     }
 
@@ -164,6 +181,50 @@ public class DBHandler extends SQLiteOpenHelper{
         db.close();
     }
 
+    public void addNotification(Notification notification){
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NotificationListId, notification.getListId());
+        values.put(COLUMN_NotificationUserId, notification.getUserId());
+        values.put(COLUMN_NotificationMsg, notification.getMsg());
+        values.put(COLUMN_NotificationAccepter, notification.getAccepted());
+        SQLiteDatabase db = getWritableDatabase();
+        db.insert(TABLE_Notifications, null, values);
+        db.close();
+    }
+
+    public ArrayList<Notification> getNotifications(int userId){
+        ArrayList<Notification> notificationsList= new ArrayList<Notification>();
+        int id;
+        int lid;
+        int uid;
+        String message="";
+        int accepted;
+
+        SQLiteDatabase db = getWritableDatabase();
+        String get_not = "SELECT * FROM " + TABLE_Notifications +
+                " WHERE " + COLUMN_NotificationUserId + " = " + userId +
+                " ORDER BY " + COLUMN_NotificationID + " DESC";
+        Cursor c = db.rawQuery(get_not, null);
+        c.moveToFirst();
+        while (!c.isAfterLast()) {
+            id = c.getInt(c.getColumnIndex(COLUMN_NotificationID));
+            lid = c.getInt(c.getColumnIndex(COLUMN_NotificationListId));
+            uid = c.getInt(c.getColumnIndex(COLUMN_NotificationUserId));
+            if(c.getString(c.getColumnIndex(COLUMN_NotificationMsg)) != null){
+                message = c.getString(c.getColumnIndex(COLUMN_NotificationMsg));
+            }
+            accepted = c.getInt(c.getColumnIndex(COLUMN_NotificationAccepter));
+
+            Notification n = new Notification(lid, uid, message, accepted);
+            n.setId(id);
+            notificationsList.add(n);
+            c.moveToNext();
+        }
+        c.close();
+        db.close();
+        return notificationsList;
+    }
+
     public void setTemp(String tempImage){
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -209,9 +270,9 @@ public class DBHandler extends SQLiteOpenHelper{
 
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
-        if (c.isAfterLast()) {
+        /*if (c.isAfterLast()) {
             System.out.println("NQMA NISHTO V BAZATA");
-        }
+        }*/
         if(!c.isAfterLast()) {
             if (c.getString(c.getColumnIndex(COLUMN_Image)) != null) {
                 encodedImage = c.getString(c.getColumnIndex(COLUMN_Image));

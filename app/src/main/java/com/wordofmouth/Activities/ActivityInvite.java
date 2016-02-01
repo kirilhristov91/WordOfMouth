@@ -5,8 +5,6 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -121,6 +119,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
                                     showError();
                                 }
                                 else if(response.equals("Timeout")){
+                                    showConnectionError();
                                     showConnectionError();
                                 }
                                 else{

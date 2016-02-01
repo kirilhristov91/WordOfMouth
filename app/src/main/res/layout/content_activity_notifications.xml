@@ -10,4 +10,11 @@
     tools:showIn="@layout/activity_activity_notifications"
     tools:context="com.wordofmouth.Activities.ActivityNotifications">
 
+    <ListView
+        android:id="@+id/notificationListView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+    </ListView>
+
 </RelativeLayout>

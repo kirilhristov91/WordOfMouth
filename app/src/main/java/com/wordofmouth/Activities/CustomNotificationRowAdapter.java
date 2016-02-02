@@ -40,7 +40,7 @@ public class CustomNotificationRowAdapter extends ArrayAdapter<String> {
 
         String msg = getItem(position);
         viewHolder.notificationText.setText(msg);
-        viewHolder.notificationImage.setImageResource(R.drawable.notification);
+        //viewHolder.notificationImage.setImageResource(R.drawable.notification);
         return convertView;
     }
 

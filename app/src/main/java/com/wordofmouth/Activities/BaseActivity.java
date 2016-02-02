@@ -103,6 +103,8 @@ public abstract class BaseActivity extends AppCompatActivity{
         setContentView(baseLayout);
     }
 
+    //TODO napravi go static !!!
+
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         Context context;
         DrawerLayout mDrawerLayout;

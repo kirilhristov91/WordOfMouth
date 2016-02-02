@@ -11,7 +11,6 @@
         android:id="@+id/itemImage"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:src="@drawable/bg"
         android:layout_centerVertical="true"/>
 
     <TextView
@@ -66,16 +65,5 @@
         android:layout_below="@+id/itemTitle"
         android:layout_alignLeft="@+id/itemTitle"
         android:layout_alignStart="@+id/itemTitle" />
-
-    <ImageView
-        android:id="@+id/forwardImage"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/forward"
-        android:layout_alignTop="@+id/customRowRatingBar"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
 
 </RelativeLayout>

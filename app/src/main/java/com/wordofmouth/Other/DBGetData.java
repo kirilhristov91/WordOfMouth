@@ -13,35 +13,30 @@ import java.util.ArrayList;
 
 public class DBGetData {
 
-    private static DBHandler dbHandler;
-    private static ProgressDialog progressDialog;
+    private DBHandler dbHandler;
 
-    public DBGetData(Context context) {
-        progressDialog = new ProgressDialog(context);
-        progressDialog.setCancelable(false);
-        progressDialog.setTitle("Fetching data from database");
-        progressDialog.setMessage("Please wait...");
-        this.dbHandler = DBHandler.getInstance(context);
+    public DBGetData() {
+        this.dbHandler = DBHandler.getDBHandlerForAsyncTask();
     }
 
     public void GetItemsInBackground(int listId, GetItems getItems){
-        progressDialog.show();
-        new getItemsAsyncTask(listId, getItems).execute();
+        new getItemsAsyncTask(listId, getItems, dbHandler).execute();
     }
 
     public void GetListsInBackground(String username, GetLists getLists){
-        progressDialog.show();
-        new getListsAsyncTask(username, getLists).execute();
+        new getListsAsyncTask(username, getLists, dbHandler).execute();
     }
 
     private static class getListsAsyncTask extends AsyncTask<Void, Void, ArrayList<MyList>> {
         String username;
         GetLists getLists;
         ArrayList<MyList> result;
+        DBHandler dbHandler;
 
-        public getListsAsyncTask(String username, GetLists getLists) {
+        public getListsAsyncTask(String username, GetLists getLists, DBHandler dbHandler) {
             this.username = username;
             this.getLists = getLists;
+            this.dbHandler = dbHandler;
             result = new ArrayList<>();
         }
 
@@ -54,7 +49,6 @@ public class DBGetData {
 
         @Override
         protected void onPostExecute(ArrayList<MyList> result) {
-            progressDialog.dismiss();
             getLists.done(result);
             super.onPostExecute(result);
         }
@@ -65,10 +59,13 @@ public class DBGetData {
         int listId;
         GetItems getItems;
         ArrayList<Item> result;
+        DBHandler dbHandler;
 
-        public getItemsAsyncTask(int listId, GetItems getItems) {
+
+        public getItemsAsyncTask(int listId, GetItems getItems, DBHandler dbHandler) {
             this.listId = listId;
             this.getItems = getItems;
+            this.dbHandler = dbHandler;
             result = new ArrayList<>();
         }
 
@@ -80,7 +77,6 @@ public class DBGetData {
 
         @Override
         protected void onPostExecute(ArrayList<Item> result) {
-            progressDialog.dismiss();
             getItems.done(result);
             super.onPostExecute(result);
         }

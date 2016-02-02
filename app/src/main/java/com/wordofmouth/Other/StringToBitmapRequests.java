@@ -1,8 +1,5 @@
 package com.wordofmouth.Other;
 
-
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -15,22 +12,16 @@ import com.wordofmouth.ObjectClasses.MyList;
 import java.util.ArrayList;
 
 public class StringToBitmapRequests {
-    private static ProgressDialog progressDialog;
 
-    public StringToBitmapRequests(Context context){
-        progressDialog = new ProgressDialog(context);
-        progressDialog.setCancelable(false);
-        progressDialog.setTitle("Fetching images");
-        progressDialog.setMessage("Please wait...");
+    public StringToBitmapRequests(){
+
     }
 
     public void stringToBitmapInBackground(ArrayList<Item> items, GetBitmap getBitmap){
-        progressDialog.show();
         new StringToBitmapAsyncTask(items, getBitmap).execute();
     }
 
     public void ListsStringToBitmapInBackground(ArrayList<MyList> lists, GetBitmap getBitmap){
-        progressDialog.show();
         new ListStringToBitmapAsyncTask(lists, getBitmap).execute();
     }
 
@@ -75,7 +66,6 @@ public class StringToBitmapRequests {
 
         @Override
         protected void onPostExecute(ArrayList<Bitmap> result) {
-            progressDialog.dismiss();
             getBitmap.done(result);
             super.onPostExecute(result);
         }
@@ -122,7 +112,6 @@ public class StringToBitmapRequests {
 
         @Override
         protected void onPostExecute(ArrayList<Bitmap> result) {
-            progressDialog.dismiss();
             getBitmap.done(result);
             super.onPostExecute(result);
         }

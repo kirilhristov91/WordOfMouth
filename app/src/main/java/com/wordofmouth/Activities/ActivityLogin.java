@@ -1,9 +1,12 @@
 package com.wordofmouth.Activities;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -42,7 +45,7 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
 
         loginButton.setOnClickListener(this);
         registerNow.setOnClickListener(this);
-        userLocalStore = new UserLocalStore(this);
+        userLocalStore = UserLocalStore.getInstance(this);
 
     }
 
@@ -96,23 +99,43 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
         return true;
     }
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+
     private void authenticate(User user){
-        ServerRequests serverRequests = new ServerRequests(this);
-        serverRequests.fetchUserDataInBackground(user, new GetUserCallback() {
-            @Override
-            public void done(User returnedUser) {
-                if (returnedUser == null) {
-                    showError();
-                } else {
-                    if(returnedUser.getUsername().equals("Timeout")){
-                        showConnectionError();
-                    }
-                    else {
-                        logUserIn(returnedUser);
+
+
+        if(!isNetworkAvailable()){
+            showConnectionError();
+        }
+        else {
+            ServerRequests serverRequests = ServerRequests.getInstance();
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setCancelable(false);
+            progressDialog.setTitle("Processing");
+            progressDialog.setMessage("Please wait...");
+            progressDialog.show();
+            serverRequests.fetchUserDataInBackground(user, new GetUserCallback() {
+                @Override
+                public void done(User returnedUser) {
+                    progressDialog.dismiss();
+                    if (returnedUser == null) {
+                        showError();
+                    } else {
+                        if (returnedUser.getUsername().equals("Timeout")) {
+                            showConnectionError();
+                        } else {
+                            logUserIn(returnedUser);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     private void logUserIn(User user){

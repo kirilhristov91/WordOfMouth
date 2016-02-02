@@ -14,8 +14,6 @@ import TabLibraries.SlidingTabLayout;
 
 public class MainActivity extends BaseActivity{
 
-    UserLocalStore userLocalStore;
-
     // Tabs variables
     ViewPager pager;
     ViewPagerAdapter adapter;
@@ -26,11 +24,10 @@ public class MainActivity extends BaseActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        System.out.println("MainActivity onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().setLogo(R.mipmap.ic_launcher);
-        userLocalStore = new UserLocalStore(this);
 
         // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
         adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,NumberOfTabs);

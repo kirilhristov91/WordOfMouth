@@ -8,6 +8,7 @@ import com.wordofmouth.ObjectClasses.User;
 public class UserLocalStore {
 
     public static final String SP_NAME = "userDetails";
+    private static UserLocalStore INSTANCE = null;
 
     public SharedPreferences getUserLocalDatabase() {
         return userLocalDatabase;
@@ -15,7 +16,14 @@ public class UserLocalStore {
 
     SharedPreferences userLocalDatabase;
 
-    public UserLocalStore(Context context){
+    public static UserLocalStore getInstance(Context context){
+        if(INSTANCE == null){
+            INSTANCE = new UserLocalStore(context);
+        }
+        return INSTANCE;
+    }
+
+    private UserLocalStore(Context context){
         userLocalDatabase = context.getApplicationContext().getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
     }
 

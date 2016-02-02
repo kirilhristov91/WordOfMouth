@@ -1,6 +1,6 @@
 package com.wordofmouth.Activities;
 
-import android.content.Context;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -17,7 +17,6 @@ import android.widget.TextView;
 import com.wordofmouth.Interfaces.GetBitmap;
 import com.wordofmouth.Interfaces.GetLists;
 import com.wordofmouth.ObjectClasses.MyList;
-import com.wordofmouth.ObjectClasses.User;
 import com.wordofmouth.Other.DBGetData;
 import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.Other.StringToBitmapRequests;
@@ -32,8 +31,8 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
     ListView myListView;
     MainActivity mainActivity;
     ArrayList<MyList> myLists;
-    UserLocalStore userLocalStore;
-    //Context context;
+    private DBGetData dbGetData;
+    private String username;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -44,20 +43,27 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
         myListView = (ListView) v.findViewById(R.id.myListsListView);
         createList.setOnClickListener(this);
         //context = container.getContext();
-        userLocalStore = new UserLocalStore(mainActivity);
-        String username = userLocalStore.getUserLoggedIn().getUsername();
+        username = UserLocalStore.getInstance(mainActivity).getUserLoggedIn().getUsername();
         // get the user`s lists to display on fragment
         myLists = new ArrayList<MyList>();
 
-        DBGetData dbGetData = new DBGetData(mainActivity);
+        dbGetData = new DBGetData();
+        final ProgressDialog progressDialogFetching = new ProgressDialog(mainActivity);
+        progressDialogFetching.setCancelable(false);
+        progressDialogFetching.setTitle("Processing");
+        progressDialogFetching.setMessage("Fetching data from database...");
+        progressDialogFetching.show();
+
         dbGetData.GetListsInBackground(username, new GetLists() {
             @Override
             public void done(ArrayList<MyList> lists) {
+                progressDialogFetching.dismiss();
                 display(lists);
             }
         });
         return v;
     }
+
 
     public void display(ArrayList<MyList> lists){
 
@@ -69,10 +75,16 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
             //System.out.println(myLists.get(i).get_listId());
         }
 
-        StringToBitmapRequests stbr = new StringToBitmapRequests(mainActivity);
+        StringToBitmapRequests stbr = new StringToBitmapRequests();
+        final ProgressDialog progressDialog = new ProgressDialog(mainActivity);
+        progressDialog.setCancelable(false);
+        progressDialog.setTitle("Processing");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.show();
         stbr.ListsStringToBitmapInBackground(myLists, new GetBitmap() {
             @Override
             public void done(ArrayList<Bitmap> result) {
+                progressDialog.dismiss();
                 /*final Runtime runtime = Runtime.getRuntime();
                 final long usedMemInMB = (runtime.totalMemory() - runtime.freeMemory()) / 1048576L;
                 final long maxHeapSizeInMB = runtime.maxMemory() / 1048576L;

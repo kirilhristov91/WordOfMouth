@@ -1,6 +1,7 @@
 package com.wordofmouth.Activities;
 
 import android.app.ActivityManager;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
@@ -29,8 +30,8 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
     ArrayList<Item> items;
     int selectedListId;
     String listName;
-    DBHandler dbHandler;
     String[] itemNames;
+    private DBGetData dbGetData;
 
 
     @Override
@@ -51,13 +52,18 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
         getSupportActionBar().setTitle(listName);
 
         // create an instance of the local database
-        dbHandler = DBHandler.getInstance(this);
         items = new ArrayList<Item>();
-
-        DBGetData dbGetData = new DBGetData(this);
+        dbGetData = new DBGetData();
+        final ProgressDialog progressDialogFetching = new ProgressDialog(this);
+        progressDialogFetching.setCancelable(false);
+        progressDialogFetching.setTitle("Processing");
+        progressDialogFetching.setMessage("Fetching data from database...");
+        progressDialogFetching.show();
+        
         dbGetData.GetItemsInBackground(selectedListId, new GetItems() {
             @Override
             public void done(ArrayList<Item> returnedItems) {
+                progressDialogFetching.dismiss();
                 System.out.println("Number of elements " + returnedItems.size());
                 Display(returnedItems);
             }
@@ -74,10 +80,16 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
             itemNames[i] = items.get(i).get_name();
         }
 
-        StringToBitmapRequests stbr = new StringToBitmapRequests(this);
+        StringToBitmapRequests stbr = new StringToBitmapRequests();
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setCancelable(false);
+        progressDialog.setTitle("Processing");
+        progressDialog.setMessage("Please wait...");
+        progressDialog.show();
         stbr.stringToBitmapInBackground(items, new GetBitmap() {
             @Override
             public void done(ArrayList<Bitmap> result) {
+                progressDialog.dismiss();
                 /*System.out.println("SIZE OF BITMAPS " + result.size());
                 final Runtime runtime = Runtime.getRuntime();
                 final long usedMemInMB = (runtime.totalMemory() - runtime.freeMemory()) / 1048576L;
@@ -138,26 +150,4 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
                 break;
         }
     }
-    /*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
 }

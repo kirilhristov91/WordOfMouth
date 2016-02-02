@@ -1,13 +1,9 @@
 package com.wordofmouth.Other;
 
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.wordofmouth.Interfaces.GetItemId;
 import com.wordofmouth.Interfaces.GetListId;
 import com.wordofmouth.Interfaces.GetUserCallback;
@@ -34,70 +30,49 @@ import java.util.Map;
 
 public class ServerRequests {
 
-    private static ProgressDialog progressDialog;
+    private static ServerRequests INSTANCE = null;
+    private ProgressDialog progressDialog;
     private static final int CONNECTION_TIMEOUT = 1000 * 6;
     private static final String SERVER_ADDRESS = "http://wordofmouth.netau.net/";
-    private static final String SENDER_ID = "260188412151";
-    private static Context context;
-    private static String gcmId;
-    private static String msg;
-    private static GoogleCloudMessaging gcm;
 
-    // Constructor
-    public ServerRequests(Context context){
-        this.context = context;
-        progressDialog = new ProgressDialog(this.context);
-        progressDialog.setCancelable(false);
-        progressDialog.setTitle("Processing");
-        progressDialog.setMessage("Please wait...");
+
+    public static ServerRequests getInstance(){
+        if(INSTANCE == null){
+            INSTANCE = new ServerRequests();
+        }
+        return INSTANCE;
     }
 
+    // Constructor
+    private ServerRequests(){}
+
     // methods
-    public void storeUserDataInBackground(User user, GetUserCallback userCallback){
-        progressDialog.show();
-        new StoreUserDataAsyncTask(user, userCallback).execute();
+    public void storeUserDataInBackground(User user, String gcmId, GetUserCallback userCallback){
+        new StoreUserDataAsyncTask(user, gcmId, userCallback).execute();
     }
 
     public void fetchUserDataInBackground(User user, GetUserCallback userCallback){
-        progressDialog.show();
         new FetchUserDataAsyncTask(user, userCallback).execute();
     }
 
     public void UploadProfilePictureAsyncTask(String username, String image, GetUserCallback userCallback){
-        progressDialog.show();
-        progressDialog.setMessage("Uploading Profile Picture to Server...");
         new UploadProfilePictureAsyncTask(username, image, userCallback).execute();
     }
 
     public void UploadListAsyncTask(MyList list, GetListId getListId){
-        progressDialog.show();
-        progressDialog.setMessage("Uploading List to Server...");
         new UploadListAsyncTask(list, getListId).execute();
     }
 
     public void UploadItemAsyncTask(Item item, GetItemId getItemId){
-        progressDialog.show();
-        progressDialog.setMessage("Uploading Item to Server...");
         new UploadItemAsyncTask(item, getItemId).execute();
     }
 
     public void fetchUsersInBackground(String requestedName, int currentUserId, GetUsers getUsers){
-        progressDialog.show();
-        progressDialog.setMessage("Fetching users matching the name or username you entered...");
         new FetchUsersAsyncTask(requestedName, currentUserId, getUsers).execute();
     }
 
     public void inviteInBackground(int listId, int currentUserId, int invitedUserId, SendInviteResponse sendInviteResponse){
-        progressDialog.show();
-        progressDialog.setMessage("Inviting the selected user to the current list");
         new inviteAsyncTask(listId, currentUserId, invitedUserId, sendInviteResponse).execute();
-    }
-
-    private static boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     // method to encode the data needed to be sent o the server
@@ -124,36 +99,17 @@ public class ServerRequests {
     private static class StoreUserDataAsyncTask extends AsyncTask<Void, Void, User>{
         User user;
         GetUserCallback userCallback;
+        String gcmId;
 
-        public StoreUserDataAsyncTask(User user, GetUserCallback userCallback) {
+        public StoreUserDataAsyncTask(User user, String gcmId, GetUserCallback userCallback) {
             this.user = user;
             this.userCallback = userCallback;
+            this.gcmId = gcmId;
         }
 
 
         @Override
         protected User doInBackground(Void... params) {
-
-            User returnedUser = null;
-
-            if(!isNetworkAvailable()){
-                System.out.println("VLQZAH TUKA na avalable network");
-                return new User(-1, "Timeout", "Timeout", "Timeout", "Timeout");
-            }
-            // get gcm registration ID
-            try {
-
-                if (gcm == null) {
-                    gcm = GoogleCloudMessaging.getInstance(context);
-                }
-                gcmId = null;
-                gcmId = gcm.register(SENDER_ID);
-                msg = "Device registered, registration ID=" + gcmId;
-            } catch (IOException ex) {
-                msg = "Error :" + ex.getMessage();
-
-            }
-
             // prepare the data to send
             Map<String,String> dataToSend = new HashMap<>();
             dataToSend.put("name",user.getName());
@@ -162,6 +118,7 @@ public class ServerRequests {
             dataToSend.put("username", user.getUsername());
             dataToSend.put("password", user.getPassword());
 
+            User returnedUser = null;
             String encodedStr = getEncodedData(dataToSend);
             BufferedReader reader = null;
 
@@ -226,7 +183,6 @@ public class ServerRequests {
 
         @Override
         protected void onPostExecute(User returnedUser) {
-            progressDialog.dismiss();
             userCallback.done(returnedUser);
             super.onPostExecute(returnedUser);
         }
@@ -246,10 +202,6 @@ public class ServerRequests {
 
         @Override
         protected User doInBackground(Void... params) {
-
-            if(!isNetworkAvailable()){
-                return new User(-1, "Timeout", "Timeout", "Timeout", "Timeout");
-            }
 
             Map<String,String> dataToSend = new HashMap<>();
             dataToSend.put("username", user.getUsername());
@@ -318,7 +270,6 @@ public class ServerRequests {
 
         @Override
         protected void onPostExecute(User returnedUser) {
-            progressDialog.dismiss();
             userCallback.done(returnedUser);
             super.onPostExecute(returnedUser);
         }
@@ -339,10 +290,6 @@ public class ServerRequests {
 
         @Override
         protected User doInBackground(Void... params) {
-
-            if(!isNetworkAvailable()){
-                return new User(-1, "Timeout", "Timeout", "Timeout", "Timeout");
-            }
 
             Map<String,String> dataToSend = new HashMap<>();
             dataToSend.put("username", username);
@@ -403,7 +350,6 @@ public class ServerRequests {
 
         @Override
         protected void onPostExecute(User returnedUser) {
-            progressDialog.dismiss();
             userCallback.done(returnedUser);
             super.onPostExecute(returnedUser);
         }
@@ -421,10 +367,6 @@ public class ServerRequests {
 
         @Override
         protected MyList doInBackground(Void... params) {
-
-            if(!isNetworkAvailable()){
-                return new MyList(-1, "Timeout", "Timeout", "Timeout", "Timeout");
-            }
 
             Map<String,String> dataToSend = new HashMap<>();
             Integer uId = list.getUserId();
@@ -504,14 +446,13 @@ public class ServerRequests {
 
         @Override
         protected void onPostExecute(MyList returnedList) {
-            progressDialog.dismiss();
             getListId.done(returnedList);
             super.onPostExecute(returnedList);
         }
     }
 
     ////////////////////////////////////////////////////////////////////////
-    private static class UploadItemAsyncTask extends AsyncTask<Void, Void, Item>{
+    private class UploadItemAsyncTask extends AsyncTask<Void, Void, Item>{
         Item item;
         GetItemId getItemId;
 
@@ -522,11 +463,6 @@ public class ServerRequests {
 
         @Override
         protected Item doInBackground(Void... params) {
-
-            if(!isNetworkAvailable()){
-                return new Item(-1, -1, "Timeout", "Timeout", -1, "Timeout", "Timeout");
-            }
-
 
             Map<String,String> dataToSend = new HashMap<>();
             Integer uId = item.get_creatorId();
@@ -612,14 +548,13 @@ public class ServerRequests {
 
         @Override
         protected void onPostExecute(Item returnedItem) {
-            progressDialog.dismiss();
             getItemId.done(returnedItem);
             super.onPostExecute(returnedItem);
         }
     }
 
     ////////////////////////////////////////////////////////////////////////////////
-    private static class FetchUsersAsyncTask extends AsyncTask<Void, Void, ArrayList<User>>{
+    private class FetchUsersAsyncTask extends AsyncTask<Void, Void, ArrayList<User>>{
         String name;
         GetUsers getUsers;
         int currentUserId;
@@ -635,12 +570,6 @@ public class ServerRequests {
         protected ArrayList<User> doInBackground(Void... params) {
 
             ArrayList<User> returnedUsers = new ArrayList<User>();
-
-            if(!isNetworkAvailable()){
-                System.out.println("VLQZAH TUKA na avalable network");
-                returnedUsers.add(new User(-1, "Timeout", "Timeout", "Timeout", "Timeout"));
-                return returnedUsers;
-            }
 
             Map<String,String> dataToSend = new HashMap<>();
             Integer cuid = currentUserId;
@@ -713,7 +642,6 @@ public class ServerRequests {
 
         @Override
         protected void onPostExecute(ArrayList<User> returnedUsers) {
-            progressDialog.dismiss();
             getUsers.done(returnedUsers);
             super.onPostExecute(returnedUsers);
         }
@@ -721,7 +649,7 @@ public class ServerRequests {
 
 
     ////////////////////////////////////////////////////////////////////////////////
-    private static class inviteAsyncTask extends AsyncTask<Void, Void, String>{
+    private class inviteAsyncTask extends AsyncTask<Void, Void, String>{
         //new inviteAsyncTask(listId, userId, sendInviteResponse).execute();
         int listId;
         int currentUserId;
@@ -738,11 +666,6 @@ public class ServerRequests {
 
         @Override
         protected String doInBackground(Void... params) {
-
-            if(!isNetworkAvailable()){
-                System.out.println("VLQZAH TUKA na avalable network");
-                return "Timeout";
-            }
 
             Map<String,String> dataToSend = new HashMap<>();
             Integer lid = listId;
@@ -807,7 +730,6 @@ public class ServerRequests {
 
         @Override
         protected void onPostExecute(String response) {
-            progressDialog.dismiss();
             sendInviteResponse.done(response);
             super.onPostExecute(response);
         }

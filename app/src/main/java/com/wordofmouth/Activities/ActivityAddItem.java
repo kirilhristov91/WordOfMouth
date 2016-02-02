@@ -2,16 +2,17 @@ package com.wordofmouth.Activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
@@ -19,12 +20,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 
-import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.Interfaces.GetItemId;
 import com.wordofmouth.ObjectClasses.Item;
 import com.wordofmouth.R;
-import com.wordofmouth.Other.ServerRequests;
-import com.wordofmouth.SharedPreferences.UserLocalStore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -38,9 +36,6 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
     ImageView addItemPhoto;
     ImageView rotateRightItem;
     ImageView rotateLeftItem;
-
-    DBHandler dbHandler;
-    UserLocalStore userLocalStore;
     double ratingSelected;
     int listId;
     String listName;
@@ -60,8 +55,6 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
         ratingSelected = 0.0;
         photo = null;
 
-        dbHandler= DBHandler.getInstance(this);
-        userLocalStore = new UserLocalStore(this);
         addItemPhoto = (ImageView) findViewById(R.id.addImageToItem);
         itemNameField = (EditText) findViewById(R.id.itemNameField);
         itemDescriptionField = (EditText) findViewById(R.id.itemDescriptionField);
@@ -116,40 +109,57 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
                     showErrorEmptyField();
                 }
                 else {
-                    System.out.println(userLocalStore.getUserLocalDatabase().getAll().toString());
-                    String imageToSave = "";
-                    if (photo != null) {
-                        imageToSave = BitMapToString(photo);
+                    //System.out.println(userLocalStore.getUserLocalDatabase().getAll().toString());
+                    if (!isNetworkAvailable()) {
+                        showConnectionError();
                     }
-                    Item i = new Item(listId, userLocalStore.getUserLoggedIn().getId() ,userLocalStore.getUserLoggedIn().getUsername(),
-                            itemNameField.getText().toString(), ratingSelected, itemDescriptionField.getText().toString(), imageToSave);
-
-                    ServerRequests serverRequests = new ServerRequests(this);
-                    serverRequests.UploadItemAsyncTask(i, new GetItemId() {
-                        @Override
-                        public void done(Item item) {
-                            if(item == null){
-                                showAlreadyExistError();
-                            }
-                            else {
-                                if(item.get_creatorUsername().equals("Timeout")){
-                                    showConnectionError();
-                                }
-                                else {
-                                    dbHandler.addItem(item);
-                                    Intent intent = new Intent(ActivityAddItem.this, ActivityItemsOfAList.class);
-                                    intent.putExtra("listId", listId);
-                                    intent.putExtra("name", listName);
-                                    startActivity(intent);
-                                    finish();
-                                }
-                            }
+                    else {
+                        String imageToSave = "";
+                        if (photo != null) {
+                            imageToSave = BitMapToString(photo);
                         }
-                    });
+                        Item i = new Item(listId, userLocalStore.getUserLoggedIn().getId(), userLocalStore.getUserLoggedIn().getUsername(),
+                                itemNameField.getText().toString(), ratingSelected, itemDescriptionField.getText().toString(), imageToSave);
+
+                        final ProgressDialog progressDialog = new ProgressDialog(this);
+                        progressDialog.setCancelable(false);
+                        progressDialog.setTitle("Processing");
+                        progressDialog.setMessage("Uploading Item to Server...");
+                        progressDialog.show();
+
+                        serverRequests.UploadItemAsyncTask(i, new GetItemId() {
+                            @Override
+                            public void done(Item item) {
+                                progressDialog.dismiss();
+                                if (item == null) {
+                                    showAlreadyExistError();
+                                } else {
+                                    if (item.get_creatorUsername().equals("Timeout")) {
+                                        showConnectionError();
+                                    } else {
+                                        dbHandler.addItem(item);
+                                        Intent intent = new Intent(ActivityAddItem.this, ActivityItemsOfAList.class);
+                                        intent.putExtra("listId", listId);
+                                        intent.putExtra("name", listName);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                }
+                            }
+                        });
+                    }
                 }
                 break;
         }
     }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
 
     private void showAlreadyExistError(){
         AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
@@ -215,7 +225,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
 
     public String BitMapToString(Bitmap bitmap){
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, stream);
         return Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);
     }
 

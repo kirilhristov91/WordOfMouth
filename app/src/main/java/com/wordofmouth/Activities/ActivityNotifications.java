@@ -20,8 +20,6 @@ import java.util.ArrayList;
 
 public class ActivityNotifications extends BaseActivity {
 
-    DBHandler dbHandler;
-    UserLocalStore userLocalStore;
     ArrayList<Notification> notifications;
     ListView notificationItemListView;
 
@@ -30,8 +28,6 @@ public class ActivityNotifications extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_activity_notifications);
 
-        dbHandler = DBHandler.getInstance(this);
-        userLocalStore = new UserLocalStore(this);
         int userId = userLocalStore.getUserLoggedIn().getId();
         notifications = dbHandler.getNotifications(userId);
         String[] messages = new String[notifications.size()];

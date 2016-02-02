@@ -63,7 +63,7 @@ public class GcmIntentService extends IntentService {
                     MESSAGE_TYPE_MESSAGE.equals(messageType)) {
 
                 String recieved_message=intent.getStringExtra("text_message");
-                userLocalStore = new UserLocalStore(this);
+                userLocalStore = UserLocalStore.getInstance(this);
                 dbHandler = DBHandler.getInstance(this);
 
                 if(recieved_message.contains("invited")) {

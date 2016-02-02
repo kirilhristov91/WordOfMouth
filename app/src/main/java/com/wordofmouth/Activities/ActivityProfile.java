@@ -1,56 +1,45 @@
 package com.wordofmouth.Activities;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Base64;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.content.pm.PackageManager;
 import android.widget.Toast;
 
-import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.Interfaces.GetUserCallback;
 import com.wordofmouth.R;
-import com.wordofmouth.Other.ServerRequests;
 import com.wordofmouth.ObjectClasses.User;
-import com.wordofmouth.SharedPreferences.UserLocalStore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-
-import com.wordofmouth.R;
 
 public class ActivityProfile extends BaseActivity implements View.OnClickListener{
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_BROWSE_GALLERY = 2;
-    ImageView profilePicture;
+    ImageView profilePictureinProfile;
     ImageView rotateRight;
     ImageView rotateLeft;
     Button updatePicture;
     Button chooseFromGallery;
     Button saveChanges;
-    int angle = 0;
+    private int angle = 0;
     Bitmap toSave =null;
-    DBHandler dbHandler;
-    UserLocalStore userLocalStore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,25 +48,28 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
         //this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         getSupportActionBar().setTitle("Edit Profile");
 
-        profilePicture = (ImageView) this.findViewById(R.id.profilePicture);
-        updatePicture = (Button) this.findViewById(R.id.updatePictureButton);
-        chooseFromGallery = (Button) this.findViewById(R.id.chooseFromGallery);
-        rotateRight = (ImageView) this.findViewById(R.id.rotateRight);
-        rotateLeft = (ImageView) this.findViewById(R.id.rotateLeft);
-        saveChanges = (Button) this.findViewById(R.id.saveProfileChanges);
+        System.out.println("ActivityProfile after SetContentView");
+
+        profilePictureinProfile = (ImageView) findViewById(R.id.profilePicture);
+        System.out.println(" V PROFILA " + (profilePictureinProfile==null));
+        updatePicture = (Button) findViewById(R.id.updatePictureButton);
+        chooseFromGallery = (Button) findViewById(R.id.chooseFromGallery);
+        rotateRight = (ImageView) findViewById(R.id.rotateRight);
+        rotateLeft = (ImageView) findViewById(R.id.rotateLeft);
+        saveChanges = (Button) findViewById(R.id.saveProfileChanges);
+
+        System.out.println("ActivityProfile after bindings : " + (profilePictureinProfile == null));
 
         if(!hasCamera()){
             updatePicture.setEnabled(false);
         }
-        dbHandler = DBHandler.getInstance(this);
-        userLocalStore = new UserLocalStore(this);
         // check if there is a picture in the db taken just now
         // this is necessary because the activity restarts after the camera closes
         String pictureTakenWithTheCamera;
         if((pictureTakenWithTheCamera = dbHandler.getTemp())!=null){
             System.out.println("VLIZAM TUKA DA MU EBA MAIKATA");
             Bitmap pic = StringToBitMap(pictureTakenWithTheCamera);
-            profilePicture.setImageBitmap(pic);
+            profilePictureinProfile.setImageBitmap(pic);
             toSave = pic;
         }
 
@@ -87,7 +79,7 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
             String pic = dbHandler.getProfilePicture(currentUser.getId());
             if (pic != null) {
                 Bitmap bitmap = StringToBitMap(pic);
-                profilePicture.setImageBitmap(bitmap);
+                profilePictureinProfile.setImageBitmap(bitmap);
                 toSave = bitmap;
             }
         }
@@ -111,8 +103,8 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
                 break;
             case R.id.rotateRight:
                 angle = angle+90;
-                profilePicture.setRotation((float) angle);
-                Bitmap bm1=((BitmapDrawable)profilePicture.getDrawable()).getBitmap();
+                profilePictureinProfile.setRotation((float) angle);
+                Bitmap bm1=((BitmapDrawable) profilePictureinProfile.getDrawable()).getBitmap();
                 Matrix matrix1 = new Matrix();
                 matrix1.postRotate(angle);
                 bm1 = Bitmap.createBitmap(bm1, 0, 0, bm1.getWidth(), bm1.getHeight(), matrix1, true);
@@ -120,8 +112,8 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
                 break;
             case R.id.rotateLeft:
                 angle = angle-90;
-                profilePicture.setRotation((float) angle);
-                Bitmap bm2=((BitmapDrawable)profilePicture.getDrawable()).getBitmap();
+                profilePictureinProfile.setRotation((float) angle);
+                Bitmap bm2=((BitmapDrawable) profilePictureinProfile.getDrawable()).getBitmap();
                 Matrix matrix2 = new Matrix();
                 matrix2.postRotate(angle);
                 bm2 = Bitmap.createBitmap(bm2, 0, 0, bm2.getWidth(), bm2.getHeight(), matrix2, true);
@@ -132,6 +124,12 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
                 break;
 
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 
     //check if the user has a camera
@@ -172,46 +170,62 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
 
                 int desiredWidth = image.getWidth();
                 int desiredHeight = image.getHeight();
-                while(desiredWidth/2 >= 250 || desiredHeight/2 >= 250){
+                while(desiredWidth/2 >= 100 || desiredHeight/2 >= 100){
                     desiredWidth = desiredWidth/2;
                     desiredHeight = desiredHeight/2;
                 }
 
                 image = Bitmap.createScaledBitmap(image,desiredWidth, desiredHeight, true);
-                profilePicture.setImageBitmap(image);
+                profilePictureinProfile.setImageBitmap(image);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         }
     }
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
 
     public void saveImageToDB(){
-        User currentUser = userLocalStore.getUserLoggedIn();
-        String imageToSave = BitMapToString(toSave);
-        currentUser.getId();
-        dbHandler.addProfilePicture(currentUser.getId(), imageToSave);
-        dbHandler.deleteTemp();
+        if(!isNetworkAvailable()){
+            showConnectionError();
+        }
 
-        ServerRequests serverRequests = new ServerRequests(this);
-        serverRequests.UploadProfilePictureAsyncTask(currentUser.getUsername(), imageToSave, new GetUserCallback() {
-            @Override
-            public void done(User returnedUser) {
-                if (returnedUser != null) {
-                    if(returnedUser.getUsername().equals("Timeout")){
-                        showConnectionError();
+        else {
+            User currentUser = userLocalStore.getUserLoggedIn();
+            String imageToSave = BitMapToString(toSave);
+            currentUser.getId();
+            dbHandler.addProfilePicture(currentUser.getId(), imageToSave);
+            dbHandler.deleteTemp();
+
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setCancelable(false);
+            progressDialog.setTitle("Processing");
+            progressDialog.setMessage("Uploading Profile Picture to Server...");
+            progressDialog.show();
+            serverRequests.UploadProfilePictureAsyncTask(currentUser.getUsername(), imageToSave, new GetUserCallback() {
+                @Override
+                public void done(User returnedUser) {
+                    progressDialog.dismiss();
+                    if (returnedUser != null) {
+                        if (returnedUser.getUsername().equals("Timeout")) {
+                            showConnectionError();
+                        } else if (returnedUser.getUsername().equals("failure")) {
+                            showUploadError();
+                        }
+                    } else {
+                        Toast.makeText(ActivityProfile.this, "Your profile picture was updated!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(ActivityProfile.this, MainActivity.class));
+                        finish();
                     }
-                    else if(returnedUser.getUsername().equals("failure")){
-                        showUploadError();
-                    }
-                } else {
-                    Toast.makeText(ActivityProfile.this, "Your profile picture was updated!", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(ActivityProfile.this, MainActivity.class));
-                    finish();
 
                 }
-
-            }
-        });
+            });
+        }
     }
 
     private void showConnectionError(){
@@ -232,7 +246,7 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
     public String BitMapToString(Bitmap bitmap){
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         // shrink the file size of the image - nz kolko da e pomisli si
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG,70 , stream);
         return Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);
     }
 
@@ -244,8 +258,8 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
         BitmapFactory.decodeByteArray(bytes, 0, bytes.length, scaleOptions);
 
         int scale = 1;
-        while (scaleOptions.outWidth / scale / 2 >= 250
-                && scaleOptions.outHeight / scale / 2 >= 250) {
+        while (scaleOptions.outWidth / scale / 2 >= 100
+                && scaleOptions.outHeight / scale / 2 >= 100) {
             scale *= 2;
         }
 

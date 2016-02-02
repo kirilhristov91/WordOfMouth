@@ -2,35 +2,25 @@ package com.wordofmouth.Activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Base64;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Spinner;
-
-import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.Interfaces.GetListId;
 import com.wordofmouth.ObjectClasses.MyList;
 import com.wordofmouth.R;
-import com.wordofmouth.Other.ServerRequests;
-import com.wordofmouth.SharedPreferences.UserLocalStore;
-
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 
@@ -38,10 +28,8 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
 
     EditText listNameField;
     EditText listDescriptionField;
-    UserLocalStore userLocalStore;
     String image;
     Button createNewListButton;
-    DBHandler dbHandler;
 
     ImageView addImageToList;
     ImageView rotateRightList;
@@ -55,8 +43,6 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_list);
 
-        dbHandler= DBHandler.getInstance(this);
-        userLocalStore = new UserLocalStore(this);
         listNameField = (EditText) findViewById(R.id.listNameField);
         listDescriptionField = (EditText) findViewById(R.id.listDescriptionField);
 
@@ -103,35 +89,51 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
                 }
 
                 else {
-                    image ="";
-                    if (photo != null) {
-                        image = BitMapToString(photo);
+                    if (!isNetworkAvailable()) {
+                        showConnectionError();
                     }
-
-                    int currentUserId = userLocalStore.getUserLoggedIn().getId();
-                    String currentUserUsername = userLocalStore.getUserLoggedIn().getUsername();
-                    MyList list = new MyList(currentUserId, currentUserUsername, listNameField.getText().toString(), listDescriptionField.getText().toString(), image);
-                    ServerRequests serverRequests = new ServerRequests(this);
-                    serverRequests.UploadListAsyncTask(list, new GetListId() {
-                        @Override
-                        public void done(MyList returnedList) {
-                            if(returnedList == null){
-                                showAlreadyExistError();
-                            }
-
-                            else{
-                                if(returnedList.get_username().equals("Timeout")){
-                                    showConnectionError();
-                                }
-                                else {
-                                    dbHandler.addList(returnedList);
-                                    closeActivity();
-                                }
-                            }
+                    else {
+                        image = "";
+                        if (photo != null) {
+                            image = BitMapToString(photo);
                         }
-                    });
+
+                        int currentUserId = userLocalStore.getUserLoggedIn().getId();
+                        String currentUserUsername = userLocalStore.getUserLoggedIn().getUsername();
+                        MyList list = new MyList(currentUserId, currentUserUsername, listNameField.getText().toString(), listDescriptionField.getText().toString(), image);
+
+                        final ProgressDialog progressDialog = new ProgressDialog(this);
+                        progressDialog.setCancelable(false);
+                        progressDialog.setTitle("Processing");
+                        progressDialog.setMessage("Uploading List to Server...");
+                        progressDialog.show();
+
+                        serverRequests.UploadListAsyncTask(list, new GetListId() {
+                            @Override
+                            public void done(MyList returnedList) {
+                                progressDialog.dismiss();
+                                if (returnedList == null) {
+                                    showAlreadyExistError();
+                                } else {
+                                    if (returnedList.get_username().equals("Timeout")) {
+                                        showConnectionError();
+                                    } else {
+                                        dbHandler.addList(returnedList);
+                                        closeActivity();
+                                    }
+                                }
+                            }
+                        });
+                    }
                 }
         }
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     public void browseGallery(){
@@ -167,7 +169,7 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
 
     public String BitMapToString(Bitmap bitmap){
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, stream);
         return Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);
     }
 

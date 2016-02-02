@@ -18,7 +18,7 @@ public class DBHandler extends SQLiteOpenHelper{
     private static DBHandler sInstance;
 
     //if updating the database change the version:
-    private static final int DATABASE_VERSION = 18;
+    private static final int DATABASE_VERSION = 19;
     private static final String DATABASE_NAME = "WOM.db";
 
     //Lists table
@@ -77,6 +77,10 @@ public class DBHandler extends SQLiteOpenHelper{
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+
+    public static DBHandler getDBHandlerForAsyncTask(){
+        return sInstance;
+    }
 
     @Override
     public void onCreate(SQLiteDatabase db) {

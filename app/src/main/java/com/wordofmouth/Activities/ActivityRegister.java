@@ -1,9 +1,12 @@
 package com.wordofmouth.Activities;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -14,11 +17,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.wordofmouth.Interfaces.GetUserCallback;
 import com.wordofmouth.R;
 import com.wordofmouth.Other.ServerRequests;
 import com.wordofmouth.ObjectClasses.User;
 
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -28,6 +33,8 @@ public class ActivityRegister extends AppCompatActivity implements View.OnClickL
     Button registerButton;
     EditText regnameField, regusernameField, regemailField, regpasswordField;
     TextView loginme;
+
+    private static final String SENDER_ID = "260188412151";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,18 +139,50 @@ public class ActivityRegister extends AppCompatActivity implements View.OnClickL
     }
 
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+
     private void registerUser(User user){
-        ServerRequests serverRequests = new ServerRequests(this);
-        serverRequests.storeUserDataInBackground(user, new GetUserCallback() {
-            @Override
-            public void done(User returnedUser) {
-                if (returnedUser != null) {
-                    if(returnedUser.getUsername().equals("Timeout")){
-                        showConnectionError();
-                    }
-                    else{showUserTakenError();}
-                } else startActivity(new Intent(ActivityRegister.this, ActivityLogin.class));
+        if(!isNetworkAvailable()){
+            showConnectionError();
+        }
+        else {
+            String gcmId="";
+            GoogleCloudMessaging gcm;
+            // get gcm registration ID
+            try {
+                gcm = GoogleCloudMessaging.getInstance(this);
+                gcmId = null;
+                gcmId = gcm.register(SENDER_ID);
+                //msg = "Device registered, registration ID=" + gcmId;
+            } catch (IOException ex) {
+                //msg = "Error :" + ex.getMessage();
+                ex.printStackTrace();
             }
-        });
+            ServerRequests serverRequests = ServerRequests.getInstance();
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setCancelable(false);
+            progressDialog.setTitle("Processing");
+            progressDialog.setMessage("Please wait...");
+            progressDialog.show();
+            serverRequests.storeUserDataInBackground(user, gcmId, new GetUserCallback() {
+                @Override
+                public void done(User returnedUser) {
+                    progressDialog.dismiss();
+                    if (returnedUser != null) {
+                        if (returnedUser.getUsername().equals("Timeout")) {
+                            showConnectionError();
+                        } else {
+                            showUserTakenError();
+                        }
+                    } else startActivity(new Intent(ActivityRegister.this, ActivityLogin.class));
+                }
+            });
+        }
     }
 }

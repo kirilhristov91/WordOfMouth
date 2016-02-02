@@ -20,7 +20,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import com.wordofmouth.Interfaces.GetListId;
 import com.wordofmouth.ObjectClasses.MyList;
+import com.wordofmouth.Other.DBHandler;
+import com.wordofmouth.Other.ServerRequests;
 import com.wordofmouth.R;
+import com.wordofmouth.SharedPreferences.UserLocalStore;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 
@@ -98,6 +102,7 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
                             image = BitMapToString(photo);
                         }
 
+                        UserLocalStore userLocalStore = UserLocalStore.getInstance(this);
                         int currentUserId = userLocalStore.getUserLoggedIn().getId();
                         String currentUserUsername = userLocalStore.getUserLoggedIn().getUsername();
                         MyList list = new MyList(currentUserId, currentUserUsername, listNameField.getText().toString(), listDescriptionField.getText().toString(), image);
@@ -108,6 +113,7 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
                         progressDialog.setMessage("Uploading List to Server...");
                         progressDialog.show();
 
+                        ServerRequests serverRequests = ServerRequests.getInstance(this);
                         serverRequests.UploadListAsyncTask(list, new GetListId() {
                             @Override
                             public void done(MyList returnedList) {
@@ -118,10 +124,12 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
                                     if (returnedList.get_username().equals("Timeout")) {
                                         showConnectionError();
                                     } else {
+                                        DBHandler dbHandler = DBHandler.getInstance(ActivityAddList.this);
                                         dbHandler.addList(returnedList);
                                         if(photo!=null) {
                                             photo.recycle();
                                         }
+
                                         closeActivity();
                                     }
                                 }

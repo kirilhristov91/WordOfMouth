@@ -1,6 +1,7 @@
 package com.wordofmouth.Other;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -36,15 +37,15 @@ public class ServerRequests {
     private static final String SERVER_ADDRESS = "http://wordofmouth.netau.net/";
 
 
-    public static ServerRequests getInstance(){
+    public static synchronized ServerRequests getInstance(Context context){
         if(INSTANCE == null){
-            INSTANCE = new ServerRequests();
+            INSTANCE = new ServerRequests(context.getApplicationContext());
         }
         return INSTANCE;
     }
 
     // Constructor
-    private ServerRequests(){}
+    private ServerRequests(Context context){}
 
     // methods
     public void storeUserDataInBackground(User user, String gcmId, GetUserCallback userCallback){
@@ -452,7 +453,7 @@ public class ServerRequests {
     }
 
     ////////////////////////////////////////////////////////////////////////
-    private class UploadItemAsyncTask extends AsyncTask<Void, Void, Item>{
+    private static class UploadItemAsyncTask extends AsyncTask<Void, Void, Item>{
         Item item;
         GetItemId getItemId;
 
@@ -554,7 +555,7 @@ public class ServerRequests {
     }
 
     ////////////////////////////////////////////////////////////////////////////////
-    private class FetchUsersAsyncTask extends AsyncTask<Void, Void, ArrayList<User>>{
+    private static class FetchUsersAsyncTask extends AsyncTask<Void, Void, ArrayList<User>>{
         String name;
         GetUsers getUsers;
         int currentUserId;
@@ -649,7 +650,7 @@ public class ServerRequests {
 
 
     ////////////////////////////////////////////////////////////////////////////////
-    private class inviteAsyncTask extends AsyncTask<Void, Void, String>{
+    private static class inviteAsyncTask extends AsyncTask<Void, Void, String>{
         //new inviteAsyncTask(listId, userId, sendInviteResponse).execute();
         int listId;
         int currentUserId;

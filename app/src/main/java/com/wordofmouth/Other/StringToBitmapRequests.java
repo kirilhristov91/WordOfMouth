@@ -1,5 +1,6 @@
 package com.wordofmouth.Other;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -13,9 +14,16 @@ import java.util.ArrayList;
 
 public class StringToBitmapRequests {
 
-    public StringToBitmapRequests(){
+    private static StringToBitmapRequests INSTANCE;
 
+    public static synchronized StringToBitmapRequests getInstance(Context context){
+        if(INSTANCE == null){
+            INSTANCE = new StringToBitmapRequests(context.getApplicationContext());
+        }
+        return INSTANCE;
     }
+
+    private StringToBitmapRequests(Context context){}
 
     public void stringToBitmapInBackground(ArrayList<Item> items, GetBitmap getBitmap){
         new StringToBitmapAsyncTask(items, getBitmap).execute();

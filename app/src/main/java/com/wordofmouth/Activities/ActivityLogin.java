@@ -114,7 +114,7 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
             showConnectionError();
         }
         else {
-            ServerRequests serverRequests = ServerRequests.getInstance();
+            ServerRequests serverRequests = ServerRequests.getInstance(this);
             final ProgressDialog progressDialog = new ProgressDialog(this);
             progressDialog.setCancelable(false);
             progressDialog.setTitle("Processing");

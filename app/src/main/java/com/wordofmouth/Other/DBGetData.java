@@ -13,10 +13,19 @@ import java.util.ArrayList;
 
 public class DBGetData {
 
-    private DBHandler dbHandler;
+    private static DBHandler dbHandler;
 
-    public DBGetData() {
-        this.dbHandler = DBHandler.getDBHandlerForAsyncTask();
+    private static DBGetData INSTANCE = null;
+
+    public static synchronized DBGetData getInstance(Context context){
+        if(INSTANCE == null){
+            INSTANCE = new DBGetData(context.getApplicationContext());
+        }
+        return INSTANCE;
+    }
+
+    private DBGetData(Context context) {
+        this.dbHandler = DBHandler.getInstance(context);
     }
 
     public void GetItemsInBackground(int listId, GetItems getItems){

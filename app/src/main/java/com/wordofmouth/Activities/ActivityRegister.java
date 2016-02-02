@@ -164,7 +164,7 @@ public class ActivityRegister extends AppCompatActivity implements View.OnClickL
                 //msg = "Error :" + ex.getMessage();
                 ex.printStackTrace();
             }
-            ServerRequests serverRequests = ServerRequests.getInstance();
+            ServerRequests serverRequests = ServerRequests.getInstance(this);
             final ProgressDialog progressDialog = new ProgressDialog(this);
             progressDialog.setCancelable(false);
             progressDialog.setTitle("Processing");

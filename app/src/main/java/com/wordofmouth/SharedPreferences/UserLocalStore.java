@@ -16,15 +16,15 @@ public class UserLocalStore {
 
     SharedPreferences userLocalDatabase;
 
-    public static UserLocalStore getInstance(Context context){
+    public synchronized static UserLocalStore getInstance(Context context){
         if(INSTANCE == null){
-            INSTANCE = new UserLocalStore(context);
+            INSTANCE = new UserLocalStore(context.getApplicationContext());
         }
         return INSTANCE;
     }
 
     private UserLocalStore(Context context){
-        userLocalDatabase = context.getApplicationContext().getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
+        userLocalDatabase = context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
     }
 
     public void storeUserData(User user){

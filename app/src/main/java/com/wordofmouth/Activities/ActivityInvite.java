@@ -23,6 +23,7 @@ import com.wordofmouth.Interfaces.SendInviteResponse;
 import com.wordofmouth.R;
 import com.wordofmouth.Other.ServerRequests;
 import com.wordofmouth.ObjectClasses.User;
+import com.wordofmouth.SharedPreferences.UserLocalStore;
 
 import java.util.ArrayList;
 
@@ -35,6 +36,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
     ListView fetchedUserList;
     ArrayList<User> users;
     String[] usernames;
+    private UserLocalStore userLocalStore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +45,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
         setContentView(R.layout.activity_activity_invite);
         /*Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);*/
-
+        userLocalStore = UserLocalStore.getInstance(this);
         Intent intent = getIntent();
         selectedListId = intent.getIntExtra("listId", 0);
         listName = intent.getStringExtra("name");
@@ -80,6 +82,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
                     progressDialog.setMessage("Fetching users matching the name or username you entered...");
                     progressDialog.show();
 
+                    ServerRequests serverRequests = ServerRequests.getInstance(this);
                     serverRequests.fetchUsersInBackground(searchView.getQuery().toString(), userLocalStore.getUserLoggedIn().getId(), new GetUsers() {
                         @Override
                         public void done(ArrayList<User> returnedUsers) {
@@ -136,6 +139,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
                             progressDialog2.setMessage("Inviting the selected user to the current list");
                             progressDialog2.show();
 
+                            ServerRequests serverRequests = ServerRequests.getInstance(ActivityInvite.this);
                             serverRequests.inviteInBackground(selectedListId, currentUserId, sharedWithId, new SendInviteResponse() {
                                 @Override
                                 public void done(String response) {

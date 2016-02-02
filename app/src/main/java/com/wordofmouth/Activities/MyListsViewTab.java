@@ -31,7 +31,6 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
     ListView myListView;
     MainActivity mainActivity;
     ArrayList<MyList> myLists;
-    private DBGetData dbGetData;
     private String username;
 
     @Override
@@ -47,7 +46,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
         // get the user`s lists to display on fragment
         myLists = new ArrayList<MyList>();
 
-        dbGetData = new DBGetData();
+        DBGetData dbGetData = DBGetData.getInstance(mainActivity);
         final ProgressDialog progressDialogFetching = new ProgressDialog(mainActivity);
         progressDialogFetching.setCancelable(false);
         progressDialogFetching.setTitle("Processing");
@@ -74,7 +73,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
             //System.out.println(myLists.get(i).get_listId());
         }
 
-        StringToBitmapRequests stbr = new StringToBitmapRequests();
+        StringToBitmapRequests stbr = StringToBitmapRequests.getInstance(mainActivity);
         final ProgressDialog progressDialog = new ProgressDialog(mainActivity);
         progressDialog.setCancelable(false);
         progressDialog.setTitle("Processing");

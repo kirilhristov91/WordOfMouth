@@ -28,7 +28,9 @@ public class ActivityNotifications extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_activity_notifications);
 
+        UserLocalStore userLocalStore = UserLocalStore.getInstance(this);
         int userId = userLocalStore.getUserLoggedIn().getId();
+        DBHandler dbHandler = DBHandler.getInstance(this);
         notifications = dbHandler.getNotifications(userId);
         String[] messages = new String[notifications.size()];
         for(int i = 0; i<notifications.size();i++){

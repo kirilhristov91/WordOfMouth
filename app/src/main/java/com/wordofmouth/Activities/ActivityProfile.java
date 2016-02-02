@@ -22,8 +22,11 @@ import android.content.pm.PackageManager;
 import android.widget.Toast;
 
 import com.wordofmouth.Interfaces.GetUserCallback;
+import com.wordofmouth.Other.DBHandler;
+import com.wordofmouth.Other.ServerRequests;
 import com.wordofmouth.R;
 import com.wordofmouth.ObjectClasses.User;
+import com.wordofmouth.SharedPreferences.UserLocalStore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -40,6 +43,8 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
     Button saveChanges;
     private int angle = 0;
     Bitmap toSave =null;
+    private DBHandler dbHandler;
+    private UserLocalStore userLocalStore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +53,6 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
         //this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         getSupportActionBar().setTitle("Edit Profile");
 
-        System.out.println("ActivityProfile after SetContentView");
 
         profilePictureinProfile = (ImageView) findViewById(R.id.profilePicture);
         System.out.println(" V PROFILA " + (profilePictureinProfile==null));
@@ -58,7 +62,8 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
         rotateLeft = (ImageView) findViewById(R.id.rotateLeft);
         saveChanges = (Button) findViewById(R.id.saveProfileChanges);
 
-        System.out.println("ActivityProfile after bindings : " + (profilePictureinProfile == null));
+        dbHandler = DBHandler.getInstance(this);
+        userLocalStore = UserLocalStore.getInstance(this);
 
         if(!hasCamera()){
             updatePicture.setEnabled(false);
@@ -88,6 +93,12 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
         updatePicture.setOnClickListener(this);
         chooseFromGallery.setOnClickListener(this);
         saveChanges.setOnClickListener(this);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
     }
 
@@ -207,6 +218,7 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
             progressDialog.setTitle("Processing");
             progressDialog.setMessage("Uploading Profile Picture to Server...");
             progressDialog.show();
+            ServerRequests serverRequests = ServerRequests.getInstance(this);
             serverRequests.UploadProfilePictureAsyncTask(currentUser.getUsername(), imageToSave, new GetUserCallback() {
                 @Override
                 public void done(User returnedUser) {

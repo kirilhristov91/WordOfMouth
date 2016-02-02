@@ -63,6 +63,7 @@ public class MainActivity extends BaseActivity{
     }
 
     private boolean authenticate(){
+        UserLocalStore userLocalStore = UserLocalStore.getInstance(this);
         return userLocalStore.getIfLoggedIn();
     }
 }

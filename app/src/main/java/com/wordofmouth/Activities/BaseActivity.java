@@ -1,20 +1,12 @@
 package com.wordofmouth.Activities;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -23,21 +15,16 @@ import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.wordofmouth.ObjectClasses.User;
 import com.wordofmouth.Other.DBHandler;
-import com.wordofmouth.Other.ServerRequests;
 import com.wordofmouth.R;
 import com.wordofmouth.SharedPreferences.UserLocalStore;
 
@@ -50,28 +37,14 @@ public abstract class BaseActivity extends AppCompatActivity{
     private ArrayAdapter<String> menuAdapter;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private ImageView menuProfilePicture;
-    protected static DBHandler dbHandler;
-    protected static ServerRequests serverRequests;
-    protected static UserLocalStore userLocalStore;
+    private DBHandler dbHandler;
+    private UserLocalStore userLocalStore;
     private DrawerItemClickListener drawerItemClickListener;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        System.out.println("BaseActivity onCreate dbHander : " + dbHandler == null);
         super.onCreate(savedInstanceState);
-
-        if(userLocalStore == null){
-            userLocalStore = UserLocalStore.getInstance(this);
-        }
-
-        if(serverRequests == null){
-            serverRequests = ServerRequests.getInstance();
-        }
-
-        if(dbHandler == null){
-            dbHandler = DBHandler.getInstance(this);
-        }
     }
 
 
@@ -81,10 +54,7 @@ public abstract class BaseActivity extends AppCompatActivity{
         LinearLayout baseLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.base_layout, null);
         View view = getLayoutInflater().inflate(layoutResID, null);
 
-        UserLocalStore userLocalStore = UserLocalStore.getInstance(this);
-        DBHandler dbHandler = DBHandler.getInstance(this);
         mDrawerLayout = (DrawerLayout) baseLayout.findViewById(R.id.drawer_layout);
-
         menuListView = (ListView) mDrawerLayout.findViewById(R.id.list_slidermenu);
         drawerListViewItems = getResources().getStringArray(R.array.menu_items);
         menuAdapter= new CustomMenuItemAdapter(this, drawerListViewItems);
@@ -114,13 +84,11 @@ public abstract class BaseActivity extends AppCompatActivity{
                 Intent myIntent = new Intent(BaseActivity.this, ActivityProfile.class);
                 startActivity(myIntent);
                 mDrawerLayout.closeDrawers();
-                //obmisli go tova
-//                ((Activity)context).finish();
             }
         });
 
-
-
+        userLocalStore = UserLocalStore.getInstance(this);
+        dbHandler = DBHandler.getInstance(this);
         User currentUser = userLocalStore.getUserLoggedIn();
         String pic = dbHandler.getProfilePicture(currentUser.getId());
         if (pic != null) {
@@ -190,20 +158,11 @@ public abstract class BaseActivity extends AppCompatActivity{
     public void onBackPressed() {
         super.onBackPressed();
     }
-/*
-    // not working for some reason
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        InputMethodManager imm = (InputMethodManager)getSystemService(Context.
-                INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-        return true;
-    }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        actionBarDrawerToggle.onConfigurationChanged(newConfig);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
     }
 
     @Override
@@ -211,12 +170,12 @@ public abstract class BaseActivity extends AppCompatActivity{
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
         actionBarDrawerToggle.syncState();
-    }*/
+    }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        actionBarDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override

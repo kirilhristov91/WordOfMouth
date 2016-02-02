@@ -22,7 +22,10 @@ import android.widget.RatingBar;
 
 import com.wordofmouth.Interfaces.GetItemId;
 import com.wordofmouth.ObjectClasses.Item;
+import com.wordofmouth.Other.DBHandler;
+import com.wordofmouth.Other.ServerRequests;
 import com.wordofmouth.R;
+import com.wordofmouth.SharedPreferences.UserLocalStore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -42,6 +45,10 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
     int angle = 0;
     Bitmap photo;
     static final int REQUEST_BROWSE_GALLERY = 1;
+
+    /*private UserLocalStore userLocalStore;
+    private DBHandler dbHandler;
+    private ServerRequests serverRequests;*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +125,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
                         if (photo != null) {
                             imageToSave = BitMapToString(photo);
                         }
+                        UserLocalStore userLocalStore = UserLocalStore.getInstance(this);
                         Item i = new Item(listId, userLocalStore.getUserLoggedIn().getId(), userLocalStore.getUserLoggedIn().getUsername(),
                                 itemNameField.getText().toString(), ratingSelected, itemDescriptionField.getText().toString(), imageToSave);
 
@@ -127,6 +135,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
                         progressDialog.setMessage("Uploading Item to Server...");
                         progressDialog.show();
 
+                        ServerRequests serverRequests = ServerRequests.getInstance(this);
                         serverRequests.UploadItemAsyncTask(i, new GetItemId() {
                             @Override
                             public void done(Item item) {
@@ -137,6 +146,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
                                     if (item.get_creatorUsername().equals("Timeout")) {
                                         showConnectionError();
                                     } else {
+                                        DBHandler dbHandler = DBHandler.getInstance(ActivityAddItem.this);
                                         dbHandler.addItem(item);
                                         Intent intent = new Intent(ActivityAddItem.this, ActivityItemsOfAList.class);
                                         intent.putExtra("listId", listId);

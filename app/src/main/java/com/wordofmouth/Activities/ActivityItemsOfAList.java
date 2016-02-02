@@ -31,7 +31,6 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
     int selectedListId;
     String listName;
     String[] itemNames;
-    private DBGetData dbGetData;
 
 
     @Override
@@ -53,7 +52,7 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
 
         // create an instance of the local database
         items = new ArrayList<Item>();
-        dbGetData = new DBGetData();
+        DBGetData dbGetData = DBGetData.getInstance(this);
         final ProgressDialog progressDialogFetching = new ProgressDialog(this);
         progressDialogFetching.setCancelable(false);
         progressDialogFetching.setTitle("Processing");
@@ -80,7 +79,7 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
             itemNames[i] = items.get(i).get_name();
         }
 
-        StringToBitmapRequests stbr = new StringToBitmapRequests();
+        StringToBitmapRequests stbr = StringToBitmapRequests.getInstance(this);
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setTitle("Processing");

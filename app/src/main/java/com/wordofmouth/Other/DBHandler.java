@@ -62,7 +62,6 @@ public class DBHandler extends SQLiteOpenHelper{
 
         // Use the application context, which will ensure that you
         // don't accidentally leak an Activity's context.
-        // See this article for more information: http://bit.ly/6LRzfx
         if (sInstance == null) {
             sInstance = new DBHandler(context.getApplicationContext());
         }
@@ -78,9 +77,9 @@ public class DBHandler extends SQLiteOpenHelper{
     }
 
 
-    public static DBHandler getDBHandlerForAsyncTask(){
+    /*public static DBHandler getDBHandlerForAsyncTask(){
         return sInstance;
-    }
+    }*/
 
     @Override
     public void onCreate(SQLiteDatabase db) {

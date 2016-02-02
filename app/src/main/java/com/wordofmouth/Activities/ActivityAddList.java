@@ -119,6 +119,9 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
                                         showConnectionError();
                                     } else {
                                         dbHandler.addList(returnedList);
+                                        if(photo!=null) {
+                                            photo.recycle();
+                                        }
                                         closeActivity();
                                     }
                                 }
@@ -160,7 +163,7 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
                 image = Bitmap.createScaledBitmap(image,desiredWidth, desiredHeight, true);
 
                 photo = image;
-                addImageToList.setImageBitmap(image);
+                addImageToList.setImageBitmap(photo);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -169,7 +172,7 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
 
     public String BitMapToString(Bitmap bitmap){
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, stream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, stream);
         return Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);
     }
 

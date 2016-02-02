@@ -55,6 +55,7 @@ public abstract class BaseActivity extends AppCompatActivity{
     protected static UserLocalStore userLocalStore;
     private DrawerItemClickListener drawerItemClickListener;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         System.out.println("BaseActivity onCreate dbHander : " + dbHandler == null);
@@ -76,11 +77,12 @@ public abstract class BaseActivity extends AppCompatActivity{
 
     @Override
     public void setContentView(int layoutResID) {
-        System.out.println("BaseActivity setContentView dbHandler : " + dbHandler == null);
+        //System.out.println("BaseActivity setContentView dbHandler : " + dbHandler == null);
         LinearLayout baseLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.base_layout, null);
         View view = getLayoutInflater().inflate(layoutResID, null);
 
-
+        UserLocalStore userLocalStore = UserLocalStore.getInstance(this);
+        DBHandler dbHandler = DBHandler.getInstance(this);
         mDrawerLayout = (DrawerLayout) baseLayout.findViewById(R.id.drawer_layout);
 
         menuListView = (ListView) mDrawerLayout.findViewById(R.id.list_slidermenu);
@@ -117,6 +119,8 @@ public abstract class BaseActivity extends AppCompatActivity{
             }
         });
 
+
+
         User currentUser = userLocalStore.getUserLoggedIn();
         String pic = dbHandler.getProfilePicture(currentUser.getId());
         if (pic != null) {
@@ -134,10 +138,12 @@ public abstract class BaseActivity extends AppCompatActivity{
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         Context context;
         DrawerLayout mDrawerLayout;
+        //UserLocalStore userLocalStore;
 
         public DrawerItemClickListener(Context context, DrawerLayout mDrawerLayout) {
             this.context = context;
             this.mDrawerLayout = mDrawerLayout;
+
         }
 
         @Override
@@ -170,13 +176,13 @@ public abstract class BaseActivity extends AppCompatActivity{
                case 4:
                    Intent logout = new Intent(context, ActivityLogin.class);
                    logout.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                   logout.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                    userLocalStore.clearUserData();
                    userLocalStore.setUserLoggedIn(false);
                    context.startActivity(logout);
                    mDrawerLayout.closeDrawers();
                    break;
            }
-
         }
     }
 

@@ -141,6 +141,9 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
                                         Intent intent = new Intent(ActivityAddItem.this, ActivityItemsOfAList.class);
                                         intent.putExtra("listId", listId);
                                         intent.putExtra("name", listName);
+                                        if(photo!=null) {
+                                            photo.recycle();
+                                        }
                                         startActivity(intent);
                                         finish();
                                     }
@@ -209,7 +212,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
                 image = Bitmap.createScaledBitmap(image,desiredWidth, desiredHeight, true);
 
                 photo = image;
-                addItemPhoto.setImageBitmap(image);
+                addItemPhoto.setImageBitmap(photo);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -225,7 +228,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
 
     public String BitMapToString(Bitmap bitmap){
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, stream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, stream);
         return Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);
     }
 

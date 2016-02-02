@@ -69,8 +69,8 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
         if((pictureTakenWithTheCamera = dbHandler.getTemp())!=null){
             System.out.println("VLIZAM TUKA DA MU EBA MAIKATA");
             Bitmap pic = StringToBitMap(pictureTakenWithTheCamera);
-            profilePictureinProfile.setImageBitmap(pic);
             toSave = pic;
+            profilePictureinProfile.setImageBitmap(toSave);
         }
 
         else {
@@ -79,8 +79,8 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
             String pic = dbHandler.getProfilePicture(currentUser.getId());
             if (pic != null) {
                 Bitmap bitmap = StringToBitMap(pic);
-                profilePictureinProfile.setImageBitmap(bitmap);
                 toSave = bitmap;
+                profilePictureinProfile.setImageBitmap(toSave);
             }
         }
         rotateRight.setOnClickListener(this);
@@ -246,7 +246,7 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
     public String BitMapToString(Bitmap bitmap){
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         // shrink the file size of the image - nz kolko da e pomisli si
-        bitmap.compress(Bitmap.CompressFormat.JPEG,70 , stream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG,80 , stream);
         return Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);
     }
 

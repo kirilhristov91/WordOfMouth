@@ -145,7 +145,6 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
                                         showError();
                                     } else if (response.equals("Timeout")) {
                                         showConnectionError();
-                                        showConnectionError();
                                     } else {
                                         Intent myIntent = new Intent(ActivityInvite.this, ActivityItemsOfAList.class);
                                         myIntent.putExtra("listId", selectedListId);

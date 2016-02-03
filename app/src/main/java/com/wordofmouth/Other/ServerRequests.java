@@ -76,6 +76,10 @@ public class ServerRequests {
         new inviteAsyncTask(listId, currentUserId, invitedUserId, sendInviteResponse).execute();
     }
 
+    public void downloadListInBackgroudn(int listId, int userId, GetListId getListId){
+        new downloadListAsyncTask(listId, userId, getListId).execute();
+    }
+
     // method to encode the data needed to be sent o the server
     private static String getEncodedData(Map<String,String> data) {
         StringBuilder sb = new StringBuilder();
@@ -733,6 +737,104 @@ public class ServerRequests {
         protected void onPostExecute(String response) {
             sendInviteResponse.done(response);
             super.onPostExecute(response);
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    private static class downloadListAsyncTask extends AsyncTask<Void, Void, MyList>{
+        int listId;
+        int userId;
+        GetListId getListId;
+
+        public downloadListAsyncTask(int listId, int userId, GetListId getListId) {
+            this.listId = listId;
+            this.userId = userId;
+            this.getListId = getListId;
+        }
+
+        @Override
+        protected MyList doInBackground(Void... params) {
+
+            Map<String,String> dataToSend = new HashMap<>();
+            Integer lid = listId;
+            String lidString = lid.toString();
+            Integer uid = userId;
+            String uidString = uid.toString();
+
+            dataToSend.put("listId", lidString);
+            dataToSend.put("userId", uidString);
+            String encodedStr = getEncodedData(dataToSend);
+            BufferedReader reader = null;
+            MyList returnedList = null;
+
+            try {
+                URL url = new URL(SERVER_ADDRESS + "downloadList.php");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+                //Post Method
+                con.setRequestMethod("POST");
+                con.setConnectTimeout(CONNECTION_TIMEOUT);
+                con.setDoOutput(true);
+                OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
+                writer.write(encodedStr);
+                writer.flush();
+
+                if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    StringBuilder sb = new StringBuilder();
+                    reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line + "\n");
+                    }
+                    line = sb.toString();
+                    Log.i("custom_ListUpload_check", "The values received are as follows:");
+                    Log.i("custom_ListUpload_check", line);
+
+                    if (line.equals("Could not update table Shared\n")) {
+                        return new MyList(-1, "UpdError", "UpdError", "UpdError", "UpdError");
+                    }
+
+                    else {
+                        JSONObject jResult = new JSONObject(line);
+
+                        //if (jResult.length() == 0) {
+                          //  returnedList = null;
+                        //} else {
+                        int id = jResult.getInt("id");
+                        int userId = jResult.getInt("userId");
+                        String username = jResult.getString("username");
+                        String name = jResult.getString("name");
+                        String description = jResult.getString("description");
+                        String image = jResult.getString("image");
+                        returnedList = new MyList(userId, username, name, description, image);
+                        returnedList.set_listId(id);
+                        //}
+                    }
+                }
+
+                else {
+                    returnedList = new MyList(-1, "Timeout", "Timeout", "Timeout", "Timeout");
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if(reader != null) {
+                    try {
+                        reader.close();     //Closing the
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return returnedList;
+        }
+
+        @Override
+        protected void onPostExecute(MyList returnedList) {
+            getListId.done(returnedList);
+            super.onPostExecute(returnedList);
         }
     }
 }

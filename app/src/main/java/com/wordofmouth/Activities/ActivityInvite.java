@@ -147,7 +147,11 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
                                     System.out.println("Otgovoryt na invite e : " + response);
                                     if (response.equals("That person has already been invited to that list!\n")) {
                                         showError();
-                                    } else if (response.equals("Timeout")) {
+                                    }
+                                    else if (response.equals("Cannot invite the creator of the list!\n")){
+                                        showCreatorError();
+                                    }
+                                    else if (response.equals("Timeout")) {
                                         showConnectionError();
                                     } else {
                                         Intent myIntent = new Intent(ActivityInvite.this, ActivityItemsOfAList.class);
@@ -174,6 +178,13 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
     private void showError(){
         AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
         allertBuilder.setMessage("That person has already been invited to list '" + listName +"'!");
+        allertBuilder.setPositiveButton("OK", null);
+        allertBuilder.show();
+    }
+
+    private void showCreatorError(){
+        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
+        allertBuilder.setMessage("That is the creator of the list '" + listName +"'! He/She already has acces to this list!");
         allertBuilder.setPositiveButton("OK", null);
         allertBuilder.show();
     }

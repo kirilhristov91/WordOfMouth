@@ -338,6 +338,51 @@ public class DBHandler extends SQLiteOpenHelper{
         return lists;
     }
 
+    // get the lists as list of objects
+    public ArrayList<MyList> getSharedLists(String currentUserUsername){
+        int id;
+        int userId;
+        String username="";
+        String listName = "";
+        String image="";
+        String des = "";
+        ArrayList<MyList> lists = new ArrayList<MyList>();
+
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_USER_LISTS +
+                " WHERE " + COLUMN_Username + "!=\"" + currentUserUsername + "\";";
+        // cursor points to a location in the results
+        Cursor c = db.rawQuery(query, null);
+        // move to the first row
+        c.moveToFirst();
+
+        while (!c.isAfterLast()){
+
+            id = c.getInt(c.getColumnIndex("_listId"));
+            userId = c.getInt(c.getColumnIndex(COLUMN_UserId));
+            if(c.getString(c.getColumnIndex("_username")) != null){
+                username = c.getString(c.getColumnIndex("_username"));
+            }
+            if(c.getString(c.getColumnIndex("_name")) != null){
+                listName = c.getString(c.getColumnIndex("_name"));
+            }
+            if(c.getString(c.getColumnIndex("_description")) != null){
+                des = c.getString(c.getColumnIndex("_description"));
+            }
+            if(c.getString(c.getColumnIndex(COLUMN_ListImage)) != null){
+                image = c.getString(c.getColumnIndex(COLUMN_ListImage));
+            }
+
+            MyList ul = new MyList(userId, username, listName, des, image);
+            ul.set_listId(id);
+            lists.add(ul);
+            c.moveToNext();
+        }
+        c.close();
+        db.close();
+        return lists;
+    }
+
     public ArrayList<Item> getItems(int listID){
         // prepare the variables to store a row
         int id;

@@ -18,7 +18,6 @@ import com.wordofmouth.Interfaces.GetBitmap;
 import com.wordofmouth.Interfaces.GetLists;
 import com.wordofmouth.ObjectClasses.MyList;
 import com.wordofmouth.Other.DBGetData;
-import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.Other.StringToBitmapRequests;
 import com.wordofmouth.R;
 import com.wordofmouth.SharedPreferences.UserLocalStore;
@@ -31,7 +30,6 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
     ListView myListView;
     MainActivity mainActivity;
     ArrayList<MyList> myLists;
-    private String username;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -42,7 +40,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
         myListView = (ListView) v.findViewById(R.id.myListsListView);
         createList.setOnClickListener(this);
         //context = container.getContext();
-        username = UserLocalStore.getInstance(mainActivity).getUserLoggedIn().getUsername();
+        String username = UserLocalStore.getInstance(mainActivity).getUserLoggedIn().getUsername();
         // get the user`s lists to display on fragment
         myLists = new ArrayList<MyList>();
 
@@ -53,7 +51,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
         progressDialogFetching.setMessage("Fetching data from database...");
         progressDialogFetching.show();
 
-        dbGetData.GetListsInBackground(username, new GetLists() {
+        dbGetData.GetListsInBackground(username, 0, new GetLists() {
             @Override
             public void done(ArrayList<MyList> lists) {
                 progressDialogFetching.dismiss();

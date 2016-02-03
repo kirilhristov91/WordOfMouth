@@ -32,27 +32,34 @@ public class DBGetData {
         new getItemsAsyncTask(listId, getItems, dbHandler).execute();
     }
 
-    public void GetListsInBackground(String username, GetLists getLists){
-        new getListsAsyncTask(username, getLists, dbHandler).execute();
+    public void GetListsInBackground(String username, int flag, GetLists getLists){
+        new getListsAsyncTask(username, flag, getLists, dbHandler).execute();
     }
 
     private static class getListsAsyncTask extends AsyncTask<Void, Void, ArrayList<MyList>> {
         String username;
         GetLists getLists;
         ArrayList<MyList> result;
+        int flag;
         DBHandler dbHandler;
 
-        public getListsAsyncTask(String username, GetLists getLists, DBHandler dbHandler) {
+        public getListsAsyncTask(String username, int flag, GetLists getLists, DBHandler dbHandler) {
             this.username = username;
             this.getLists = getLists;
             this.dbHandler = dbHandler;
+            this.flag = flag;
             result = new ArrayList<>();
         }
 
         @Override
         protected ArrayList<MyList> doInBackground(Void... params) {
 
-            result = dbHandler.getLists(username);
+            if(flag == 0) {
+                result = dbHandler.getLists(username);
+            }
+            else {
+                result = dbHandler.getSharedLists(username);
+            }
             return result;
         }
 

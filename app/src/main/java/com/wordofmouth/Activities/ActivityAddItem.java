@@ -238,7 +238,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
 
     public String BitMapToString(Bitmap bitmap){
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, stream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         return Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);
     }
 

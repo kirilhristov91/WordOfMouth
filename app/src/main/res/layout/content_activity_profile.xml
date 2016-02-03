@@ -51,7 +51,8 @@
 
         android:layout_above="@+id/updatePictureButton"
         android:layout_alignLeft="@+id/updatePictureButton"
-        android:layout_alignStart="@+id/updatePictureButton" />
+        android:layout_alignStart="@+id/updatePictureButton"
+        android:layout_marginBottom="28dp" />
 
     <ImageView
         android:layout_width="40dp"

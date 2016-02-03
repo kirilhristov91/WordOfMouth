@@ -55,7 +55,6 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
 
 
         profilePictureinProfile = (ImageView) findViewById(R.id.profilePicture);
-        System.out.println(" V PROFILA " + (profilePictureinProfile==null));
         updatePicture = (Button) findViewById(R.id.updatePictureButton);
         chooseFromGallery = (Button) findViewById(R.id.chooseFromGallery);
         rotateRight = (ImageView) findViewById(R.id.rotateRight);

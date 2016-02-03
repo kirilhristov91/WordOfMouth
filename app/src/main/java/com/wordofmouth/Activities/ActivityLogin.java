@@ -107,6 +107,12 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
     }
 
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Runtime.getRuntime().gc();
+    }
+
     private void authenticate(User user){
 
 

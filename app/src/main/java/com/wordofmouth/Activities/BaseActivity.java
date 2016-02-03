@@ -76,14 +76,18 @@ public abstract class BaseActivity extends AppCompatActivity{
         actContent.addView(view);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-
         menuProfilePicture = (ImageView) mDrawerLayout.findViewById(R.id.menuProfilePicture);
         menuProfilePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent myIntent = new Intent(BaseActivity.this, ActivityProfile.class);
-                startActivity(myIntent);
-                mDrawerLayout.closeDrawers();
+                if(BaseActivity.this.toString().contains("ActivityProfile")){
+                    mDrawerLayout.closeDrawers();
+                }
+                else{
+                    Intent myIntent = new Intent(BaseActivity.this, ActivityProfile.class);
+                    startActivity(myIntent);
+                    mDrawerLayout.closeDrawers();
+                }
             }
         });
 
@@ -120,28 +124,48 @@ public abstract class BaseActivity extends AppCompatActivity{
         public void onItemClick(AdapterView parent, View view, int position, long id) {
            switch (position){
                case 0:
-                   Intent home = new Intent(context, MainActivity.class);
-                   //home.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                   context.startActivity(home);
-                   mDrawerLayout.closeDrawers();
+                   if(context.toString().contains("MainActivity")){
+                       mDrawerLayout.closeDrawers();
+                   }
+                   else {
+                       Intent home = new Intent(context, MainActivity.class);
+                       //home.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                       context.startActivity(home);
+                       mDrawerLayout.closeDrawers();
+                   }
                    break;
                case 1:
-                   Intent notifications = new Intent(context, ActivityNotifications.class);
-                   //notifications.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                   context.startActivity(notifications);
-                   mDrawerLayout.closeDrawers();
+                   if(context.toString().contains("ActivityNotifications")){
+                       mDrawerLayout.closeDrawers();
+                   }
+                   else {
+                       Intent notifications = new Intent(context, ActivityNotifications.class);
+                       //notifications.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                       context.startActivity(notifications);
+                       mDrawerLayout.closeDrawers();
+                   }
                    break;
                case 2:
-                   Intent feedback = new Intent(context, ActivityFeedback.class);
-                   //feedback.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                   context.startActivity(feedback);
-                   mDrawerLayout.closeDrawers();
+                   if(context.toString().contains("ActivityFeedback")){
+                       mDrawerLayout.closeDrawers();
+                   }
+                   else {
+                       Intent feedback = new Intent(context, ActivityFeedback.class);
+                       //feedback.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                       context.startActivity(feedback);
+                       mDrawerLayout.closeDrawers();
+                   }
                    break;
                case 3:
-                   Intent about = new Intent(context, ActivityAbout.class);
-                   //about.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                   context.startActivity(about);
-                   mDrawerLayout.closeDrawers();
+                   if(context.toString().contains("ActivityAbout")){
+                       mDrawerLayout.closeDrawers();
+                   }
+                   else {
+                       Intent about = new Intent(context, ActivityAbout.class);
+                       //about.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                       context.startActivity(about);
+                       mDrawerLayout.closeDrawers();
+                   }
                    break;
                case 4:
                    Intent logout = new Intent(context, ActivityLogin.class);

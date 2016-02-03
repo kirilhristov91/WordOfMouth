@@ -162,6 +162,23 @@ public class DBHandler extends SQLiteOpenHelper{
         db.close();
     }
 
+    public void addMultipleItems(ArrayList<Item> items){
+        SQLiteDatabase db = getWritableDatabase();
+        for(int i = 0; i<items.size();i++){
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_ItemID, items.get(i).get_itemId());
+            values.put(COLUMN_ListID, items.get(i).get_listId());
+            values.put(COLUMN_CreatorId, items.get(i).get_creatorId());
+            values.put(COLUMN_Creator, items.get(i).get_creatorUsername());
+            values.put(COLUMN_ItemName, items.get(i).get_name());
+            values.put(COLUMN_Rating, items.get(i).get_rating());
+            values.put(COLUMN_Description, items.get(i).get_description());
+            values.put(COLUMN_ItemImage, items.get(i).get_itemImage());
+            db.insert(TABLE_Items, null, values);
+        }
+        db.close();
+    }
+
     public void addProfilePicture(int userId, String encodedImage){
         SQLiteDatabase db = getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_Profile_Image +

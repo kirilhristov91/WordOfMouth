@@ -18,7 +18,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.wordofmouth.Interfaces.GetItems;
 import com.wordofmouth.Interfaces.GetListId;
+import com.wordofmouth.ObjectClasses.Item;
 import com.wordofmouth.ObjectClasses.MyList;
 import com.wordofmouth.ObjectClasses.Notification;
 import com.wordofmouth.Other.DBHandler;
@@ -81,18 +83,16 @@ public class ActivityNotifications extends BaseActivity {
                     final ProgressDialog progressDialogDownloadList = new ProgressDialog(ActivityNotifications.this);
                     progressDialogDownloadList.setCancelable(false);
                     progressDialogDownloadList.setTitle("Processing");
-                    progressDialogDownloadList.setMessage("Fetching data from database...");
+                    progressDialogDownloadList.setMessage("Fetching data from server...");
                     progressDialogDownloadList.show();
                     serverRequests.downloadListInBackgroudn(n.getListId(), n.getUserId(), new GetListId() {
                         @Override
                         public void done(MyList myList) {
                             if (myList.get_username().equals("Timeout")) {
                                 showConnectionError();
-                            }
-                            else if(myList.get_username().equals("UpdError")){
+                            } else if (myList.get_username().equals("UpdError")) {
                                 showServerError();
-                            }
-                            else{
+                            } else {
                                 DBHandler dbHandler = DBHandler.getInstance(ActivityNotifications.this);
                                 dbHandler.addList(myList);
                                 progressDialogDownloadList.dismiss();
@@ -116,10 +116,24 @@ public class ActivityNotifications extends BaseActivity {
 
     private void downloadItems(MyList list){
 
-        System.out.println(list.get_listId());
+        int listId = list.get_listId();
 
-        // trqbva ti listid
-        //ServerRequests serverRequests = ServerRequests.getInstance(this);
+        ServerRequests serverRequests = ServerRequests.getInstance(this);
+        final ProgressDialog progressDialogDownloadList = new ProgressDialog(this);
+        progressDialogDownloadList.setCancelable(false);
+        progressDialogDownloadList.setTitle("Processing");
+        progressDialogDownloadList.setMessage("Fetching data from server...");
+        progressDialogDownloadList.show();
+        serverRequests.downloadItemsInBackgroudn(listId, new GetItems() {
+            @Override
+            public void done(ArrayList<Item> items) {
+                if(items.size()>0){
+                    DBHandler dbHandler = DBHandler.getInstance(ActivityNotifications.this);
+                    dbHandler.addMultipleItems(items);
+                }
+                progressDialogDownloadList.dismiss();
+            }
+        });
     }
 
     private boolean isNetworkAvailable() {

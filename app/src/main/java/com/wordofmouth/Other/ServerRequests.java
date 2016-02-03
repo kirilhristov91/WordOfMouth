@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.wordofmouth.Interfaces.GetItemId;
+import com.wordofmouth.Interfaces.GetItems;
 import com.wordofmouth.Interfaces.GetListId;
 import com.wordofmouth.Interfaces.GetUserCallback;
 import com.wordofmouth.Interfaces.GetUsers;
@@ -78,6 +79,10 @@ public class ServerRequests {
 
     public void downloadListInBackgroudn(int listId, int userId, GetListId getListId){
         new downloadListAsyncTask(listId, userId, getListId).execute();
+    }
+
+    public void downloadItemsInBackgroudn(int listId, GetItems getItems){
+        new downloadItemsAsyncTask(listId, getItems).execute();
     }
 
     // method to encode the data needed to be sent o the server
@@ -835,6 +840,93 @@ public class ServerRequests {
         protected void onPostExecute(MyList returnedList) {
             getListId.done(returnedList);
             super.onPostExecute(returnedList);
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    private static class downloadItemsAsyncTask extends AsyncTask<Void, Void, ArrayList<Item>>{
+        int listId;
+        GetItems getItems;
+
+        public downloadItemsAsyncTask(int listId, GetItems getItems) {
+            this.listId = listId;
+            this.getItems = getItems;
+        }
+
+        @Override
+        protected ArrayList<Item> doInBackground(Void... params) {
+
+            Map<String,String> dataToSend = new HashMap<>();
+            Integer lid = listId;
+            String lidString = lid.toString();
+            ArrayList<Item> items = new ArrayList<Item>();
+            dataToSend.put("listId", lidString);
+            String encodedStr = getEncodedData(dataToSend);
+            BufferedReader reader = null;
+
+            try {
+                URL url = new URL(SERVER_ADDRESS + "downloadItems.php");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+                //Post Method
+                con.setRequestMethod("POST");
+                con.setConnectTimeout(CONNECTION_TIMEOUT);
+                con.setDoOutput(true);
+                OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
+                writer.write(encodedStr);
+                writer.flush();
+
+                if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    StringBuilder sb = new StringBuilder();
+                    reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line + "\n");
+                    }
+                    line = sb.toString();
+                    Log.i("custom_ListUpload_check", "The values received are as follows:");
+                    Log.i("custom_ListUpload_check", line);
+
+                    if (!line.equals("null\n")) {
+                        JSONArray array = new JSONArray(line);
+                        for (int n = 0; n < array.length(); n++) {
+                            JSONObject jResult = array.getJSONObject(n);
+                            String item = jResult.getString("item");
+                            jResult = new JSONObject(item);
+                            int id = jResult.getInt("id");
+                            int lId = jResult.getInt("listId");
+                            int creatorId = jResult.getInt("userId");
+                            String username = jResult.getString("username");
+                            String name = jResult.getString("name");
+                            double r = jResult.getDouble("rating");
+                            String description = jResult.getString("description");
+                            String image = jResult.getString("picture");
+                            Item itemToAdd = new Item(lId, creatorId, username, name, r, description, image);
+                            itemToAdd.set_itemId(id);
+                            items.add(itemToAdd);
+                        }
+                    }
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if(reader != null) {
+                    try {
+                        reader.close();     //Closing the
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return items;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Item> items) {
+            getItems.done(items);
+            super.onPostExecute(items);
         }
     }
 }

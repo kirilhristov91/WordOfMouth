@@ -36,9 +36,14 @@ public class MainActivity extends BaseActivity{
         pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(adapter);
 
+        // taka se slaga koi tab da se pokaje 0 ili 1
+        if(getIntent().getIntExtra("tab", 0) == 1) {
+            pager.setCurrentItem(1);
+        }
+
         // Assiging the Sliding Tab Layout View
         tabs = (SlidingTabLayout) findViewById(R.id.tabs);
-        tabs.setDistributeEvenly(true); // To make the Tabs Fixed set this true, This makes the tabs Space Evenly in Available width
+        tabs.setDistributeEvenly(true); // To make the Tabbs Fixed set this true, This makes the tabs Space Evenly in Available width
 
         // Setting Custom Color for the Scroll bar indicator of the Tab View
         tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {

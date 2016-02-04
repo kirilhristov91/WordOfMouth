@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -132,6 +133,10 @@ public class ActivityNotifications extends BaseActivity {
                     dbHandler.addMultipleItems(items);
                 }
                 progressDialogDownloadList.dismiss();
+                Intent intent = new Intent(ActivityNotifications.this, MainActivity.class);
+                intent.putExtra("tab", 1);
+                startActivity(intent);
+                finish();
             }
         });
     }

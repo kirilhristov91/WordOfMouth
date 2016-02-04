@@ -7,8 +7,8 @@
     tools:context="com.wordofmouth.Activities.ActivityProfile">
 
     <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:id="@+id/profilePicture"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
@@ -49,10 +49,10 @@
         android:id="@+id/rotateRight"
         android:src="@drawable/rotate_right"
 
-        android:layout_above="@+id/updatePictureButton"
-        android:layout_alignLeft="@+id/updatePictureButton"
-        android:layout_alignStart="@+id/updatePictureButton"
-        android:layout_marginBottom="28dp" />
+        android:layout_alignBottom="@+id/profilePicture"
+        android:layout_toLeftOf="@+id/updatePictureButton"
+        android:layout_toStartOf="@+id/updatePictureButton"
+        android:layout_marginBottom="74dp" />
 
     <ImageView
         android:layout_width="40dp"
@@ -60,8 +60,8 @@
         android:id="@+id/rotateLeft"
         android:src="@drawable/rotate_left"
         android:layout_alignTop="@+id/rotateRight"
-        android:layout_alignRight="@+id/updatePictureButton"
-        android:layout_alignEnd="@+id/updatePictureButton" />
+        android:layout_toRightOf="@+id/updatePictureButton"
+        android:layout_toEndOf="@+id/updatePictureButton" />
 
 
 

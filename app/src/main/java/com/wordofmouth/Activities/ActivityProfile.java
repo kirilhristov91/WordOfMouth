@@ -180,7 +180,7 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
 
                 int desiredWidth = image.getWidth();
                 int desiredHeight = image.getHeight();
-                while(desiredWidth/2 >= 100 || desiredHeight/2 >= 100){
+                while(desiredWidth/2 >= 200 || desiredHeight/2 >= 200){
                     desiredWidth = desiredWidth/2;
                     desiredHeight = desiredHeight/2;
                 }
@@ -269,8 +269,8 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
         BitmapFactory.decodeByteArray(bytes, 0, bytes.length, scaleOptions);
 
         int scale = 1;
-        while (scaleOptions.outWidth / scale / 2 >= 100
-                && scaleOptions.outHeight / scale / 2 >= 100) {
+        while (scaleOptions.outWidth / scale / 2 >= 200
+                && scaleOptions.outHeight / scale / 2 >= 200) {
             scale *= 2;
         }
 

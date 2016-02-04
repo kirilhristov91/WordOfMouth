@@ -214,7 +214,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
 
                 int desiredWidth = image.getWidth();
                 int desiredHeight = image.getHeight();
-                while(desiredWidth/2 >= 100 || desiredHeight/2 >=100){
+                while(desiredWidth/2 >= 150 || desiredHeight/2 >=150){
                     desiredWidth = desiredWidth/2;
                     desiredHeight = desiredHeight/2;
                 }

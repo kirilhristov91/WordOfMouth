@@ -449,4 +449,54 @@ public class DBHandler extends SQLiteOpenHelper{
         db.close();
         return itemsList;
     }
+
+
+    public Item getItem(int itemId){
+        // prepare the variables to store a row
+        int id;
+        int listId;
+        int userId;
+        String itemName = "";
+        double rating;
+        String des = "";
+        String image = "";
+        String creatorUsername = "";
+        Item item = null;
+
+        SQLiteDatabase db = getWritableDatabase();
+        // select the items of the selected list
+        String query = "SELECT * FROM " + TABLE_Items  +
+                " WHERE " + COLUMN_ItemID + "=" + itemId;
+        // cursor points to a location in the results
+        Cursor c = db.rawQuery(query, null);
+        // move to the first row
+        c.moveToFirst();
+
+        if (!c.isAfterLast()){
+
+            id = c.getInt(c.getColumnIndex(COLUMN_ItemID));
+            listId = c.getInt(c.getColumnIndex(COLUMN_ListID));
+            userId = c.getInt(c.getColumnIndex(COLUMN_CreatorId));
+            if(c.getString(c.getColumnIndex(COLUMN_Creator)) != null){
+                creatorUsername = c.getString(c.getColumnIndex(COLUMN_Creator));
+            }
+            if(c.getString(c.getColumnIndex(COLUMN_ItemName)) != null){
+                itemName = c.getString(c.getColumnIndex(COLUMN_ItemName));
+            }
+            rating = c.getDouble(c.getColumnIndex(COLUMN_Rating));
+            if(c.getString(c.getColumnIndex(COLUMN_ItemDescription)) != null){
+                des = c.getString(c.getColumnIndex(COLUMN_ItemDescription));
+            }
+
+            if(c.getString(c.getColumnIndex(COLUMN_ItemImage)) != null){
+                image = c.getString(c.getColumnIndex(COLUMN_ItemImage));
+            }
+
+            item = new Item(listId, userId, creatorUsername, itemName, rating, des, image);
+            item.set_itemId(id);
+        }
+        c.close();
+        db.close();
+        return item;
+    }
 }

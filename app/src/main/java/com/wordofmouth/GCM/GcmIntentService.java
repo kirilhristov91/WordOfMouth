@@ -23,6 +23,9 @@ import com.wordofmouth.Other.ServerRequests;
 import com.wordofmouth.R;
 import com.wordofmouth.SharedPreferences.UserLocalStore;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class GcmIntentService extends IntentService {
     public static final int NOTIFICATION_ID = 1;
     private NotificationManager mNotificationManager;
@@ -84,7 +87,11 @@ public class GcmIntentService extends IntentService {
                     String idString = recieved_message.substring(index+1, recieved_message.length());
                     System.out.println("Received id after cutting the string is: " + idString);
                     Integer listId = Integer.parseInt(idString);
-                    Notification n = new Notification(listId, userId, preparedMessage, 0);
+
+                    SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-DD HH:MM");
+                    String date = sdf.format(new Date());
+
+                    Notification n = new Notification(listId, userId, preparedMessage, date, 0);
                     dbHandler.addNotification(n);
 
                     sendNotification(preparedMessage);

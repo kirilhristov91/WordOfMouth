@@ -1,5 +1,7 @@
 package com.wordofmouth.ObjectClasses;
 
+import java.util.Date;
+
 public class Notification {
 
     int id;
@@ -7,11 +9,13 @@ public class Notification {
     int userId;
     String msg;
     int accepted;
+    String date;
 
-    public Notification(int listId, int userId, String msg, int accepted){
+    public Notification(int listId, int userId, String msg, String date, int accepted){
         this.listId = listId;
         this.userId = userId;
         this.msg = msg;
+        this.date = date;
         this.accepted = accepted;
     }
 
@@ -45,6 +49,14 @@ public class Notification {
 
     public void setMsg(String msg) {
         this.msg = msg;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public int getAccepted() {

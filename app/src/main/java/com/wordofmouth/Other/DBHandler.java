@@ -54,7 +54,8 @@ public class DBHandler extends SQLiteOpenHelper{
     public static final String COLUMN_NotificationListId = "_notificationListId";
     public static final String COLUMN_NotificationUserId = "_notificationUsertId";
     public static final String COLUMN_NotificationMsg = "_notificationMsg";
-    public static final String COLUMN_NotificationAccepter = "_notificationAccepted";
+    public static final String COLUMN_NotificationDate = "_notificationDate";
+    public static final String COLUMN_NotificationAccepted = "_notificationAccepted";
 
     /*public DBHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, DATABASE_NAME, factory, DATABASE_VERSION);
@@ -119,7 +120,8 @@ public class DBHandler extends SQLiteOpenHelper{
                 COLUMN_NotificationListId + " INTEGER, " +
                 COLUMN_NotificationUserId + " INTEGER, " +
                 COLUMN_NotificationMsg + " TEXT, " +
-                COLUMN_NotificationAccepter + " INTEGER " +
+                COLUMN_NotificationDate + " TEXT, " +
+                COLUMN_NotificationAccepted + " INTEGER " +
                 ");";
 
         db.execSQL(CreateListTableQuery);
@@ -247,7 +249,8 @@ public class DBHandler extends SQLiteOpenHelper{
         values.put(COLUMN_NotificationListId, notification.getListId());
         values.put(COLUMN_NotificationUserId, notification.getUserId());
         values.put(COLUMN_NotificationMsg, notification.getMsg());
-        values.put(COLUMN_NotificationAccepter, notification.getAccepted());
+        values.put(COLUMN_NotificationDate, notification.getDate());
+        values.put(COLUMN_NotificationAccepted, notification.getAccepted());
         SQLiteDatabase db = getWritableDatabase();
         db.insert(TABLE_Notifications, null, values);
         db.close();
@@ -259,6 +262,7 @@ public class DBHandler extends SQLiteOpenHelper{
         int lid;
         int uid;
         String message="";
+        String date = "";
         int accepted;
 
         SQLiteDatabase db = getWritableDatabase();
@@ -274,9 +278,14 @@ public class DBHandler extends SQLiteOpenHelper{
             if(c.getString(c.getColumnIndex(COLUMN_NotificationMsg)) != null){
                 message = c.getString(c.getColumnIndex(COLUMN_NotificationMsg));
             }
-            accepted = c.getInt(c.getColumnIndex(COLUMN_NotificationAccepter));
 
-            Notification n = new Notification(lid, uid, message, accepted);
+            if(c.getString(c.getColumnIndex(COLUMN_NotificationDate)) != null){
+                date = c.getString(c.getColumnIndex(COLUMN_NotificationDate));
+            }
+
+            accepted = c.getInt(c.getColumnIndex(COLUMN_NotificationAccepted));
+
+            Notification n = new Notification(lid, uid, message, date, accepted);
             n.setId(id);
             notificationsList.add(n);
             c.moveToNext();

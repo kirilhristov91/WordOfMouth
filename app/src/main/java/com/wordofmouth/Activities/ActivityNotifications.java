@@ -53,7 +53,7 @@ public class ActivityNotifications extends BaseActivity {
 
         notificationItemListView = (ListView) findViewById(R.id.notificationListView);
         ArrayAdapter<String> notificationAdapter =
-                new CustomNotificationRowAdapter(ActivityNotifications.this, messages);
+                new CustomNotificationRowAdapter(ActivityNotifications.this, messages, notifications);
         notificationItemListView.setAdapter(notificationAdapter);
 
         notificationItemListView.setOnItemClickListener(

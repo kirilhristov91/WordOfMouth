@@ -7,17 +7,25 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.wordofmouth.ObjectClasses.Notification;
 import com.wordofmouth.R;
+
+import java.util.ArrayList;
 
 public class CustomNotificationRowAdapter extends ArrayAdapter<String> {
 
-    public CustomNotificationRowAdapter(Context context, String[] messages) {
+    ArrayList<Notification> notifications;
+
+    public CustomNotificationRowAdapter(Context context, String[] messages, ArrayList<Notification> notifications) {
         super(context, R.layout.custom_notification_row, messages);
+        this.notifications = notifications;
     }
 
     static class ViewHolderItem{
         ImageView notificationImage;
         TextView notificationText;
+        TextView notificationDate;
     }
 
     @Override
@@ -30,6 +38,7 @@ public class CustomNotificationRowAdapter extends ArrayAdapter<String> {
             viewHolder = new ViewHolderItem();
 
             viewHolder.notificationText = (TextView) convertView.findViewById(R.id.notificationText);
+            viewHolder.notificationDate = (TextView) convertView.findViewById(R.id.notificationDate);
             viewHolder.notificationImage = (ImageView) convertView.findViewById(R.id.notificationImage);
 
 
@@ -40,6 +49,7 @@ public class CustomNotificationRowAdapter extends ArrayAdapter<String> {
 
         String msg = getItem(position);
         viewHolder.notificationText.setText(msg);
+        viewHolder.notificationDate.setText(notifications.get(position).getDate());
         //viewHolder.notificationImage.setImageResource(R.drawable.notification);
         return convertView;
     }

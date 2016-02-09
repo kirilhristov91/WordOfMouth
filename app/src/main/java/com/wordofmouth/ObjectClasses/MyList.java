@@ -9,6 +9,7 @@ public class MyList {
     private String _name;
     private String image;
     private String _description;
+    private int hasNewContent;
 
     public MyList(){}
 
@@ -18,8 +19,8 @@ public class MyList {
         this._name = name;
         this.image = image;
         this._description = description;
-
     }
+
 
     public void set_listId(int _listId) {
         this._listId = _listId;
@@ -67,5 +68,13 @@ public class MyList {
 
     public String get_description() {
         return _description;
+    }
+
+    public int getHasNewContent() {
+        return hasNewContent;
+    }
+
+    public void setHasNewContent(int hasNewContent) {
+        this.hasNewContent = hasNewContent;
     }
 }

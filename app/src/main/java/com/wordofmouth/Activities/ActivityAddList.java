@@ -125,6 +125,7 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
                                         showConnectionError();
                                     } else {
                                         DBHandler dbHandler = DBHandler.getInstance(ActivityAddList.this);
+                                        returnedList.setHasNewContent(0);
                                         dbHandler.addList(returnedList);
                                         if(photo!=null) {
                                             photo.recycle();

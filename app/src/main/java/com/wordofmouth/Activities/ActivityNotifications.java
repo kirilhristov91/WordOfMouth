@@ -95,6 +95,7 @@ public class ActivityNotifications extends BaseActivity {
                                 showServerError();
                             } else {
                                 DBHandler dbHandler = DBHandler.getInstance(ActivityNotifications.this);
+                                myList.setHasNewContent(1);
                                 dbHandler.addList(myList);
                                 progressDialogDownloadList.dismiss();
                                 downloadItems(myList);

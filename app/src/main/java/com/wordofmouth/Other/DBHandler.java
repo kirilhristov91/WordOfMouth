@@ -18,7 +18,7 @@ public class DBHandler extends SQLiteOpenHelper{
     private static DBHandler sInstance;
 
     //if updating the database change the version:
-    private static final int DATABASE_VERSION = 21;
+    private static final int DATABASE_VERSION = 22;
     private static final String DATABASE_NAME = "WOM.db";
 
     //Lists table
@@ -29,6 +29,7 @@ public class DBHandler extends SQLiteOpenHelper{
     public static final String COLUMN_Name = "_name";
     public static final String COLUMN_Description = "_description";
     public static final String COLUMN_ListImage = "_listImage";
+    public static final String COLUMN_HasNewContent = "_hasNewContent";
 
     // Items table
     public static final String TABLE_Items = "Items";
@@ -90,7 +91,8 @@ public class DBHandler extends SQLiteOpenHelper{
                 COLUMN_Username + " TEXT, " +
                 COLUMN_Name + " TEXT, " +
                 COLUMN_Description + " TEXT, " +
-                COLUMN_ListImage + " TEXT " +
+                COLUMN_ListImage + " TEXT, " +
+                COLUMN_HasNewContent + " INTEGER, " +
                 ");";
 
         String CreateItemsTableQuery = "CREATE TABLE " + TABLE_Items + "(" +
@@ -138,12 +140,13 @@ public class DBHandler extends SQLiteOpenHelper{
     //Add a new row to table lists
     public void addList(MyList ul){
         ContentValues values = new ContentValues();
-        values.put(COLUMN_ListID, ul.get_listId());
+        values.put(COLUMN_ID, ul.get_listId());
         values.put(COLUMN_UserId, ul.getUserId());
         values.put(COLUMN_Username, ul.get_username());
         values.put(COLUMN_Name, ul.get_name());
         values.put(COLUMN_Description, ul.get_description());
         values.put(COLUMN_ListImage, ul.getImage());
+        values.put(COLUMN_HasNewContent, ul.getHasNewContent());
         SQLiteDatabase db = getWritableDatabase();
         db.insert(TABLE_USER_LISTS, null, values);
         db.close();
@@ -194,6 +197,22 @@ public class DBHandler extends SQLiteOpenHelper{
                     " SET " + COLUMN_Rating + " = " + item.get_rating() + "," +
                     COLUMN_RatingCounter + " = " + item.getRatingCounter() +
                     " WHERE " + COLUMN_ItemID + " = " + item.get_itemId() + ";";
+            db.execSQL(UpdateRating);
+        }
+        c.close();
+        db.close();
+    }
+
+    public void updateHasNewContent(int listId, int toPut){
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_USER_LISTS +
+                " WHERE " + COLUMN_ID + " = " + listId;
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+        if (c.getCount() > 0) {
+            String UpdateRating = "UPDATE " + TABLE_USER_LISTS +
+                    " SET " + COLUMN_HasNewContent + " = " + toPut +
+                    " WHERE " + COLUMN_ID + " = " + listId + ";";
             db.execSQL(UpdateRating);
         }
         c.close();

@@ -117,6 +117,7 @@ public class GcmIntentService extends IntentService {
                             if (item!= null && item.get_itemId()!=-1){
                                 if (userLocalStore.getUserLoggedIn().getId() != item.get_creatorId()) {
                                     dbHandler.addItem(item);
+                                    dbHandler.updateHasNewContent(item.get_listId(), 1);
                                 }
                             }
                         }

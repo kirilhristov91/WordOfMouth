@@ -2,6 +2,7 @@ package com.wordofmouth.Activities;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,6 +64,9 @@ public class CustomListRowAdapter extends ArrayAdapter<String> {
         viewHolder.listTitle.setText(title);
         viewHolder.descriptionText.setText(lists.get(position).get_description());
         viewHolder.listAddedByUsername.setText(lists.get(position).get_username());
+        if(lists.get(position).getHasNewContent() == 1){
+            convertView.setBackgroundColor(Color.GREEN);
+        }
         return convertView;
     }
 }

@@ -85,6 +85,10 @@ public class ServerRequests {
         new downloadItemsAsyncTask(listId, getItems).execute();
     }
 
+    public void downloadNewItemInBackgroudn(int itemId, GetItemId getItemId){
+        new downloadNewItemAsyncTask(itemId, getItemId).execute();
+    }
+
     // method to encode the data needed to be sent o the server
     private static String getEncodedData(Map<String,String> data) {
         StringBuilder sb = new StringBuilder();
@@ -929,4 +933,95 @@ public class ServerRequests {
             super.onPostExecute(items);
         }
     }
+
+
+    ////////////////////////////////////////////////////////////////////////
+    private static class downloadNewItemAsyncTask extends AsyncTask<Void, Void, Item>{
+        int itemId;
+        GetItemId getItemId;
+
+        public downloadNewItemAsyncTask(int itemId, GetItemId getItemId) {
+            this.itemId = itemId;
+            this.getItemId = getItemId;
+        }
+
+        @Override
+        protected Item doInBackground(Void... params) {
+
+            Map<String,String> dataToSend = new HashMap<>();
+            Integer iId = itemId;
+            String itemIdString = iId.toString();
+
+            dataToSend.put("itemId", itemIdString);
+
+            String encodedStr = getEncodedData(dataToSend);
+            BufferedReader reader = null;
+            Item returnedItem = null;
+
+            //Connection Handling
+            try {
+                URL url = new URL(SERVER_ADDRESS + "downloadNewItem.php");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+                //Post Method
+                con.setRequestMethod("POST");
+                con.setConnectTimeout(CONNECTION_TIMEOUT);
+                con.setDoOutput(true);
+                OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
+                writer.write(encodedStr);
+                writer.flush();
+
+                if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    //Data Read Procedure
+                    StringBuilder sb = new StringBuilder();
+                    reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line + "\n");
+                    }
+                    line = sb.toString();
+                    Log.i("custom_ListUpload_check", "The values received are as follows:");
+                    Log.i("custom_ListUpload_check", line);
+
+                    JSONObject jResult = new JSONObject(line);
+
+                    if (jResult.length() == 0) {
+                        returnedItem = null;
+                    } else {
+                        int id = jResult.getInt("id");
+                        int lId = jResult.getInt("listId");
+                        int creatorId = jResult.getInt("userId");
+                        String username = jResult.getString("username");
+                        String name = jResult.getString("name");
+                        double r = jResult.getDouble("rating");
+                        String description = jResult.getString("description");
+                        String image = jResult.getString("picture");
+                        returnedItem = new Item(lId, creatorId, username, name, r, description, image);
+                        returnedItem.set_itemId(id);
+                    }
+                }
+                else return new Item(-1, -1, "Timeout", "Timeout", -1, "Timeout", "Timeout");
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if(reader != null) {
+                    try {
+                        reader.close();     //Closing the
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return returnedItem;
+        }
+
+        @Override
+        protected void onPostExecute(Item returnedItem) {
+            getItemId.done(returnedItem);
+            super.onPostExecute(returnedItem);
+        }
+    }
+
+
 }

@@ -15,8 +15,11 @@ import android.util.Log;
 import com.wordofmouth.Activities.*;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.wordofmouth.Interfaces.GetItemId;
+import com.wordofmouth.ObjectClasses.Item;
 import com.wordofmouth.ObjectClasses.Notification;
 import com.wordofmouth.Other.DBHandler;
+import com.wordofmouth.Other.ServerRequests;
 import com.wordofmouth.R;
 import com.wordofmouth.SharedPreferences.UserLocalStore;
 
@@ -85,6 +88,19 @@ public class GcmIntentService extends IntentService {
                     dbHandler.addNotification(n);
 
                     sendNotification(preparedMessage);
+                }
+
+                else {
+                    Integer itemId = Integer.parseInt(recieved_message);
+                    ServerRequests serverRequests = ServerRequests.getInstance(this);
+                    serverRequests.downloadNewItemInBackgroudn(itemId, new GetItemId() {
+                        @Override
+                        public void done(Item item) {
+                            if (item!= null && item.get_itemId()!=-1){
+                                dbHandler.addItem(item);
+                            }
+                        }
+                    });
                 }
 
                 Intent sendIntent =new Intent("message_recieved");

@@ -50,7 +50,13 @@ public class ActivityItem extends BaseActivity {
         Bitmap bitmap = StringToBitMap(item.get_itemImage());
 
         itemNameTitle.setText(item.get_name());
-        itemPicture.setImageBitmap(bitmap);
+        if(bitmap!=null) {
+            itemPicture.setImageBitmap(bitmap);
+        }
+        else {
+            itemPicture.setImageResource(R.drawable.logowom);
+        }
+
         usernameText.setText(item.get_creatorUsername());
         description.setText(item.get_description());
         itemRating.setRating((float) item.get_rating());

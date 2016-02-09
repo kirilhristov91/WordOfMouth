@@ -526,8 +526,8 @@ public class ServerRequests {
                         sb.append(line + "\n");
                     }
                     line = sb.toString();
-                    Log.i("custom_ListUpload_check", "The values received are as follows:");
-                    Log.i("custom_ListUpload_check", line);
+                    Log.i("custom_ItemUpload_check", "The values received are as follows:");
+                    Log.i("custom_ItemUpload_check", line);
 
                     if (line.equals("An item with that name for that list already exists!\n")) {
                         returnedItem = null;
@@ -726,8 +726,8 @@ public class ServerRequests {
                         sb.append(line + "\n");
                     }
                     line = sb.toString();
-                    Log.i("fetchUsers", "The values received are as follows:");
-                    Log.i("fetchUsers", line);
+                    Log.i("invite", "The values received are as follows:");
+                    Log.i("invite", line);
 
                     response = line;
                 }
@@ -803,8 +803,8 @@ public class ServerRequests {
                         sb.append(line + "\n");
                     }
                     line = sb.toString();
-                    Log.i("custom_ListUpload_check", "The values received are as follows:");
-                    Log.i("custom_ListUpload_check", line);
+                    Log.i("downloadList", "The values received are as follows:");
+                    Log.i("downloadList", line);
 
                     if (line.equals("Could not update table Shared\n")) {
                         return new MyList(-1, "UpdError", "UpdError", "UpdError", "UpdError");
@@ -895,8 +895,8 @@ public class ServerRequests {
                         sb.append(line + "\n");
                     }
                     line = sb.toString();
-                    Log.i("custom_ListUpload_check", "The values received are as follows:");
-                    Log.i("custom_ListUpload_check", line);
+                    Log.i("downloadItems", "The values received are as follows:");
+                    Log.i("downloadItems", line);
 
                     if (!line.equals("null\n")) {
                         JSONArray array = new JSONArray(line);
@@ -988,8 +988,8 @@ public class ServerRequests {
                         sb.append(line + "\n");
                     }
                     line = sb.toString();
-                    Log.i("custom_ListUpload_check", "The values received are as follows:");
-                    Log.i("custom_ListUpload_check", line);
+                    Log.i("downloadNewItem", "The values received are as follows:");
+                    Log.i("downloadNewItem", line);
 
                     JSONObject jResult = new JSONObject(line);
 

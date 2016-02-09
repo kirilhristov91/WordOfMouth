@@ -35,6 +35,7 @@ public class ActivityNotifications extends BaseActivity {
 
     ArrayList<Notification> notifications;
     ListView notificationItemListView;
+    int notificationId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +62,14 @@ public class ActivityNotifications extends BaseActivity {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         //Toast.makeText(ActivityNotifications.this, notifications.get(position).getMsg(), Toast.LENGTH_SHORT).show();
-                        showConfirmationDialog(notifications.get(position));
+
+                        if(notifications.get(position).getAccepted() == 1){
+                            showAlreadyAccepted();
+                        }
+                        else {
+                            notificationId = notifications.get(position).getId();
+                            showConfirmationDialog(notifications.get(position));
+                        }
                     }
                 }
         );
@@ -129,11 +137,12 @@ public class ActivityNotifications extends BaseActivity {
         serverRequests.downloadItemsInBackgroudn(listId, new GetItems() {
             @Override
             public void done(ArrayList<Item> items) {
-                if(items.size()>0){
-                    DBHandler dbHandler = DBHandler.getInstance(ActivityNotifications.this);
+                DBHandler dbHandler = DBHandler.getInstance(ActivityNotifications.this);
+                if (items.size() > 0) {
                     dbHandler.addMultipleItems(items);
                 }
                 progressDialogDownloadList.dismiss();
+                dbHandler.updateAccepted(notificationId);
                 Intent intent = new Intent(ActivityNotifications.this, MainActivity.class);
                 intent.putExtra("tab", 1);
                 startActivity(intent);
@@ -162,4 +171,12 @@ public class ActivityNotifications extends BaseActivity {
         allertBuilder.setPositiveButton("OK", null);
         allertBuilder.show();
     }
+
+    private void showAlreadyAccepted(){
+        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
+        allertBuilder.setMessage("You have already accepted that notification!");
+        allertBuilder.setPositiveButton("OK", null);
+        allertBuilder.show();
+    }
+
 }

@@ -221,6 +221,22 @@ public class DBHandler extends SQLiteOpenHelper{
         db.close();
     }
 
+    public void updateAccepted(int notificationId){
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_Notifications +
+                " WHERE " + COLUMN_NotificationID + " = " + notificationId;
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+        if (c.getCount() > 0) {
+            String UpdateRating = "UPDATE " + TABLE_Notifications +
+                    " SET " + COLUMN_NotificationAccepted + " = " + 1 +
+                    " WHERE " + COLUMN_NotificationID + " = " + notificationId + ";";
+            db.execSQL(UpdateRating);
+        }
+        c.close();
+        db.close();
+    }
+
 
     public void addProfilePicture(int userId, String encodedImage){
         SQLiteDatabase db = getWritableDatabase();

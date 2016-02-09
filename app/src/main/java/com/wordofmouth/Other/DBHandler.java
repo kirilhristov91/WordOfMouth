@@ -18,7 +18,7 @@ public class DBHandler extends SQLiteOpenHelper{
     private static DBHandler sInstance;
 
     //if updating the database change the version:
-    private static final int DATABASE_VERSION = 20;
+    private static final int DATABASE_VERSION = 21;
     private static final String DATABASE_NAME = "WOM.db";
 
     //Lists table
@@ -38,6 +38,7 @@ public class DBHandler extends SQLiteOpenHelper{
     public static final String COLUMN_Creator = "_creatorUsername";
     public static final String COLUMN_ItemName = "_itemName";
     public static final String COLUMN_Rating = "_rating";
+    public static final String COLUMN_RatingCounter = "_ratingCounter";
     public static final String COLUMN_ItemDescription = "_description";
     public static final String COLUMN_ItemImage = "_itemImage";
 
@@ -99,6 +100,7 @@ public class DBHandler extends SQLiteOpenHelper{
                 COLUMN_Creator + " TEXT, " +
                 COLUMN_ItemName + " TEXT, " +
                 COLUMN_Rating + " DOUBLE, " +
+                COLUMN_RatingCounter + " INTEGER, " +
                 COLUMN_ItemDescription + " TEXT, " +
                 COLUMN_ItemImage + " TEXT, " +
                 "FOREIGN KEY (" + COLUMN_ListID + ") REFERENCES " +
@@ -155,6 +157,7 @@ public class DBHandler extends SQLiteOpenHelper{
         values.put(COLUMN_Creator, i.get_creatorUsername());
         values.put(COLUMN_ItemName, i.get_name());
         values.put(COLUMN_Rating, i.get_rating());
+        values.put(COLUMN_RatingCounter, i.getRatingCounter());
         values.put(COLUMN_Description, i.get_description());
         values.put(COLUMN_ItemImage, i.get_itemImage());
         SQLiteDatabase db = getWritableDatabase();
@@ -178,6 +181,25 @@ public class DBHandler extends SQLiteOpenHelper{
         }
         db.close();
     }
+
+
+    public void updateRating(Item item){
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_Items +
+                " WHERE " + COLUMN_ItemID + " = " + item.get_itemId();
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+        if (c.getCount() > 0) {
+            String UpdateRating = "UPDATE " + TABLE_Items +
+                    " SET " + COLUMN_Rating + " = " + item.get_rating() + "," +
+                    COLUMN_RatingCounter + " = " + item.getRatingCounter() +
+                    " WHERE " + COLUMN_ItemID + " = " + item.get_itemId() + ";";
+            db.execSQL(UpdateRating);
+        }
+        c.close();
+        db.close();
+    }
+
 
     public void addProfilePicture(int userId, String encodedImage){
         SQLiteDatabase db = getWritableDatabase();
@@ -406,6 +428,7 @@ public class DBHandler extends SQLiteOpenHelper{
         int userId;
         String itemName = "";
         double rating;
+        int ratingCounter;
         String des = "";
         String image = "";
         String creatorUsername = "";
@@ -428,6 +451,7 @@ public class DBHandler extends SQLiteOpenHelper{
                 itemName = c.getString(c.getColumnIndex("_itemName"));
             }
             rating = c.getDouble(c.getColumnIndex("_rating"));
+            ratingCounter = c.getInt(c.getColumnIndex(COLUMN_RatingCounter));
             if(c.getString(c.getColumnIndex("_description")) != null){
                 des = c.getString(c.getColumnIndex("_description"));
             }
@@ -440,7 +464,7 @@ public class DBHandler extends SQLiteOpenHelper{
                 image = c.getString(c.getColumnIndex(COLUMN_ItemImage));
             }
 
-            Item item = new Item(listID, userId, creatorUsername, itemName, rating, des, image);
+            Item item = new Item(listID, userId, creatorUsername, itemName, rating, ratingCounter, des, image);
             item.set_itemId(id);
             itemsList.add(item);
             c.moveToNext();
@@ -458,6 +482,7 @@ public class DBHandler extends SQLiteOpenHelper{
         int userId;
         String itemName = "";
         double rating;
+        int ratingCounter;
         String des = "";
         String image = "";
         String creatorUsername = "";
@@ -484,6 +509,7 @@ public class DBHandler extends SQLiteOpenHelper{
                 itemName = c.getString(c.getColumnIndex(COLUMN_ItemName));
             }
             rating = c.getDouble(c.getColumnIndex(COLUMN_Rating));
+            ratingCounter = c.getInt(c.getColumnIndex(COLUMN_RatingCounter));
             if(c.getString(c.getColumnIndex(COLUMN_ItemDescription)) != null){
                 des = c.getString(c.getColumnIndex(COLUMN_ItemDescription));
             }
@@ -492,7 +518,7 @@ public class DBHandler extends SQLiteOpenHelper{
                 image = c.getString(c.getColumnIndex(COLUMN_ItemImage));
             }
 
-            item = new Item(listId, userId, creatorUsername, itemName, rating, des, image);
+            item = new Item(listId, userId, creatorUsername, itemName, rating, ratingCounter, des, image);
             item.set_itemId(id);
         }
         c.close();

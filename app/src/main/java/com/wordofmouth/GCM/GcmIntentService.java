@@ -90,6 +90,24 @@ public class GcmIntentService extends IntentService {
                     sendNotification(preparedMessage);
                 }
 
+                else if(recieved_message.contains("rating")) {
+                    int index = recieved_message.length()-1;
+                    while(recieved_message.charAt(index)!=' '){
+                        index--;
+                    }
+                    String idString = recieved_message.substring(index+1, recieved_message.length());
+                    Integer itemId = Integer.parseInt(idString);
+                    ServerRequests serverRequests = ServerRequests.getInstance(this);
+                    serverRequests.downloadNewItemInBackgroudn(itemId, new GetItemId() {
+                        @Override
+                        public void done(Item item) {
+                            if (item!= null && item.get_itemId()!=-1){
+                                dbHandler.updateRating(item);
+                            }
+                        }
+                    });
+                }
+
                 else {
                     Integer itemId = Integer.parseInt(recieved_message);
                     ServerRequests serverRequests = ServerRequests.getInstance(this);

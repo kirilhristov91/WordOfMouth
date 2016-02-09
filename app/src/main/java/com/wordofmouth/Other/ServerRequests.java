@@ -8,6 +8,7 @@ import android.util.Log;
 import com.wordofmouth.Interfaces.GetItemId;
 import com.wordofmouth.Interfaces.GetItems;
 import com.wordofmouth.Interfaces.GetListId;
+import com.wordofmouth.Interfaces.GetRateResponce;
 import com.wordofmouth.Interfaces.GetUserCallback;
 import com.wordofmouth.Interfaces.GetUsers;
 import com.wordofmouth.Interfaces.SendInviteResponse;
@@ -87,6 +88,10 @@ public class ServerRequests {
 
     public void downloadNewItemInBackgroudn(int itemId, GetItemId getItemId){
         new downloadNewItemAsyncTask(itemId, getItemId).execute();
+    }
+
+    public void rateInBackground(int listId, int itemId, int userId, double rating, GetRateResponce getRateResponce){
+        new rateInBackgroundAsyncTask(listId, itemId, userId, rating, getRateResponce).execute();
     }
 
     // method to encode the data needed to be sent o the server
@@ -538,14 +543,15 @@ public class ServerRequests {
                             String username = jResult.getString("username");
                             String name = jResult.getString("name");
                             double r = jResult.getDouble("rating");
+                            int ratingCounter = jResult.getInt("ratingCounter");
                             String description = jResult.getString("description");
                             String image = jResult.getString("picture");
-                            returnedItem = new Item(lId, creatorId, username, name, rating, description, image);
+                            returnedItem = new Item(lId, creatorId, username, name, rating, ratingCounter, description, image);
                             returnedItem.set_itemId(id);
                         }
                     }
                 }
-                else return new Item(-1, -1, "Timeout", "Timeout", -1, "Timeout", "Timeout");
+                else return new Item(-1, -1, "Timeout", "Timeout", -1, 1, "Timeout", "Timeout");
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -904,9 +910,10 @@ public class ServerRequests {
                             String username = jResult.getString("username");
                             String name = jResult.getString("name");
                             double r = jResult.getDouble("rating");
+                            int ratingCounter = jResult.getInt("ratingCounter");
                             String description = jResult.getString("description");
                             String image = jResult.getString("picture");
-                            Item itemToAdd = new Item(lId, creatorId, username, name, r, description, image);
+                            Item itemToAdd = new Item(lId, creatorId, username, name, r, ratingCounter, description, image);
                             itemToAdd.set_itemId(id);
                             items.add(itemToAdd);
                         }
@@ -995,13 +1002,14 @@ public class ServerRequests {
                         String username = jResult.getString("username");
                         String name = jResult.getString("name");
                         double r = jResult.getDouble("rating");
+                        int ratingCounter = jResult.getInt("ratingCounter");
                         String description = jResult.getString("description");
                         String image = jResult.getString("picture");
-                        returnedItem = new Item(lId, creatorId, username, name, r, description, image);
+                        returnedItem = new Item(lId, creatorId, username, name, r, ratingCounter, description, image);
                         returnedItem.set_itemId(id);
                     }
                 }
-                else return new Item(-1, -1, "Timeout", "Timeout", -1, "Timeout", "Timeout");
+                else return new Item(-1, -1, "Timeout", "Timeout", -1, 1, "Timeout", "Timeout");
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -1023,5 +1031,95 @@ public class ServerRequests {
         }
     }
 
+    ////////////////////////////////////////////////////////////////////////////////
+    private static class rateInBackgroundAsyncTask extends AsyncTask<Void, Void, String>{
+        int listId;
+        int userId;
+        int itemId;
+        double rating;
+        GetRateResponce getRateResponce;
+
+        public rateInBackgroundAsyncTask(int listId, int itemId, int userId, double rating, GetRateResponce getRateResponce) {
+            this.listId = listId;
+            this.itemId = itemId;
+            this.userId = userId;
+            this.rating = rating;
+            this.getRateResponce = getRateResponce;
+        }
+
+
+        @Override
+        protected String doInBackground(Void... params) {
+
+            Map<String,String> dataToSend = new HashMap<>();
+            Integer lid = listId;
+            String lidString = lid.toString();
+            Integer iid = itemId;
+            String iidString = iid.toString();
+            Integer uid = userId;
+            String uidString = uid.toString();
+            Double r = rating;
+            String rString = r.toString();
+
+            dataToSend.put("listId", lidString);
+            dataToSend.put("itemId", iidString);
+            dataToSend.put("userId", uidString);
+            dataToSend.put("rating", rString);
+            String encodedStr = getEncodedData(dataToSend);
+            BufferedReader reader = null;
+
+            String response="";
+
+            //Connection Handling
+            try {
+                URL url = new URL(SERVER_ADDRESS + "updateRating.php");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+                //Post Method
+                con.setRequestMethod("POST");
+                con.setConnectTimeout(CONNECTION_TIMEOUT);
+                con.setDoOutput(true);
+                OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
+                writer.write(encodedStr);
+                writer.flush();
+
+                if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    //Data Read Procedure
+                    StringBuilder sb = new StringBuilder();
+                    reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line + "\n");
+                    }
+                    line = sb.toString();
+                    Log.i("rate", "The values received are as follows:");
+                    Log.i("rate", line);
+
+                    response = line;
+                }
+                else {
+                    return "Timeout";
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if(reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            getRateResponce.done(response);
+            super.onPostExecute(response);
+        }
+    }
 
 }

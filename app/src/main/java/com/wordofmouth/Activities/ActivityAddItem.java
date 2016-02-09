@@ -127,7 +127,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
                         }
                         UserLocalStore userLocalStore = UserLocalStore.getInstance(this);
                         Item i = new Item(listId, userLocalStore.getUserLoggedIn().getId(), userLocalStore.getUserLoggedIn().getUsername(),
-                                itemNameField.getText().toString(), ratingSelected, itemDescriptionField.getText().toString(), imageToSave);
+                                itemNameField.getText().toString(), ratingSelected, 1, itemDescriptionField.getText().toString(), imageToSave);
 
                         final ProgressDialog progressDialog = new ProgressDialog(this);
                         progressDialog.setCancelable(false);

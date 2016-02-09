@@ -36,10 +36,47 @@
             android:layout_height="wrap_content"
             android:numStars="5"
             android:stepSize="0.5"
+            android:isIndicator="true"
             android:progressTint="@color/colorPrimary"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
             android:layout_below="@+id/itemPicture" />
+
+        <LinearLayout
+            android:id="@+id/rateItLayout"
+            android:layout_below="@+id/itemRatingBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:background="#A5D6A7">
+
+            <TextView
+                android:layout_marginTop="3dp"
+                android:text="Rate the item yourself"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <RatingBar
+                android:id="@+id/rateItYourselfRatingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:numStars="5"
+                android:stepSize="0.5"
+                android:progressTint="@color/colorPrimary"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:layout_below="@+id/itemPicture" />
+
+            <Button
+                android:layout_marginTop="10dp"
+                android:id="@+id/rateButton"
+                android:text="Rate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
 
         <TextView
             android:layout_marginTop="10dp"
@@ -47,10 +84,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Created by: "
-            android:layout_below="@+id/itemRatingBar"
+            android:layout_below="@+id/rateItLayout"
             android:textStyle="bold"
             android:textSize="16sp"/>
-
 
         <TextView
             android:layout_marginTop="10dp"
@@ -59,11 +95,10 @@
             android:layout_height="wrap_content"
             android:layout_toEndOf="@+id/creator"
             android:layout_toRightOf="@+id/creator"
-            android:layout_below="@+id/itemRatingBar"
+            android:layout_below="@+id/rateItLayout"
             android:textSize="16sp"
             android:text="username"
             />
-
 
 
         <TextView
@@ -85,9 +120,6 @@
             android:textSize="16sp"
             android:text="text"
             />
-
-
-
 
     </RelativeLayout>
 </ScrollView>

@@ -9,6 +9,7 @@ import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -37,6 +38,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
     ArrayList<User> users;
     String[] usernames;
     private UserLocalStore userLocalStore;
+    int tabToreturn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
         Intent intent = getIntent();
         selectedListId = intent.getIntExtra("listId", 0);
         listName = intent.getStringExtra("name");
+        tabToreturn = intent.getIntExtra("tab", 0);
         getSupportActionBar().setTitle("Invite to: " + listName);
 
         searchView = (SearchView) findViewById(R.id.searchUsersField);
@@ -101,7 +104,6 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
                 }
         }
     }
-
 
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
@@ -195,6 +197,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
         Intent intent = new Intent(this, ActivityItemsOfAList.class);
         intent.putExtra("listId", selectedListId);
         intent.putExtra("name", listName);
+        intent.putExtra("tab", tabToreturn);
         startActivity(intent);
         finish();
     }

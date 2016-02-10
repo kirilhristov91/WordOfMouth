@@ -106,6 +106,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
                         Intent myIntent = new Intent(mainActivity, ActivityItemsOfAList.class);
                         myIntent.putExtra("listId", idClicked);
                         myIntent.putExtra("name", list);
+                        myIntent.putExtra("tab", 0);
                         startActivity(myIntent);
                         //mainActivity.finish();
                     }

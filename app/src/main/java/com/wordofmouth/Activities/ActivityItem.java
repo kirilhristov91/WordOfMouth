@@ -42,7 +42,7 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
     Item item;
     ServerRequests serverRequests;
     UserLocalStore userLocalStore;
-
+    int tabToreturn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +67,7 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
         listName = intent.getStringExtra("listName");
         itemId = intent.getIntExtra("itemId", 0);
         itemName = intent.getStringExtra("itemName");
+        tabToreturn = intent.getIntExtra("tab", 0);
 
         getSupportActionBar().setTitle(itemName);
         DBHandler dbHandler = DBHandler.getInstance(this);
@@ -97,6 +98,7 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
         Intent intent = new Intent(this, ActivityItemsOfAList.class);
         intent.putExtra("listId", listId);
         intent.putExtra("name", listName);
+        intent.putExtra("tab", tabToreturn);
         startActivity(intent);
         finish();
     }

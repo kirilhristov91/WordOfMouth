@@ -15,7 +15,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
@@ -107,7 +109,7 @@ public abstract class BaseActivity extends AppCompatActivity{
         setContentView(baseLayout);
     }
 
-    //TODO napravi go static !!!
+    //TODO napravi go static !!! maybe
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         Context context;

@@ -31,7 +31,7 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
     int selectedListId;
     String listName;
     String[] itemNames;
-
+    int tabToreturn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +48,7 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
         Intent intent = getIntent();
         selectedListId = intent.getIntExtra("listId", 0);
         listName = intent.getStringExtra("name");
+        tabToreturn = intent.getIntExtra("tab", 0);
         getSupportActionBar().setTitle(listName);
 
         // create an instance of the local database
@@ -115,6 +116,7 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
                         myIntent.putExtra("listName", listName);
                         myIntent.putExtra("itemId", itemIdClicked);
                         myIntent.putExtra("itemName", itemName);
+                        myIntent.putExtra("tab", tabToreturn);
                         startActivity(myIntent);
                         finish();
                     }
@@ -125,6 +127,7 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("tab", tabToreturn);
         startActivity(intent);
         finish();
     }
@@ -137,6 +140,7 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
                 Intent intent = new Intent(this, ActivityAddItem.class);
                 intent.putExtra("listId", selectedListId);
                 intent.putExtra("name", listName);
+                intent.putExtra("tab", tabToreturn);
                 startActivity(intent);
                 finish();
                 break;
@@ -144,6 +148,7 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
                 Intent invite = new Intent(this, ActivityInvite.class);
                 invite.putExtra("listId", selectedListId);
                 invite.putExtra("name", listName);
+                invite.putExtra("tab", tabToreturn);
                 startActivity(invite);
                 finish();
                 break;

@@ -14,7 +14,9 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -45,6 +47,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
     int angle = 0;
     Bitmap photo;
     static final int REQUEST_BROWSE_GALLERY = 1;
+    int tabToreturn;
 
     /*private UserLocalStore userLocalStore;
     private DBHandler dbHandler;
@@ -58,6 +61,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
         Intent intent = getIntent();
         listId = intent.getIntExtra("listId", 0);
         listName = intent.getStringExtra("name");
+        tabToreturn = intent.getIntExtra("tab", 0);
 
         ratingSelected = 0.0;
         photo = null;
@@ -151,6 +155,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
                                         Intent intent = new Intent(ActivityAddItem.this, ActivityItemsOfAList.class);
                                         intent.putExtra("listId", listId);
                                         intent.putExtra("name", listName);
+                                        intent.putExtra("tab", tabToreturn);
                                         if(photo!=null) {
                                             photo.recycle();
                                         }
@@ -194,6 +199,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
         Intent intent = new Intent(this, ActivityItemsOfAList.class);
         intent.putExtra("listId", listId);
         intent.putExtra("name", listName);
+        intent.putExtra("tab", tabToreturn);
         startActivity(intent);
         finish();
     }

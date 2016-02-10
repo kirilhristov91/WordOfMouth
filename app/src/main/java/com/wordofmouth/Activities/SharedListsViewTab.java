@@ -102,6 +102,7 @@ public class SharedListsViewTab extends Fragment {
                         Intent myIntent = new Intent(mainActivity, ActivityItemsOfAList.class);
                         myIntent.putExtra("listId", idClicked);
                         myIntent.putExtra("name", list);
+                        myIntent.putExtra("tab", 1);
                         startActivity(myIntent);
                         //mainActivity.finish();
                     }

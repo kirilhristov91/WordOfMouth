@@ -88,7 +88,7 @@ public class GcmIntentService extends IntentService {
                     System.out.println("Received id after cutting the string is: " + idString);
                     Integer listId = Integer.parseInt(idString);
 
-                    SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-DD HH:MM");
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                     String date = sdf.format(new Date());
 
                     Notification n = new Notification(listId, userId, preparedMessage, date, 0);

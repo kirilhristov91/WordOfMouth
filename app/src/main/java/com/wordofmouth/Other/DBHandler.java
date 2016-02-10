@@ -93,7 +93,7 @@ public class DBHandler extends SQLiteOpenHelper{
                 COLUMN_Name + " TEXT, " +
                 COLUMN_Description + " TEXT, " +
                 COLUMN_ListImage + " TEXT, " +
-                COLUMN_HasNewContent + " INTEGER, " +
+                COLUMN_HasNewContent + " INTEGER " +
                 ");";
 
         String CreateItemsTableQuery = "CREATE TABLE " + TABLE_Items + "(" +

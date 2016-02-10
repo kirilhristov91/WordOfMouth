@@ -49,7 +49,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
         Intent intent = getIntent();
         selectedListId = intent.getIntExtra("listId", 0);
         listName = intent.getStringExtra("name");
-        getSupportActionBar().setTitle("Invite people to: " + listName);
+        getSupportActionBar().setTitle("Invite to: " + listName);
 
         searchView = (SearchView) findViewById(R.id.searchUsersField);
         searchView.setOnClickListener(new View.OnClickListener() {
@@ -66,6 +66,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
 
     }
 
+    // TODO set an alertDialog to ask if the user is sure he wants to invite the selected user
     @Override
     public void onClick(View v) {
         switch (v.getId()) {

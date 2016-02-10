@@ -21,9 +21,19 @@
         android:textStyle="bold"
         android:textSize="18sp"/>
 
+
+    <TextView
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="The feedback is completely anonymous"
+        android:gravity="center_horizontal"
+        android:textStyle="bold"
+        android:textSize="14sp"/>
+
     <EditText
         android:id = "@+id/feedbackField"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         android:hint="Type your feedback here..."
         android:textColor="#FFF"
         android:background="#d3d3d3"

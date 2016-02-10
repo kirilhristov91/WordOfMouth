@@ -49,7 +49,6 @@ public class ActivityNotifications extends BaseActivity {
         String[] messages = new String[notifications.size()];
         for(int i = 0; i<notifications.size();i++){
             messages[i] = notifications.get(i).getMsg();
-            System.out.println("list id:" + notifications.get(i).getListId() + " userId:" + notifications.get(i).getUserId()+ "!");
         }
 
         notificationItemListView = (ListView) findViewById(R.id.notificationListView);

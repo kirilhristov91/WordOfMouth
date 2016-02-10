@@ -140,6 +140,7 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
                         });
                     }
                 }
+                break;
         }
     }
 

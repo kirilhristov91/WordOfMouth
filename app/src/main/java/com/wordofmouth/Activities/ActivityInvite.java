@@ -102,6 +102,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
                         }
                     });
                 }
+                break;
         }
     }
 

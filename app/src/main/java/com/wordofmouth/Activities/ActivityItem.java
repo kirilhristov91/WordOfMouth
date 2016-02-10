@@ -169,6 +169,7 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
 
                     });
                 }
+                break;
         }
     }
 }

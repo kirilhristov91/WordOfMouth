@@ -18,6 +18,7 @@ import com.wordofmouth.Interfaces.GetBitmap;
 import com.wordofmouth.Interfaces.GetLists;
 import com.wordofmouth.ObjectClasses.MyList;
 import com.wordofmouth.Other.DBGetData;
+import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.Other.StringToBitmapRequests;
 import com.wordofmouth.R;
 import com.wordofmouth.SharedPreferences.UserLocalStore;
@@ -100,6 +101,8 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
                         int idClicked;
                         String list = String.valueOf(parent.getItemAtPosition(position));
                         idClicked = myLists.get(position).get_listId();
+                        DBHandler dbHandler = DBHandler.getInstance(mainActivity);
+                        dbHandler.updateHasNewContent(idClicked, 0);
                         Intent myIntent = new Intent(mainActivity, ActivityItemsOfAList.class);
                         myIntent.putExtra("listId", idClicked);
                         myIntent.putExtra("name", list);

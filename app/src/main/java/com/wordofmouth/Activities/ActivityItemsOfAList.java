@@ -50,9 +50,6 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
         listName = intent.getStringExtra("name");
         getSupportActionBar().setTitle(listName);
 
-        DBHandler dbHandler = DBHandler.getInstance(this);
-        dbHandler.updateHasNewContent(selectedListId, 0);
-
         // create an instance of the local database
         items = new ArrayList<Item>();
         DBGetData dbGetData = DBGetData.getInstance(this);

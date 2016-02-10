@@ -212,6 +212,7 @@ public class DBHandler extends SQLiteOpenHelper{
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
         if (c.getCount() > 0) {
+            System.out.println("VLIZAM NA UPDATEHASNEWCONTENT I listid e " + listId + " i to put e " + toPut);
             String UpdateRating = "UPDATE " + TABLE_USER_LISTS +
                     " SET " + COLUMN_HasNewContent + " = " + toPut +
                     " WHERE " + COLUMN_ID + " = " + listId + ";";
@@ -455,9 +456,11 @@ public class DBHandler extends SQLiteOpenHelper{
             if(c.getString(c.getColumnIndex(COLUMN_ListImage)) != null){
                 image = c.getString(c.getColumnIndex(COLUMN_ListImage));
             }
-
+            int hasNewC = c.getInt(c.getColumnIndex(COLUMN_HasNewContent));
             MyList ul = new MyList(userId, username, listName, des, image);
             ul.set_listId(id);
+            ul.setHasNewContent(hasNewC);
+            System.out.println("KATO VZEMAM LISTITE - hasNewC e :" + hasNewC);
             lists.add(ul);
             c.moveToNext();
         }

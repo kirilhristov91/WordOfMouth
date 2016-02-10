@@ -65,7 +65,9 @@ public class CustomListRowAdapter extends ArrayAdapter<String> {
         viewHolder.descriptionText.setText(lists.get(position).get_description());
         viewHolder.listAddedByUsername.setText(lists.get(position).get_username());
         if(lists.get(position).getHasNewContent() == 1){
-            convertView.setBackgroundColor(Color.GREEN);
+            System.out.println(lists.get(position).get_name() + " " + lists.get(position).getHasNewContent());
+            int c = Color.parseColor("#A5D6A7");
+            convertView.setBackgroundColor(c);
         }
         return convertView;
     }

@@ -17,6 +17,7 @@ import com.wordofmouth.Interfaces.GetBitmap;
 import com.wordofmouth.Interfaces.GetLists;
 import com.wordofmouth.ObjectClasses.MyList;
 import com.wordofmouth.Other.DBGetData;
+import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.Other.StringToBitmapRequests;
 import com.wordofmouth.R;
 import com.wordofmouth.SharedPreferences.UserLocalStore;
@@ -28,6 +29,7 @@ public class SharedListsViewTab extends Fragment {
     MainActivity mainActivity;
     ListView sharedListView;
     ArrayList<MyList> sharedLists;
+    DBHandler dbHandler;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -35,7 +37,7 @@ public class SharedListsViewTab extends Fragment {
 
         mainActivity = (MainActivity) getActivity();
         sharedListView = (ListView) v.findViewById(R.id.sharedListsListView);
-
+        dbHandler = DBHandler.getInstance(mainActivity);
         String username = UserLocalStore.getInstance(mainActivity).getUserLoggedIn().getUsername();
         // get the user`s lists to display on fragment
         sharedLists = new ArrayList<MyList>();
@@ -96,6 +98,7 @@ public class SharedListsViewTab extends Fragment {
                         int idClicked;
                         String list = String.valueOf(parent.getItemAtPosition(position));
                         idClicked = sharedLists.get(position).get_listId();
+                        dbHandler.updateHasNewContent(idClicked, 0);
                         Intent myIntent = new Intent(mainActivity, ActivityItemsOfAList.class);
                         myIntent.putExtra("listId", idClicked);
                         myIntent.putExtra("name", list);

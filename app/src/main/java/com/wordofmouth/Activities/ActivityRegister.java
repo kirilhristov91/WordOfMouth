@@ -109,10 +109,15 @@ public class ActivityRegister extends AppCompatActivity implements View.OnClickL
             showError("Network error! Check your internet connection and try again!");
         }
         else {
+            final ProgressDialog progressDialogGCM = new ProgressDialog(this,R.style.MyTheme);
+            progressDialogGCM.setCancelable(false);
+            progressDialogGCM.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
+            progressDialogGCM.show();
             GCMRequest gcmRequest = GCMRequest.getInstance(this);
             gcmRequest.getGCMidInBackground(new GetGCM() {
                 @Override
                 public void done(String gcmId) {
+                    progressDialogGCM.dismiss();
                     registerUser(gcmId);
                 }
             });
@@ -121,10 +126,9 @@ public class ActivityRegister extends AppCompatActivity implements View.OnClickL
 
     private void registerUser(String gcmId){
         ServerRequests serverRequests = ServerRequests.getInstance(this);
-        final ProgressDialog progressDialog = new ProgressDialog(this);
+        final ProgressDialog progressDialog = new ProgressDialog(this,R.style.MyTheme);
         progressDialog.setCancelable(false);
-        progressDialog.setTitle("Processing");
-        progressDialog.setMessage("Please wait...");
+        progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
         progressDialog.show();
         serverRequests.storeUserDataInBackground(user, gcmId, new GetUserCallback() {
             @Override

@@ -54,17 +54,15 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
         // create an instance of the local database
         items = new ArrayList<Item>();
         DBGetData dbGetData = DBGetData.getInstance(this);
-        final ProgressDialog progressDialogFetching = new ProgressDialog(this);
+        final ProgressDialog progressDialogFetching = new ProgressDialog(this,R.style.MyTheme);
         progressDialogFetching.setCancelable(false);
-        progressDialogFetching.setTitle("Processing");
-        progressDialogFetching.setMessage("Fetching data from database...");
+        progressDialogFetching.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
         progressDialogFetching.show();
         
         dbGetData.GetItemsInBackground(selectedListId, new GetItems() {
             @Override
             public void done(ArrayList<Item> returnedItems) {
                 progressDialogFetching.dismiss();
-                System.out.println("Number of elements " + returnedItems.size());
                 Display(returnedItems);
             }
         });
@@ -73,7 +71,6 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
     // method to display the items after fetching from database is done
     public void Display(ArrayList<Item> returnedItems){
         items = returnedItems;
-        System.out.println("Number of elements in items " + items.size());
         // display via adapter
         itemNames = new String[items.size()];
         for(int i =0; i< items.size();i++){
@@ -81,22 +78,14 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
         }
 
         StringToBitmapRequests stbr = StringToBitmapRequests.getInstance(this);
-        final ProgressDialog progressDialog = new ProgressDialog(this);
+        final ProgressDialog progressDialog = new ProgressDialog(this,R.style.MyTheme);
         progressDialog.setCancelable(false);
-        progressDialog.setTitle("Processing");
-        progressDialog.setMessage("Please wait...");
+        progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
         progressDialog.show();
         stbr.stringToBitmapInBackground(items, new GetBitmap() {
             @Override
             public void done(ArrayList<Bitmap> result) {
                 progressDialog.dismiss();
-                /*System.out.println("SIZE OF BITMAPS " + result.size());
-                final Runtime runtime = Runtime.getRuntime();
-                final long usedMemInMB = (runtime.totalMemory() - runtime.freeMemory()) / 1048576L;
-                final long maxHeapSizeInMB = runtime.maxMemory() / 1048576L;
-                System.out.println("Total heap size: " + maxHeapSizeInMB + " MB");
-                System.out.println("Available heap size: " + usedMemInMB + " MB");*/
-
                 ArrayAdapter<String> womAdapter =
                         new CustomItemRowAdapter(ActivityItemsOfAList.this, itemNames, items, result);
                 itemsListView.setAdapter(womAdapter);

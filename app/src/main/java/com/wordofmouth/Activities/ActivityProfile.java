@@ -50,9 +50,6 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_activity_profile);
-        //this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        getSupportActionBar().setTitle("Edit Profile");
-
 
         profilePictureinProfile = (ImageView) findViewById(R.id.profilePicture);
         updatePicture = (Button) findViewById(R.id.updatePictureButton);
@@ -92,12 +89,6 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
         updatePicture.setOnClickListener(this);
         chooseFromGallery.setOnClickListener(this);
         saveChanges.setOnClickListener(this);
-
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
 
     }
 
@@ -212,10 +203,9 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
             dbHandler.addProfilePicture(currentUser.getId(), imageToSave);
             dbHandler.deleteTemp();
 
-            final ProgressDialog progressDialog = new ProgressDialog(this);
+            final ProgressDialog progressDialog = new ProgressDialog(this,R.style.MyTheme);
             progressDialog.setCancelable(false);
-            progressDialog.setTitle("Processing");
-            progressDialog.setMessage("Uploading Profile Picture to Server...");
+            progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
             progressDialog.show();
             ServerRequests serverRequests = ServerRequests.getInstance(this);
             serverRequests.UploadProfilePictureAsyncTask(currentUser.getUsername(), imageToSave, new GetUserCallback() {

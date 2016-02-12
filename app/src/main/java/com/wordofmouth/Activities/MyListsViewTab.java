@@ -46,10 +46,9 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
         myLists = new ArrayList<MyList>();
 
         DBGetData dbGetData = DBGetData.getInstance(mainActivity);
-        final ProgressDialog progressDialogFetching = new ProgressDialog(mainActivity);
+        final ProgressDialog progressDialogFetching = new ProgressDialog(mainActivity,R.style.MyTheme);
         progressDialogFetching.setCancelable(false);
-        progressDialogFetching.setTitle("Processing");
-        progressDialogFetching.setMessage("Fetching data from database...");
+        progressDialogFetching.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
         progressDialogFetching.show();
 
         dbGetData.GetListsInBackground(username, 0, new GetLists() {
@@ -69,25 +68,17 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
         final String[] listNames = new String[myLists.size()];
         for (int i = 0; i < myLists.size(); i++) {
             listNames[i] = myLists.get(i).get_name();
-            //System.out.println(myLists.get(i).get_listId());
         }
 
         StringToBitmapRequests stbr = StringToBitmapRequests.getInstance(mainActivity);
-        final ProgressDialog progressDialog = new ProgressDialog(mainActivity);
+        final ProgressDialog progressDialog = new ProgressDialog(mainActivity,R.style.MyTheme);
         progressDialog.setCancelable(false);
-        progressDialog.setTitle("Processing");
-        progressDialog.setMessage("Please wait...");
+        progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
         progressDialog.show();
         stbr.ListsStringToBitmapInBackground(myLists, new GetBitmap() {
             @Override
             public void done(ArrayList<Bitmap> result) {
                 progressDialog.dismiss();
-                /*final Runtime runtime = Runtime.getRuntime();
-                final long usedMemInMB = (runtime.totalMemory() - runtime.freeMemory()) / 1048576L;
-                final long maxHeapSizeInMB = runtime.maxMemory() / 1048576L;
-                System.out.println("Total heap size: " + maxHeapSizeInMB + " MB");
-                System.out.println("Available heap size: " + usedMemInMB + " MB");*/
-
                 ArrayAdapter<String> listAdapter =
                         new CustomListRowAdapter(mainActivity, listNames, myLists, result);
                 myListView.setAdapter(listAdapter);
@@ -108,7 +99,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
                         myIntent.putExtra("name", list);
                         myIntent.putExtra("tab", 0);
                         startActivity(myIntent);
-                        //mainActivity.finish();
+                        mainActivity.finish();
                     }
                 }
         );

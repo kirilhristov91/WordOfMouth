@@ -8,11 +8,6 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.preference.DialogPreference;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -86,16 +81,15 @@ public class ActivityNotifications extends BaseActivity {
                 if (!isNetworkAvailable()) {
                     showConnectionError();
                 } else {
-                    //UserLocalStore userLocalStore = UserLocalStore.getInstance(ActivityNotifications.this);
                     ServerRequests serverRequests = ServerRequests.getInstance(ActivityNotifications.this);
-                    final ProgressDialog progressDialogDownloadList = new ProgressDialog(ActivityNotifications.this);
+                    final ProgressDialog progressDialogDownloadList = new ProgressDialog(ActivityNotifications.this,R.style.MyTheme);
                     progressDialogDownloadList.setCancelable(false);
-                    progressDialogDownloadList.setTitle("Processing");
-                    progressDialogDownloadList.setMessage("Fetching data from server...");
+                    progressDialogDownloadList.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
                     progressDialogDownloadList.show();
                     serverRequests.downloadListInBackgroudn(n.getListId(), n.getUserId(), new GetListId() {
                         @Override
                         public void done(MyList myList) {
+                            progressDialogDownloadList.dismiss();
                             if (myList.get_username().equals("Timeout")) {
                                 showConnectionError();
                             } else if (myList.get_username().equals("UpdError")) {
@@ -104,7 +98,6 @@ public class ActivityNotifications extends BaseActivity {
                                 DBHandler dbHandler = DBHandler.getInstance(ActivityNotifications.this);
                                 myList.setHasNewContent(1);
                                 dbHandler.addList(myList);
-                                progressDialogDownloadList.dismiss();
                                 downloadItems(myList);
                             }
                         }
@@ -128,19 +121,18 @@ public class ActivityNotifications extends BaseActivity {
         int listId = list.get_listId();
 
         ServerRequests serverRequests = ServerRequests.getInstance(this);
-        final ProgressDialog progressDialogDownloadList = new ProgressDialog(this);
-        progressDialogDownloadList.setCancelable(false);
-        progressDialogDownloadList.setTitle("Processing");
-        progressDialogDownloadList.setMessage("Fetching data from server...");
-        progressDialogDownloadList.show();
+        final ProgressDialog progressDialogDownloadItem = new ProgressDialog(ActivityNotifications.this,R.style.MyTheme);
+        progressDialogDownloadItem.setCancelable(false);
+        progressDialogDownloadItem.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
+        progressDialogDownloadItem.show();
         serverRequests.downloadItemsInBackgroudn(listId, new GetItems() {
             @Override
             public void done(ArrayList<Item> items) {
+                progressDialogDownloadItem.dismiss();
                 DBHandler dbHandler = DBHandler.getInstance(ActivityNotifications.this);
                 if (items.size() > 0) {
                     dbHandler.addMultipleItems(items);
                 }
-                progressDialogDownloadList.dismiss();
                 dbHandler.updateAccepted(notificationId);
                 Intent intent = new Intent(ActivityNotifications.this, MainActivity.class);
                 intent.putExtra("tab", 1);

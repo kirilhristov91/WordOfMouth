@@ -9,7 +9,6 @@ import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -78,12 +77,11 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
                 imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
 
                 if (!isNetworkAvailable()) {
-                    showConnectionError();
+                    showError("Network error! Check your internet connection and try again!");
                 } else {
-                    final ProgressDialog progressDialog = new ProgressDialog(this);
+                    final ProgressDialog progressDialog = new ProgressDialog(this,R.style.MyTheme);
                     progressDialog.setCancelable(false);
-                    progressDialog.setTitle("Processing");
-                    progressDialog.setMessage("Fetching users matching the name or username you entered...");
+                    progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
                     progressDialog.show();
 
                     ServerRequests serverRequests = ServerRequests.getInstance(this);
@@ -93,7 +91,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
                             progressDialog.dismiss();
                             if (returnedUsers.size() > 0) {
                                 if (returnedUsers.get(0).getUsername().equals("Timeout")) {
-                                    showConnectionError();
+                                    showError("Network error! Check your internet connection and try again!");
                                 } else {
                                     display(returnedUsers);
                                 }
@@ -132,35 +130,32 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
                         // list id, sharedWithId
 
                         if (!isNetworkAvailable()) {
-                            showConnectionError();
+                            showError("Network error! Check your internet connection and try again!");
                         } else {
                             int sharedWithId = users.get(position).getId();
                             int currentUserId = userLocalStore.getUserLoggedIn().getId();
 
-                            final ProgressDialog progressDialog2 = new ProgressDialog(ActivityInvite.this);
-                            progressDialog2.setCancelable(false);
-                            progressDialog2.setTitle("Processing");
-                            progressDialog2.setMessage("Inviting the selected user to the current list");
-                            progressDialog2.show();
+                            final ProgressDialog progressDialog = new ProgressDialog(ActivityInvite.this,R.style.MyTheme);
+                            progressDialog.setCancelable(false);
+                            progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
+                            progressDialog.show();
 
                             ServerRequests serverRequests = ServerRequests.getInstance(ActivityInvite.this);
                             serverRequests.inviteInBackground(selectedListId, currentUserId, sharedWithId, new SendInviteResponse() {
                                 @Override
                                 public void done(String response) {
-                                    progressDialog2.dismiss();
-                                    System.out.println("Otgovoryt na invite e : " + response);
+                                    progressDialog.dismiss();
                                     if (response.equals("That person has already been invited to that list!\n")) {
-                                        showError();
-                                    }
-                                    else if (response.equals("Cannot invite the creator of the list!\n")){
-                                        showCreatorError();
-                                    }
-                                    else if (response.equals("Timeout")) {
-                                        showConnectionError();
+                                        showError("That person has already been invited to list '" + listName +"'!");
+                                    } else if (response.equals("Cannot invite the creator of the list!\n")) {
+                                        showError("That is the creator of the list '" + listName + "'! He/She already has acces to this list!");
+                                    } else if (response.equals("Timeout")) {
+                                        showError("Network error! Check your internet connection and try again!");
                                     } else {
                                         Intent myIntent = new Intent(ActivityInvite.this, ActivityItemsOfAList.class);
                                         myIntent.putExtra("listId", selectedListId);
                                         myIntent.putExtra("name", listName);
+                                        myIntent.putExtra("tab", tabToreturn);
                                         startActivity(myIntent);
                                         finish();
                                     }
@@ -172,23 +167,9 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
         );
     }
 
-    private void showConnectionError(){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(ActivityInvite.this);
-        allertBuilder.setMessage("Network error! Check your internet connection and try again!");
-        allertBuilder.setPositiveButton("OK", null);
-        allertBuilder.show();
-    }
-
-    private void showError(){
+    private void showError(String message){
         AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
-        allertBuilder.setMessage("That person has already been invited to list '" + listName +"'!");
-        allertBuilder.setPositiveButton("OK", null);
-        allertBuilder.show();
-    }
-
-    private void showCreatorError(){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
-        allertBuilder.setMessage("That is the creator of the list '" + listName +"'! He/She already has acces to this list!");
+        allertBuilder.setMessage(message);
         allertBuilder.setPositiveButton("OK", null);
         allertBuilder.show();
     }

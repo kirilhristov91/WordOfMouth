@@ -158,10 +158,9 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
                     showConnectionError();
                 }
                 else {
-                    final ProgressDialog progressDialog = new ProgressDialog(this);
+                    final ProgressDialog progressDialog = new ProgressDialog(this,R.style.MyTheme);
                     progressDialog.setCancelable(false);
-                    progressDialog.setTitle("Processing");
-                    progressDialog.setMessage("Uploading your rating to server...");
+                    progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
                     progressDialog.show();
                     serverRequests.rateInBackground(listId, itemId, userId, ratingSelected, new GetRateResponce() {
                         @Override

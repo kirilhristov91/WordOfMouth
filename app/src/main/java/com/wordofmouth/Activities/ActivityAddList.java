@@ -14,9 +14,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -109,10 +107,9 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
                         String currentUserUsername = userLocalStore.getUserLoggedIn().getUsername();
                         MyList list = new MyList(currentUserId, currentUserUsername, listNameField.getText().toString(), listDescriptionField.getText().toString(), image);
 
-                        final ProgressDialog progressDialog = new ProgressDialog(this);
+                        final ProgressDialog progressDialog = new ProgressDialog(this,R.style.MyTheme);
                         progressDialog.setCancelable(false);
-                        progressDialog.setTitle("Processing");
-                        progressDialog.setMessage("Uploading List to Server...");
+                        progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
                         progressDialog.show();
 
                         ServerRequests serverRequests = ServerRequests.getInstance(this);

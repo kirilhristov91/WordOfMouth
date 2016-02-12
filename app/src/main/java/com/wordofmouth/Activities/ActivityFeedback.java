@@ -6,10 +6,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,7 +25,6 @@ public class ActivityFeedback extends BaseActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_activity_feedback);
-        getSupportActionBar().setTitle("Leave Feedback");
 
         feedbackField = (EditText) findViewById(R.id.feedbackField);
         feedbackButton = (Button) findViewById(R.id.feedbackButton);
@@ -60,6 +55,12 @@ public class ActivityFeedback extends BaseActivity implements View.OnClickListen
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.feedbackButton:
@@ -72,10 +73,9 @@ public class ActivityFeedback extends BaseActivity implements View.OnClickListen
                         showConnectionError();
                     }
                     else{
-                        final ProgressDialog progressDialog = new ProgressDialog(this);
+                        final ProgressDialog progressDialog = new ProgressDialog(this,R.style.MyTheme);
                         progressDialog.setCancelable(false);
-                        progressDialog.setTitle("Processing");
-                        progressDialog.setMessage("Sending your feedback to server...");
+                        progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
                         progressDialog.show();
                         serverRequests.sendFeedbackInBackground(feedback, new GetFeedbackResponse() {
                             @Override

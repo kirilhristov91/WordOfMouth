@@ -14,9 +14,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -48,10 +46,6 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
     Bitmap photo;
     static final int REQUEST_BROWSE_GALLERY = 1;
     int tabToreturn;
-
-    /*private UserLocalStore userLocalStore;
-    private DBHandler dbHandler;
-    private ServerRequests serverRequests;*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,10 +127,9 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
                         Item i = new Item(listId, userLocalStore.getUserLoggedIn().getId(), userLocalStore.getUserLoggedIn().getUsername(),
                                 itemNameField.getText().toString(), ratingSelected, 1, itemDescriptionField.getText().toString(), imageToSave);
 
-                        final ProgressDialog progressDialog = new ProgressDialog(this);
+                        final ProgressDialog progressDialog = new ProgressDialog(this,R.style.MyTheme);
                         progressDialog.setCancelable(false);
-                        progressDialog.setTitle("Processing");
-                        progressDialog.setMessage("Uploading Item to Server...");
+                        progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
                         progressDialog.show();
 
                         ServerRequests serverRequests = ServerRequests.getInstance(this);

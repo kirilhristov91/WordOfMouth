@@ -98,11 +98,12 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
         }
         else {
             ServerRequests serverRequests = ServerRequests.getInstance(this);
-            final ProgressDialog progressDialog = new ProgressDialog(this);
+
+            final ProgressDialog progressDialog = new ProgressDialog(this,R.style.MyTheme);
             progressDialog.setCancelable(false);
-            progressDialog.setTitle("Processing");
-            progressDialog.setMessage("Please wait...");
+            progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
             progressDialog.show();
+
             serverRequests.fetchUserDataInBackground(user, new GetUserCallback() {
                 @Override
                 public void done(User returnedUser) {

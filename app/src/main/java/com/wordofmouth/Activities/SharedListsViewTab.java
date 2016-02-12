@@ -42,16 +42,15 @@ public class SharedListsViewTab extends Fragment {
         // get the user`s lists to display on fragment
         sharedLists = new ArrayList<MyList>();
         DBGetData dbGetData = DBGetData.getInstance(mainActivity);
-        /*final ProgressDialog progressDialogFetching = new ProgressDialog(mainActivity);
+        final ProgressDialog progressDialogFetching = new ProgressDialog(mainActivity,R.style.MyTheme);
         progressDialogFetching.setCancelable(false);
-        progressDialogFetching.setTitle("Processing");
-        progressDialogFetching.setMessage("Fetching data from database...");
-        progressDialogFetching.show();*/
+        progressDialogFetching.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
+        progressDialogFetching.show();
 
         dbGetData.GetListsInBackground(username, 1, new GetLists() {
             @Override
             public void done(ArrayList<MyList> lists) {
-                //progressDialogFetching.dismiss();
+                progressDialogFetching.dismiss();
                 display(lists);
             }
         });
@@ -70,21 +69,14 @@ public class SharedListsViewTab extends Fragment {
         }
 
         StringToBitmapRequests stbr = StringToBitmapRequests.getInstance(mainActivity);
-        final ProgressDialog progressDialogShared = new ProgressDialog(mainActivity);
+        final ProgressDialog progressDialogShared = new ProgressDialog(mainActivity,R.style.MyTheme);
         progressDialogShared.setCancelable(false);
-        progressDialogShared.setTitle("Processing");
-        progressDialogShared.setMessage("Please wait...");
+        progressDialogShared.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
         progressDialogShared.show();
         stbr.ListsStringToBitmapInBackground(sharedLists, new GetBitmap() {
             @Override
             public void done(ArrayList<Bitmap> resultShared) {
                 progressDialogShared.dismiss();
-                /*final Runtime runtime = Runtime.getRuntime();
-                final long usedMemInMB = (runtime.totalMemory() - runtime.freeMemory()) / 1048576L;
-                final long maxHeapSizeInMB = runtime.maxMemory() / 1048576L;
-                System.out.println("Total heap size: " + maxHeapSizeInMB + " MB");
-                System.out.println("Available heap size: " + usedMemInMB + " MB");*/
-
                 ArrayAdapter<String> listAdapterShared =
                         new CustomListRowAdapter(mainActivity, listNames, sharedLists, resultShared);
                 sharedListView.setAdapter(listAdapterShared);
@@ -104,7 +96,7 @@ public class SharedListsViewTab extends Fragment {
                         myIntent.putExtra("name", list);
                         myIntent.putExtra("tab", 1);
                         startActivity(myIntent);
-                        //mainActivity.finish();
+                        mainActivity.finish();
                     }
                 }
         );

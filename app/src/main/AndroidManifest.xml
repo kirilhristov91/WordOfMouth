@@ -79,22 +79,22 @@
 
         <activity
             android:name=".Activities.ActivityNotifications"
-            android:label="@string/title_activity_activity_notifications"
+            android:label="Notifications"
             android:theme="@style/AppTheme" >
         </activity>
         <activity
             android:name=".Activities.ActivityAbout"
-            android:label="@string/title_activity_activity_about"
+            android:label="About"
             android:theme="@style/AppTheme" >
         </activity>
         <activity
             android:name=".Activities.ActivityFeedback"
-            android:label="@string/title_activity_activity_feedback"
+            android:label="Leave Feedback"
             android:theme="@style/AppTheme" >
         </activity>
         <activity
             android:name=".Activities.ActivityProfile"
-            android:label="@string/title_activity_activity_profile"
+            android:label="Profile"
             android:theme="@style/AppTheme" >
         </activity>
     </application>

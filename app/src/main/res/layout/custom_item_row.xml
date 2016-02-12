@@ -55,15 +55,15 @@
 
     <RatingBar
         android:id="@+id/customRowRatingBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:numStars="5"
         android:stepSize="0.5"
         android:isIndicator="true"
         android:progressTint="@color/colorPrimary"
-        style="?android:attr/ratingBarStyleIndicator"
+        style="@style/CustomRatingBar"
         android:layout_below="@+id/itemTitle"
         android:layout_alignLeft="@+id/itemTitle"
-        android:layout_alignStart="@+id/itemTitle" />
+        android:layout_alignStart="@+id/itemTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>

@@ -227,6 +227,17 @@ public class DBHandler extends SQLiteOpenHelper{
         db.close();
     }
 
+    public void addNotification(Notification notification){
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NotificationListId, notification.getListId());
+        values.put(COLUMN_NotificationUserId, notification.getUserId());
+        values.put(COLUMN_NotificationMsg, notification.getMsg());
+        values.put(COLUMN_NotificationDate, notification.getDate());
+        values.put(COLUMN_NotificationAccepted, notification.getAccepted());
+        SQLiteDatabase db = getWritableDatabase();
+        db.insert(TABLE_Notifications, null, values);
+        db.close();
+    }
 
     public void addProfilePicture(int userId, String encodedImage){
         SQLiteDatabase db = getWritableDatabase();
@@ -247,18 +258,6 @@ public class DBHandler extends SQLiteOpenHelper{
             db.insert(TABLE_Profile_Image, null, values);
         }
         c.close();
-        db.close();
-    }
-
-    public void addNotification(Notification notification){
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_NotificationListId, notification.getListId());
-        values.put(COLUMN_NotificationUserId, notification.getUserId());
-        values.put(COLUMN_NotificationMsg, notification.getMsg());
-        values.put(COLUMN_NotificationDate, notification.getDate());
-        values.put(COLUMN_NotificationAccepted, notification.getAccepted());
-        SQLiteDatabase db = getWritableDatabase();
-        db.insert(TABLE_Notifications, null, values);
         db.close();
     }
 
@@ -301,20 +300,14 @@ public class DBHandler extends SQLiteOpenHelper{
         return notificationsList;
     }
 
+    ////////////////////////////////////////////////////////////////////
+    // Profile Picture methods
     public void setTemp(String tempImage){
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_UserID, -1);
         values.put(COLUMN_Image, tempImage);
         db.insert(TABLE_Profile_Image, null, values);
-        db.close();
-    }
-
-    public void deleteTemp(){
-        SQLiteDatabase db = getWritableDatabase();
-        String query = "DELETE FROM " + TABLE_Profile_Image +
-                " WHERE " + COLUMN_UserId + " = " + -1;
-        db.execSQL(query);
         db.close();
     }
 
@@ -337,6 +330,13 @@ public class DBHandler extends SQLiteOpenHelper{
         return encodedImage;
     }
 
+    public void deleteTemp(){
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "DELETE FROM " + TABLE_Profile_Image +
+                " WHERE " + COLUMN_UserId + " = " + -1;
+        db.execSQL(query);
+        db.close();
+    }
 
     public String getProfilePicture(int userId){
         String encodedImage = null;
@@ -355,6 +355,8 @@ public class DBHandler extends SQLiteOpenHelper{
         db.close();
         return encodedImage;
     }
+    // end of Profile Picture methods
+    ////////////////////////////////////////////////////////////////////
 
     // get the lists as list of objects
     public ArrayList<MyList> getLists(String currentUserUsername, int flag){

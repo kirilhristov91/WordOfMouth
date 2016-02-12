@@ -105,7 +105,6 @@ public class ServerRequests {
         for(String key : data.keySet()) {
             String value = null;
             try {
-                System.out.println(" DATA.GETKYE " +  key + " - " + data.get(key));
                 value = URLEncoder.encode(data.get(key),"UTF-8");
 
             } catch (UnsupportedEncodingException e) {
@@ -114,7 +113,6 @@ public class ServerRequests {
 
             if(sb.length()>0)
                 sb.append("&");
-
             sb.append(key + "=" + value);
         }
         return sb.toString();

@@ -4,14 +4,12 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -26,17 +24,9 @@ import com.wordofmouth.R;
 import com.wordofmouth.Other.ServerRequests;
 import com.wordofmouth.ObjectClasses.User;
 import com.wordofmouth.SharedPreferences.UserLocalStore;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class ActivityRegister extends AppCompatActivity implements View.OnClickListener{
@@ -66,103 +56,59 @@ public class ActivityRegister extends AppCompatActivity implements View.OnClickL
     public void onClick(View v){
         switch(v.getId()){
             case R.id.registerButton:
-                //TODO set check for empty name field
                 int id=0;
                 String name = regnameField.getText().toString();
                 String email = regemailField.getText().toString();
                 String username = regusernameField.getText().toString();
                 String password = regpasswordField.getText().toString();
 
-                String generatedPassword = null;
-                try {
-                    // Create MessageDigest instance for MD5
-                    MessageDigest md = MessageDigest.getInstance("MD5");
-                    //Add password bytes to digest
-                    md.update(password.getBytes());
-                    //Get the hash's bytes
-                    byte[] bytes = md.digest();
-                    //This bytes[] has bytes in decimal format;
-                    //Convert it to hexadecimal format
-                    StringBuilder sb = new StringBuilder();
-                    for(int i=0; i< bytes.length ;i++)
-                    {
-                        sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
-                    }
-                    //Get complete hashed password in hex format
-                    generatedPassword = sb.toString();
-                }
-                catch (NoSuchAlgorithmException e)
-                {
-                    e.printStackTrace();
-                }
-                System.out.println("REGISTER " + generatedPassword);
-
-                user = new User(id,name, email, username, generatedPassword);
-
-                if(!isValidEmail(email)){
-                    showError();
+                if(name.equals("") || email.equals("") || username.equals("") || password.equals("")){
+                    showError("Please leave no field empty!");
                 }
 
                 else {
-                    getGcmId();
-                }
+                    String generatedPassword = null;
+                    try {
+                        // Create MessageDigest instance for MD5
+                        MessageDigest md = MessageDigest.getInstance("MD5");
+                        //Add password bytes to digest
+                        md.update(password.getBytes());
+                        //Get the hash's bytes
+                        byte[] bytes = md.digest();
+                        //This bytes[] has bytes in decimal format;
+                        //Convert it to hexadecimal format
+                        StringBuilder sb = new StringBuilder();
+                        for (int i = 0; i < bytes.length; i++) {
+                            sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+                        }
+                        //Get complete hashed password in hex format
+                        generatedPassword = sb.toString();
+                    } catch (NoSuchAlgorithmException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("REGISTER " + generatedPassword);
 
+                    user = new User(id, name, email, username, generatedPassword);
+
+                    if (!isValidEmail(email)) {
+                        showError("Invalid e-mail address!");
+                    } else {
+                        getGcmId();
+                    }
+                }
                 break;
 
             case R.id.loginme:
                 startActivity(new Intent(this, ActivityLogin.class));
-
+                finish();
         }
     }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        InputMethodManager imm = (InputMethodManager)getSystemService(Context.
-                INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-        return true;
-    }
-
-    public final static boolean isValidEmail(CharSequence target) {
-        return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
-    }
-
-    private void showError(){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(ActivityRegister.this);
-        allertBuilder.setMessage("Invalid e-mail address!");
-        allertBuilder.setPositiveButton("OK", null);
-        allertBuilder.show();
-    }
-
-    private void showConnectionError(){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(ActivityRegister.this);
-        allertBuilder.setMessage("Network error! Check your internet connection and try again!");
-        allertBuilder.setPositiveButton("OK", null);
-        allertBuilder.show();
-    }
-
-    private void showUserTakenError(){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(ActivityRegister.this);
-        allertBuilder.setMessage("Username is already taken");
-        allertBuilder.setPositiveButton("OK", null);
-        allertBuilder.show();
-    }
-
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
 
     private void getGcmId(){
         if(!isNetworkAvailable()){
-            showConnectionError();
+            showError("Network error! Check your internet connection and try again!");
         }
         else {
-            String gcmId = "";
             GCMRequest gcmRequest = GCMRequest.getInstance(this);
             gcmRequest.getGCMidInBackground(new GetGCM() {
                 @Override
@@ -186,18 +132,16 @@ public class ActivityRegister extends AppCompatActivity implements View.OnClickL
                 progressDialog.dismiss();
                 if (returnedUser != null) {
                     if (returnedUser.getUsername().equals("Timeout")) {
-                        showConnectionError();
-                    } else if (returnedUser.getUsername().equals("Exists")){
-                        showUserTakenError();
-                    }
-                    else{
+                        showError("Network error! Check your internet connection and try again!");
+                    } else if (returnedUser.getUsername().equals("Exists")) {
+                        showError("Username is already taken");
+                    } else {
                         login(returnedUser);
                     }
                 }
             }
         });
     }
-
 
     private void login(User returnedUser){
         UserLocalStore userLocalStore = UserLocalStore.getInstance(this);
@@ -207,7 +151,33 @@ public class ActivityRegister extends AppCompatActivity implements View.OnClickL
         finish();
     }
 
-////////////////////////////////////////////
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.
+                INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        return true;
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    public static boolean isValidEmail(CharSequence target) {
+        return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+    }
+
+    private void showError(String message){
+        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(ActivityRegister.this);
+        allertBuilder.setMessage(message);
+        allertBuilder.setPositiveButton("OK", null);
+        allertBuilder.show();
+    }
+
+    // Get GcmId in Background
     private static class GCMRequest{
 
         static Context context;
@@ -246,9 +216,7 @@ public class ActivityRegister extends AppCompatActivity implements View.OnClickL
                     gcm = GoogleCloudMessaging.getInstance(context);
                     gcmId = null;
                     gcmId = gcm.register(SENDER_ID);
-                    //msg = "Device registered, registration ID=" + gcmId;
                 } catch (IOException ex) {
-                    //msg = "Error :" + ex.getMessage();
                     ex.printStackTrace();
                 }
                 return gcmId;

@@ -11,7 +11,9 @@
         android:id="@+id/itemImage"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_centerVertical="true"/>
+        android:layout_centerVertical="true"
+        android:background="@drawable/imageviewborder"
+        />
 
     <TextView
         android:id="@+id/itemTitle"
@@ -59,6 +61,7 @@
         android:stepSize="0.5"
         android:isIndicator="true"
         android:progressTint="@color/colorPrimary"
+        android:layout_marginTop="10dp"
         style="@style/CustomRatingBar"
         android:layout_below="@+id/itemTitle"
         android:layout_alignLeft="@+id/itemTitle"

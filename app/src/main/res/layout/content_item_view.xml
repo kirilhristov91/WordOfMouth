@@ -28,7 +28,8 @@
             android:layout_width="200dp"
             android:layout_height="200dp"
             android:layout_centerHorizontal="true"
-            android:id="@+id/itemPicture" />
+            android:id="@+id/itemPicture"
+            android:background="@drawable/imageviewborder"/>
 
         <RatingBar
             android:id="@+id/itemRatingBar"

@@ -37,6 +37,7 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
     TextView usernameText;
     TextView description;
     RatingBar itemRating;
+    TextView ratedBy;
     RatingBar rateItYourselfRatingBar;
     Button rateButton;
     Item item;
@@ -54,6 +55,7 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
         description = (TextView) findViewById(R.id.description);
         itemRating = (RatingBar) findViewById(R.id.itemRatingBar);
         rateButton = (Button) findViewById(R.id.rateButton);
+        ratedBy = (TextView) findViewById(R.id.ratedBy);
 
         rateItYourselfRatingBar = (RatingBar) findViewById(R.id.rateItYourselfRatingBar);
         rateItYourselfRatingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
@@ -86,6 +88,13 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
         usernameText.setText(item.get_creatorUsername());
         description.setText(item.get_description());
         itemRating.setRating((float) item.get_rating());
+
+        if(item.getRatingCounter()>1){
+            ratedBy.setText("Rated by " + item.getRatingCounter() + " users");
+        }
+        else{
+            ratedBy.setText("Rated by " + item.getRatingCounter() + " user");
+        }
 
         serverRequests = ServerRequests.getInstance(this);
         userLocalStore = UserLocalStore.getInstance(this);

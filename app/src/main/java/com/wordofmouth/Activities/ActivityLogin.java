@@ -87,6 +87,7 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
                 break;
             case R.id.registerNow:
                 startActivity(new Intent(this, ActivityRegister.class));
+                finish();
                 break;
         }
     }
@@ -114,8 +115,6 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
     }
 
     private void authenticate(User user){
-
-
         if(!isNetworkAvailable()){
             showConnectionError();
         }

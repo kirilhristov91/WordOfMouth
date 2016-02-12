@@ -105,7 +105,9 @@ public class ServerRequests {
         for(String key : data.keySet()) {
             String value = null;
             try {
+                System.out.println(" DATA.GETKYE " +  key + " - " + data.get(key));
                 value = URLEncoder.encode(data.get(key),"UTF-8");
+
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
@@ -185,6 +187,13 @@ public class ServerRequests {
                         Log.i("ZAETO", "VLQZAH");
                         returnedUser = new User(-1, "Exists", "Exists", "Exists", "Exists");
                     }
+
+                    else {
+                        JSONObject jResult = new JSONObject(line);
+                        int id = jResult.getInt("id");
+                        returnedUser = new User(id, user.getName(), user.getEmail(), user.getUsername(), user.getPassword());
+                    }
+
                 }
 
                 else {

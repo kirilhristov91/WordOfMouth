@@ -42,9 +42,20 @@
             android:layout_marginTop="10dp"
             android:layout_below="@+id/itemPicture" />
 
+        <TextView
+            android:id="@+id/ratedBy"
+            android:layout_marginTop="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rated by "
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/itemRatingBar"
+            android:textSize="16sp"/>
+
         <LinearLayout
             android:id="@+id/rateItLayout"
-            android:layout_below="@+id/itemRatingBar"
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/ratedBy"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -56,7 +67,8 @@
                 android:text="Rate the item yourself"
                 android:textStyle="bold"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textSize="16sp"/>
 
             <RatingBar
                 android:id="@+id/rateItYourselfRatingBar"

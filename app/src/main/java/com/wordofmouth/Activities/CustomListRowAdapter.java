@@ -70,8 +70,8 @@ public class CustomListRowAdapter extends ArrayAdapter<String> {
 
         if(sharedWith.length()>0){
             sharedWith = sharedWith.substring(0, sharedWith.length()-2);
+            viewHolder.sharedWithUsernames.setText(sharedWith);
         }
-        viewHolder.sharedWithUsernames.setText(sharedWith);
 
         String title = getItem(position);
         String image = lists.get(position).getImage();
@@ -82,7 +82,9 @@ public class CustomListRowAdapter extends ArrayAdapter<String> {
             viewHolder.listImage.setImageResource(R.drawable.logowom);
         }
         viewHolder.listTitle.setText(title);
-        viewHolder.descriptionText.setText(lists.get(position).get_description());
+        if(lists.get(position).get_description().length()>0) {
+            viewHolder.descriptionText.setText(lists.get(position).get_description());
+        }
         viewHolder.listAddedByUsername.setText(lists.get(position).get_username());
         if(lists.get(position).getHasNewContent() == 1){
             int c = Color.parseColor("#2ecc71");

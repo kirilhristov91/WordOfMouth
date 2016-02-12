@@ -54,13 +54,15 @@ public class DBGetData {
         @Override
         protected ArrayList<MyList> doInBackground(Void... params) {
 
-            if(flag == 0) {
+           /* if(flag == 0) {
                 result = dbHandler.getLists(username);
             }
             else {
                 result = dbHandler.getSharedLists(username);
-            }
-            return result;
+            }*/
+
+            //return result;
+            return dbHandler.getLists(username, flag);
         }
 
         @Override

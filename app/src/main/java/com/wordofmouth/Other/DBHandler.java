@@ -12,7 +12,6 @@ import com.wordofmouth.ObjectClasses.Notification;
 
 import java.util.ArrayList;
 
-
 public class DBHandler extends SQLiteOpenHelper{
 
     private static DBHandler sInstance;
@@ -57,10 +56,6 @@ public class DBHandler extends SQLiteOpenHelper{
     public static final String COLUMN_NotificationDate = "_notificationDate";
     public static final String COLUMN_NotificationAccepted = "_notificationAccepted";
 
-    /*public DBHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, DATABASE_NAME, factory, DATABASE_VERSION);
-    }*/
-
     public static synchronized DBHandler getInstance(Context context) {
 
         // Use the application context, which will ensure that you
@@ -78,11 +73,6 @@ public class DBHandler extends SQLiteOpenHelper{
     private DBHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
-
-
-    /*public static DBHandler getDBHandlerForAsyncTask(){
-        return sInstance;
-    }*/
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -212,7 +202,6 @@ public class DBHandler extends SQLiteOpenHelper{
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
         if (c.getCount() > 0) {
-            System.out.println("VLIZAM NA UPDATEHASNEWCONTENT I listid e " + listId + " i to put e " + toPut);
             String UpdateRating = "UPDATE " + TABLE_USER_LISTS +
                     " SET " + COLUMN_HasNewContent + " = " + toPut +
                     " WHERE " + COLUMN_ID + " = " + listId + ";";
@@ -324,7 +313,7 @@ public class DBHandler extends SQLiteOpenHelper{
     public void deleteTemp(){
         SQLiteDatabase db = getWritableDatabase();
         String query = "DELETE FROM " + TABLE_Profile_Image +
-                " WHERE _userId = " + -1;
+                " WHERE " + COLUMN_UserId + " = " + -1;
         db.execSQL(query);
         db.close();
     }
@@ -333,7 +322,7 @@ public class DBHandler extends SQLiteOpenHelper{
         String encodedImage = null;
         SQLiteDatabase db = getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_Profile_Image +
-                " WHERE _userId = " + -1;
+                " WHERE " + COLUMN_UserId + " = " + -1;
 
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
@@ -353,13 +342,10 @@ public class DBHandler extends SQLiteOpenHelper{
         String encodedImage = null;
         SQLiteDatabase db = getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_Profile_Image +
-                " WHERE _userId = " + userId;
+                " WHERE " + COLUMN_UserId + " = " + userId;
 
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
-        /*if (c.isAfterLast()) {
-            System.out.println("NQMA NISHTO V BAZATA");
-        }*/
         if(!c.isAfterLast()) {
             if (c.getString(c.getColumnIndex(COLUMN_Image)) != null) {
                 encodedImage = c.getString(c.getColumnIndex(COLUMN_Image));
@@ -370,14 +356,8 @@ public class DBHandler extends SQLiteOpenHelper{
         return encodedImage;
     }
 
-    //Delete a list from the database
-    /*public void deleteList(String listName){
-        SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("DELETE FROM " + TABLE_USER_LISTS + " WHERE " + COLUMN_Name + "=\"" + listName + "\";");
-    }*/
-
     // get the lists as list of objects
-    public ArrayList<MyList> getLists(String currentUserUsername){
+    public ArrayList<MyList> getLists(String currentUserUsername, int flag){
         // prepare the variables to store a row
         int id;
         int userId;
@@ -387,71 +367,39 @@ public class DBHandler extends SQLiteOpenHelper{
         String des = "";
         ArrayList<MyList> lists = new ArrayList<MyList>();
 
-        SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT * FROM " + TABLE_USER_LISTS +
-                       " WHERE " + COLUMN_Username + "=\"" + currentUserUsername + "\";";
-        // cursor points to a location in the results
-        Cursor c = db.rawQuery(query, null);
-        // move to the first row
-        c.moveToFirst();
+        String myLists = "SELECT * FROM " + TABLE_USER_LISTS +
+                       " WHERE " + COLUMN_Username + "=\"" + currentUserUsername + "\"" +
+                       " ORDER BY " + COLUMN_ID + " DESC;";
+        String sharedLists = "SELECT * FROM " + TABLE_USER_LISTS +
+                       " WHERE " + COLUMN_Username + "!=\"" + currentUserUsername + "\"" +
+                       " ORDER BY " + COLUMN_ID + " DESC;";
 
-        while (!c.isAfterLast()){
-
-            id = c.getInt(c.getColumnIndex("_listId"));
-            userId = c.getInt(c.getColumnIndex(COLUMN_UserId));
-            if(c.getString(c.getColumnIndex("_username")) != null){
-                username = c.getString(c.getColumnIndex("_username"));
-            }
-            if(c.getString(c.getColumnIndex("_name")) != null){
-                listName = c.getString(c.getColumnIndex("_name"));
-            }
-            if(c.getString(c.getColumnIndex("_description")) != null){
-                des = c.getString(c.getColumnIndex("_description"));
-            }
-            if(c.getString(c.getColumnIndex(COLUMN_ListImage)) != null){
-                image = c.getString(c.getColumnIndex(COLUMN_ListImage));
-            }
-
-            MyList ul = new MyList(userId, username, listName, des, image);
-            ul.set_listId(id);
-            lists.add(ul);
-            c.moveToNext();
+        String queryToExecute = "";
+        if(flag == 0){
+            queryToExecute = myLists;
         }
-        c.close();
-        db.close();
-        return lists;
-    }
-
-    // get the lists as list of objects
-    public ArrayList<MyList> getSharedLists(String currentUserUsername){
-        int id;
-        int userId;
-        String username="";
-        String listName = "";
-        String image="";
-        String des = "";
-        ArrayList<MyList> lists = new ArrayList<MyList>();
+        else {
+           queryToExecute = sharedLists;
+        }
 
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT * FROM " + TABLE_USER_LISTS +
-                " WHERE " + COLUMN_Username + "!=\"" + currentUserUsername + "\";";
         // cursor points to a location in the results
-        Cursor c = db.rawQuery(query, null);
+        Cursor c = db.rawQuery(queryToExecute, null);
         // move to the first row
         c.moveToFirst();
 
         while (!c.isAfterLast()){
 
-            id = c.getInt(c.getColumnIndex("_listId"));
+            id = c.getInt(c.getColumnIndex(COLUMN_ID));
             userId = c.getInt(c.getColumnIndex(COLUMN_UserId));
-            if(c.getString(c.getColumnIndex("_username")) != null){
-                username = c.getString(c.getColumnIndex("_username"));
+            if(c.getString(c.getColumnIndex(COLUMN_Username)) != null){
+                username = c.getString(c.getColumnIndex(COLUMN_Username));
             }
-            if(c.getString(c.getColumnIndex("_name")) != null){
-                listName = c.getString(c.getColumnIndex("_name"));
+            if(c.getString(c.getColumnIndex(COLUMN_Name)) != null){
+                listName = c.getString(c.getColumnIndex(COLUMN_Name));
             }
-            if(c.getString(c.getColumnIndex("_description")) != null){
-                des = c.getString(c.getColumnIndex("_description"));
+            if(c.getString(c.getColumnIndex(COLUMN_Description)) != null){
+                des = c.getString(c.getColumnIndex(COLUMN_Description));
             }
             if(c.getString(c.getColumnIndex(COLUMN_ListImage)) != null){
                 image = c.getString(c.getColumnIndex(COLUMN_ListImage));
@@ -460,7 +408,6 @@ public class DBHandler extends SQLiteOpenHelper{
             MyList ul = new MyList(userId, username, listName, des, image);
             ul.set_listId(id);
             ul.setHasNewContent(hasNewC);
-            System.out.println("KATO VZEMAM LISTITE - hasNewC e :" + hasNewC);
             lists.add(ul);
             c.moveToNext();
         }
@@ -484,7 +431,8 @@ public class DBHandler extends SQLiteOpenHelper{
         SQLiteDatabase db = getWritableDatabase();
         // select the items of the selected list
         String query = "SELECT * FROM " + TABLE_Items  +
-                " WHERE " + TABLE_Items + "._listId = " + listID;
+                " WHERE " + COLUMN_ListID + " = " + listID +
+                " ORDER BY " + COLUMN_ItemID + " DESC;";
         // cursor points to a location in the results
         Cursor c = db.rawQuery(query, null);
         // move to the first row
@@ -492,15 +440,15 @@ public class DBHandler extends SQLiteOpenHelper{
 
         while (!c.isAfterLast()){
 
-            id = c.getInt(c.getColumnIndex("_itemId"));
+            id = c.getInt(c.getColumnIndex(COLUMN_ItemID));
             userId = c.getInt(c.getColumnIndex(COLUMN_CreatorId));
-            if(c.getString(c.getColumnIndex("_itemName")) != null){
-                itemName = c.getString(c.getColumnIndex("_itemName"));
+            if(c.getString(c.getColumnIndex(COLUMN_ItemName)) != null){
+                itemName = c.getString(c.getColumnIndex(COLUMN_ItemName));
             }
-            rating = c.getDouble(c.getColumnIndex("_rating"));
+            rating = c.getDouble(c.getColumnIndex(COLUMN_Rating));
             ratingCounter = c.getInt(c.getColumnIndex(COLUMN_RatingCounter));
-            if(c.getString(c.getColumnIndex("_description")) != null){
-                des = c.getString(c.getColumnIndex("_description"));
+            if(c.getString(c.getColumnIndex(COLUMN_ItemDescription)) != null){
+                des = c.getString(c.getColumnIndex(COLUMN_ItemDescription));
             }
 
             if(c.getString(c.getColumnIndex(COLUMN_Creator)) != null){

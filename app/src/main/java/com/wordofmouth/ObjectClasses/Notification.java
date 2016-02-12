@@ -6,14 +6,12 @@ public class Notification {
 
     int id;
     int listId;
-    int userId;
     String msg;
     int accepted;
     String date;
 
-    public Notification(int listId, int userId, String msg, String date, int accepted){
+    public Notification(int listId, String msg, String date, int accepted){
         this.listId = listId;
-        this.userId = userId;
         this.msg = msg;
         this.date = date;
         this.accepted = accepted;
@@ -33,14 +31,6 @@ public class Notification {
 
     public void setListId(int listId) {
         this.listId = listId;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
     }
 
     public String getMsg() {

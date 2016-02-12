@@ -9,6 +9,7 @@ import android.content.ContentValues;
 import com.wordofmouth.ObjectClasses.Item;
 import com.wordofmouth.ObjectClasses.MyList;
 import com.wordofmouth.ObjectClasses.Notification;
+import com.wordofmouth.ObjectClasses.Shared;
 
 import java.util.ArrayList;
 
@@ -17,11 +18,11 @@ public class DBHandler extends SQLiteOpenHelper{
     private static DBHandler sInstance;
 
     //if updating the database change the version:
-    private static final int DATABASE_VERSION = 22;
+    private static final int DATABASE_VERSION = 25;
     private static final String DATABASE_NAME = "WOM.db";
 
     //Lists table
-    public static final String TABLE_USER_LISTS = "UserLists";
+    public static final String TABLE_List = "List";
     public static final String COLUMN_ID = "_listId";
     public static final String COLUMN_UserId = "_userId";
     public static final String COLUMN_Username = "_username";
@@ -31,7 +32,7 @@ public class DBHandler extends SQLiteOpenHelper{
     public static final String COLUMN_HasNewContent = "_hasNewContent";
 
     // Items table
-    public static final String TABLE_Items = "Items";
+    public static final String TABLE_Item = "Item";
     public static final String COLUMN_ItemID = "_itemId";
     public static final String COLUMN_ListID = "_listId";
     public static final String COLUMN_CreatorId = "_creatorId";
@@ -41,6 +42,7 @@ public class DBHandler extends SQLiteOpenHelper{
     public static final String COLUMN_RatingCounter = "_ratingCounter";
     public static final String COLUMN_ItemDescription = "_description";
     public static final String COLUMN_ItemImage = "_itemImage";
+    public static final String COLUMN_Seen = "_seen";
 
     //Profile image table (only local)
     public static final String TABLE_Profile_Image = "ProfileImage";
@@ -48,13 +50,19 @@ public class DBHandler extends SQLiteOpenHelper{
     public static final String COLUMN_Image = "_image";
 
     //Notification table (only local)
-    public static final String TABLE_Notifications = "Notifications";
+    public static final String TABLE_Notification = "Notification";
     public static final String COLUMN_NotificationID = "_notificationId";
     public static final String COLUMN_NotificationListId = "_notificationListId";
-    public static final String COLUMN_NotificationUserId = "_notificationUsertId";
     public static final String COLUMN_NotificationMsg = "_notificationMsg";
     public static final String COLUMN_NotificationDate = "_notificationDate";
     public static final String COLUMN_NotificationAccepted = "_notificationAccepted";
+
+    // Table SharedWith
+    public static final String TABLE_SharedWith = "SharedWith";
+    public static final String COLUMN_Key = "_id";
+    public static final String COLUMN_SharedListId = "_listId";
+    public static final String COLUMN_SharedWithUsername = "_username";
+
 
     public static synchronized DBHandler getInstance(Context context) {
 
@@ -76,7 +84,7 @@ public class DBHandler extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CreateListTableQuery = "CREATE TABLE " + TABLE_USER_LISTS + "(" +
+        String CreateListTableQuery = "CREATE TABLE " + TABLE_List + "(" +
                 COLUMN_ID + " INTEGER PRIMARY KEY, " +
                 COLUMN_UserId + " INTEGER, " +
                 COLUMN_Username + " TEXT, " +
@@ -86,7 +94,7 @@ public class DBHandler extends SQLiteOpenHelper{
                 COLUMN_HasNewContent + " INTEGER " +
                 ");";
 
-        String CreateItemsTableQuery = "CREATE TABLE " + TABLE_Items + "(" +
+        String CreateItemTableQuery = "CREATE TABLE " + TABLE_Item + "(" +
                 COLUMN_ItemID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_ListID + " INTEGER, " +
                 COLUMN_CreatorId + " INTEGER, " +
@@ -96,8 +104,9 @@ public class DBHandler extends SQLiteOpenHelper{
                 COLUMN_RatingCounter + " INTEGER, " +
                 COLUMN_ItemDescription + " TEXT, " +
                 COLUMN_ItemImage + " TEXT, " +
+                COLUMN_Seen + " INTEGER, " +
                 "FOREIGN KEY (" + COLUMN_ListID + ") REFERENCES " +
-                TABLE_USER_LISTS + "(" + COLUMN_ID + ")"+
+                TABLE_List + "(" + COLUMN_ID + ")"+
                 ");";
 
         String CreateProfileImageTableQuery = "CREATE TABLE " + TABLE_Profile_Image + "(" +
@@ -105,27 +114,34 @@ public class DBHandler extends SQLiteOpenHelper{
                 COLUMN_Image + " TEXT " +
                 ");";
 
-        String CreateNoticationsTableQuery = "CREATE TABLE " + TABLE_Notifications + "(" +
+        String CreateNotificationTableQuery = "CREATE TABLE " + TABLE_Notification + "(" +
                 COLUMN_NotificationID + " INTEGER PRIMARY KEY, " +
                 COLUMN_NotificationListId + " INTEGER, " +
-                COLUMN_NotificationUserId + " INTEGER, " +
                 COLUMN_NotificationMsg + " TEXT, " +
                 COLUMN_NotificationDate + " TEXT, " +
                 COLUMN_NotificationAccepted + " INTEGER " +
                 ");";
 
+        String CreateSharedWithTableQuery = "CREATE TABLE " + TABLE_SharedWith + "(" +
+                COLUMN_Key + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_SharedListId + " INTEGER, " +
+                COLUMN_SharedWithUsername + " TEXT " +
+                ");";
+
         db.execSQL(CreateListTableQuery);
-        db.execSQL(CreateItemsTableQuery);
+        db.execSQL(CreateItemTableQuery);
         db.execSQL(CreateProfileImageTableQuery);
-        db.execSQL(CreateNoticationsTableQuery);
+        db.execSQL(CreateNotificationTableQuery);
+        db.execSQL(CreateSharedWithTableQuery);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_Items);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER_LISTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_Item);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_List);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_Profile_Image);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_Notifications);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_Notification);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SharedWith);
         onCreate(db);
     }
 
@@ -140,7 +156,7 @@ public class DBHandler extends SQLiteOpenHelper{
         values.put(COLUMN_ListImage, ul.getImage());
         values.put(COLUMN_HasNewContent, ul.getHasNewContent());
         SQLiteDatabase db = getWritableDatabase();
-        db.insert(TABLE_USER_LISTS, null, values);
+        db.insert(TABLE_List, null, values);
         db.close();
     }
 
@@ -155,8 +171,9 @@ public class DBHandler extends SQLiteOpenHelper{
         values.put(COLUMN_RatingCounter, i.getRatingCounter());
         values.put(COLUMN_Description, i.get_description());
         values.put(COLUMN_ItemImage, i.get_itemImage());
+        values.put(COLUMN_Seen, i.getSeen());
         SQLiteDatabase db = getWritableDatabase();
-        db.insert(TABLE_Items, null, values);
+        db.insert(TABLE_Item, null, values);
         db.close();
     }
 
@@ -172,20 +189,74 @@ public class DBHandler extends SQLiteOpenHelper{
             values.put(COLUMN_Rating, items.get(i).get_rating());
             values.put(COLUMN_Description, items.get(i).get_description());
             values.put(COLUMN_ItemImage, items.get(i).get_itemImage());
-            db.insert(TABLE_Items, null, values);
+            values.put(COLUMN_Seen, items.get(i).getSeen());
+            db.insert(TABLE_Item, null, values);
         }
         db.close();
     }
 
+    public void addNotification(Notification notification){
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NotificationListId, notification.getListId());
+        values.put(COLUMN_NotificationMsg, notification.getMsg());
+        values.put(COLUMN_NotificationDate, notification.getDate());
+        values.put(COLUMN_NotificationAccepted, notification.getAccepted());
+        SQLiteDatabase db = getWritableDatabase();
+        db.insert(TABLE_Notification, null, values);
+        db.close();
+    }
+
+    public void addUserToSharedWith(int listId, String username){
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_SharedListId, listId);
+        values.put(COLUMN_SharedWithUsername, username);
+        SQLiteDatabase db = getWritableDatabase();
+        db.insert(TABLE_SharedWith, null, values);
+        db.close();
+    }
+
+    public void addMultipleUsersToSharedWith(int listId, ArrayList<String> usernames){
+        SQLiteDatabase db = getWritableDatabase();
+        for(int i = 0; i<usernames.size();i++){
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_SharedListId, listId);
+            values.put(COLUMN_SharedWithUsername, usernames.get(i));
+            db.insert(TABLE_SharedWith, null, values);
+        }
+        db.close();
+    }
+
+    public ArrayList<Shared> getUsernames(){
+        ArrayList<Shared> toReturn = new ArrayList<>();
+        int listId;
+        String username ="";
+        SQLiteDatabase db = getWritableDatabase();
+        String getUsernames = "SELECT * FROM " + TABLE_SharedWith;
+
+        Cursor c = db.rawQuery(getUsernames, null);
+        c.moveToFirst();
+        while (!c.isAfterLast()) {
+
+            listId = c.getInt(c.getColumnIndex(COLUMN_SharedListId));
+            if(c.getString(c.getColumnIndex(COLUMN_SharedWithUsername)) != null){
+                username = c.getString(c.getColumnIndex(COLUMN_SharedWithUsername));
+            }
+            toReturn.add(new Shared(listId, username));
+            c.moveToNext();
+        }
+        c.close();
+        db.close();
+        return toReturn;
+    }
 
     public void updateRating(Item item){
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT * FROM " + TABLE_Items +
+        String query = "SELECT * FROM " + TABLE_Item +
                 " WHERE " + COLUMN_ItemID + " = " + item.get_itemId();
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
         if (c.getCount() > 0) {
-            String UpdateRating = "UPDATE " + TABLE_Items +
+            String UpdateRating = "UPDATE " + TABLE_Item +
                     " SET " + COLUMN_Rating + " = " + item.get_rating() + "," +
                     COLUMN_RatingCounter + " = " + item.getRatingCounter() +
                     " WHERE " + COLUMN_ItemID + " = " + item.get_itemId() + ";";
@@ -197,12 +268,12 @@ public class DBHandler extends SQLiteOpenHelper{
 
     public void updateHasNewContent(int listId, int toPut){
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT * FROM " + TABLE_USER_LISTS +
+        String query = "SELECT * FROM " + TABLE_List +
                 " WHERE " + COLUMN_ID + " = " + listId;
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
         if (c.getCount() > 0) {
-            String UpdateRating = "UPDATE " + TABLE_USER_LISTS +
+            String UpdateRating = "UPDATE " + TABLE_List +
                     " SET " + COLUMN_HasNewContent + " = " + toPut +
                     " WHERE " + COLUMN_ID + " = " + listId + ";";
             db.execSQL(UpdateRating);
@@ -213,12 +284,12 @@ public class DBHandler extends SQLiteOpenHelper{
 
     public void updateAccepted(int notificationId){
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT * FROM " + TABLE_Notifications +
+        String query = "SELECT * FROM " + TABLE_Notification +
                 " WHERE " + COLUMN_NotificationID + " = " + notificationId;
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
         if (c.getCount() > 0) {
-            String UpdateRating = "UPDATE " + TABLE_Notifications +
+            String UpdateRating = "UPDATE " + TABLE_Notification +
                     " SET " + COLUMN_NotificationAccepted + " = " + 1 +
                     " WHERE " + COLUMN_NotificationID + " = " + notificationId + ";";
             db.execSQL(UpdateRating);
@@ -227,18 +298,61 @@ public class DBHandler extends SQLiteOpenHelper{
         db.close();
     }
 
-    public void addNotification(Notification notification){
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_NotificationListId, notification.getListId());
-        values.put(COLUMN_NotificationUserId, notification.getUserId());
-        values.put(COLUMN_NotificationMsg, notification.getMsg());
-        values.put(COLUMN_NotificationDate, notification.getDate());
-        values.put(COLUMN_NotificationAccepted, notification.getAccepted());
+
+    public void updateSeen(int itemId){
         SQLiteDatabase db = getWritableDatabase();
-        db.insert(TABLE_Notifications, null, values);
+        String query = "SELECT * FROM " + TABLE_Item +
+                " WHERE " + COLUMN_ItemID + " = " + itemId;
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+        if (c.getCount() > 0) {
+            String UpdateRating = "UPDATE " + TABLE_Item +
+                    " SET " + COLUMN_Seen + " = " + 1 +
+                    " WHERE " + COLUMN_ItemID + " = " + itemId + ";";
+            db.execSQL(UpdateRating);
+        }
+        c.close();
         db.close();
     }
 
+    public ArrayList<Notification> getNotifications(){
+        ArrayList<Notification> notificationsList= new ArrayList<>();
+        int id;
+        int lid;
+        String message="";
+        String date = "";
+        int accepted;
+
+        SQLiteDatabase db = getWritableDatabase();
+        String get_not = "SELECT * FROM " + TABLE_Notification +
+                " ORDER BY " + COLUMN_NotificationID + " DESC";
+        Cursor c = db.rawQuery(get_not, null);
+        c.moveToFirst();
+        while (!c.isAfterLast()) {
+            id = c.getInt(c.getColumnIndex(COLUMN_NotificationID));
+            lid = c.getInt(c.getColumnIndex(COLUMN_NotificationListId));
+            if(c.getString(c.getColumnIndex(COLUMN_NotificationMsg)) != null){
+                message = c.getString(c.getColumnIndex(COLUMN_NotificationMsg));
+            }
+
+            if(c.getString(c.getColumnIndex(COLUMN_NotificationDate)) != null){
+                date = c.getString(c.getColumnIndex(COLUMN_NotificationDate));
+            }
+
+            accepted = c.getInt(c.getColumnIndex(COLUMN_NotificationAccepted));
+
+            Notification n = new Notification(lid, message, date, accepted);
+            n.setId(id);
+            notificationsList.add(n);
+            c.moveToNext();
+        }
+        c.close();
+        db.close();
+        return notificationsList;
+    }
+
+    ////////////////////////////////////////////////////////////////////
+    // Profile Picture methods
     public void addProfilePicture(int userId, String encodedImage){
         SQLiteDatabase db = getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_Profile_Image +
@@ -261,47 +375,7 @@ public class DBHandler extends SQLiteOpenHelper{
         db.close();
     }
 
-    public ArrayList<Notification> getNotifications(int userId){
-        ArrayList<Notification> notificationsList= new ArrayList<Notification>();
-        int id;
-        int lid;
-        int uid;
-        String message="";
-        String date = "";
-        int accepted;
 
-        SQLiteDatabase db = getWritableDatabase();
-        String get_not = "SELECT * FROM " + TABLE_Notifications +
-                " WHERE " + COLUMN_NotificationUserId + " = " + userId +
-                " ORDER BY " + COLUMN_NotificationID + " DESC";
-        Cursor c = db.rawQuery(get_not, null);
-        c.moveToFirst();
-        while (!c.isAfterLast()) {
-            id = c.getInt(c.getColumnIndex(COLUMN_NotificationID));
-            lid = c.getInt(c.getColumnIndex(COLUMN_NotificationListId));
-            uid = c.getInt(c.getColumnIndex(COLUMN_NotificationUserId));
-            if(c.getString(c.getColumnIndex(COLUMN_NotificationMsg)) != null){
-                message = c.getString(c.getColumnIndex(COLUMN_NotificationMsg));
-            }
-
-            if(c.getString(c.getColumnIndex(COLUMN_NotificationDate)) != null){
-                date = c.getString(c.getColumnIndex(COLUMN_NotificationDate));
-            }
-
-            accepted = c.getInt(c.getColumnIndex(COLUMN_NotificationAccepted));
-
-            Notification n = new Notification(lid, uid, message, date, accepted);
-            n.setId(id);
-            notificationsList.add(n);
-            c.moveToNext();
-        }
-        c.close();
-        db.close();
-        return notificationsList;
-    }
-
-    ////////////////////////////////////////////////////////////////////
-    // Profile Picture methods
     public void setTemp(String tempImage){
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -367,16 +441,16 @@ public class DBHandler extends SQLiteOpenHelper{
         String listName = "";
         String image="";
         String des = "";
-        ArrayList<MyList> lists = new ArrayList<MyList>();
+        ArrayList<MyList> lists = new ArrayList<>();
 
-        String myLists = "SELECT * FROM " + TABLE_USER_LISTS +
+        String myLists = "SELECT * FROM " + TABLE_List +
                        " WHERE " + COLUMN_Username + "=\"" + currentUserUsername + "\"" +
                        " ORDER BY " + COLUMN_ID + " DESC;";
-        String sharedLists = "SELECT * FROM " + TABLE_USER_LISTS +
+        String sharedLists = "SELECT * FROM " + TABLE_List +
                        " WHERE " + COLUMN_Username + "!=\"" + currentUserUsername + "\"" +
                        " ORDER BY " + COLUMN_ID + " DESC;";
 
-        String queryToExecute = "";
+        String queryToExecute;
         if(flag == 0){
             queryToExecute = myLists;
         }
@@ -418,6 +492,27 @@ public class DBHandler extends SQLiteOpenHelper{
         return lists;
     }
 
+    public ArrayList getSeens (int listID){
+        Integer seen;
+        ArrayList<Integer> toReturn= new ArrayList<>();
+
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT " + COLUMN_Seen + " FROM " + TABLE_Item +
+                " WHERE " + COLUMN_ListID + " = " + listID;
+
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+
+        while (!c.isAfterLast()){
+            seen = c.getInt(c.getColumnIndex(COLUMN_Seen));
+            toReturn.add(seen);
+            c.moveToNext();
+        }
+        c.close();
+        db.close();
+        return toReturn;
+    }
+
     public ArrayList<Item> getItems(int listID){
         // prepare the variables to store a row
         int id;
@@ -428,11 +523,12 @@ public class DBHandler extends SQLiteOpenHelper{
         String des = "";
         String image = "";
         String creatorUsername = "";
-        ArrayList<Item> itemsList = new ArrayList<Item>();
+        int seen;
+        ArrayList<Item> itemsList = new ArrayList<>();
 
         SQLiteDatabase db = getWritableDatabase();
         // select the items of the selected list
-        String query = "SELECT * FROM " + TABLE_Items  +
+        String query = "SELECT * FROM " + TABLE_Item +
                 " WHERE " + COLUMN_ListID + " = " + listID +
                 " ORDER BY " + COLUMN_ItemID + " DESC;";
         // cursor points to a location in the results
@@ -460,9 +556,11 @@ public class DBHandler extends SQLiteOpenHelper{
             if(c.getString(c.getColumnIndex(COLUMN_ItemImage)) != null){
                 image = c.getString(c.getColumnIndex(COLUMN_ItemImage));
             }
+            seen = c.getInt(c.getColumnIndex(COLUMN_Seen));
 
             Item item = new Item(listID, userId, creatorUsername, itemName, rating, ratingCounter, des, image);
             item.set_itemId(id);
+            item.setSeen(seen);
             itemsList.add(item);
             c.moveToNext();
         }
@@ -483,11 +581,12 @@ public class DBHandler extends SQLiteOpenHelper{
         String des = "";
         String image = "";
         String creatorUsername = "";
+        int seen;
         Item item = null;
 
         SQLiteDatabase db = getWritableDatabase();
         // select the items of the selected list
-        String query = "SELECT * FROM " + TABLE_Items  +
+        String query = "SELECT * FROM " + TABLE_Item +
                 " WHERE " + COLUMN_ItemID + "=" + itemId;
         // cursor points to a location in the results
         Cursor c = db.rawQuery(query, null);
@@ -514,9 +613,10 @@ public class DBHandler extends SQLiteOpenHelper{
             if(c.getString(c.getColumnIndex(COLUMN_ItemImage)) != null){
                 image = c.getString(c.getColumnIndex(COLUMN_ItemImage));
             }
-
+            seen = c.getInt(c.getColumnIndex(COLUMN_Seen));
             item = new Item(listId, userId, creatorUsername, itemName, rating, ratingCounter, des, image);
             item.set_itemId(id);
+            item.setSeen(seen);
         }
         c.close();
         db.close();

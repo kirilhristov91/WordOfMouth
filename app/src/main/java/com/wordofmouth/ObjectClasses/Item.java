@@ -11,6 +11,7 @@ public class Item {
     private String _description;
     private String _itemImage;
     private String _creatorUsername;
+    int seen;
 
     public Item(int _listId, int creatorId, String username, String name, double rating, int ratingCounter, String description, String itemImage) {
         this._creatorId = creatorId;
@@ -94,4 +95,13 @@ public class Item {
     public void setRatingCounter(int ratingCounter) {
         this.ratingCounter = ratingCounter;
     }
+
+    public int getSeen() {
+        return seen;
+    }
+
+    public void setSeen(int seen) {
+        this.seen = seen;
+    }
+
 }

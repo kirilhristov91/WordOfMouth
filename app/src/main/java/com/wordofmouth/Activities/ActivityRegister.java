@@ -66,6 +66,10 @@ public class ActivityRegister extends AppCompatActivity implements View.OnClickL
                     showError("Please leave no field empty!");
                 }
 
+                else if(username.contains(" ")){
+                    showError("username should be one word!");
+                }
+
                 else {
                     String generatedPassword = null;
                     try {

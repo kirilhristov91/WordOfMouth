@@ -1,6 +1,7 @@
 package com.wordofmouth.Activities;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +51,10 @@ public class CustomNotificationRowAdapter extends ArrayAdapter<String> {
         String msg = getItem(position);
         viewHolder.notificationText.setText(msg);
         viewHolder.notificationDate.setText(notifications.get(position).getDate());
+        if(notifications.get(position).getAccepted() == 0){
+            int c = Color.parseColor("#2ecc71");
+            convertView.setBackgroundColor(c);
+        }
         return convertView;
     }
 

@@ -1,6 +1,5 @@
 package com.wordofmouth.Activities;
 
-import android.app.ActivityManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -52,7 +51,7 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
         getSupportActionBar().setTitle(listName);
 
         // create an instance of the local database
-        items = new ArrayList<Item>();
+        items = new ArrayList<>();
         DBGetData dbGetData = DBGetData.getInstance(this);
         final ProgressDialog progressDialogFetching = new ProgressDialog(this,R.style.MyTheme);
         progressDialogFetching.setCancelable(false);
@@ -100,6 +99,8 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         String itemName = String.valueOf(parent.getItemAtPosition(position));
                         int itemIdClicked = items.get(position).get_itemId();
+                        DBHandler dbHandler = DBHandler.getInstance(ActivityItemsOfAList.this);
+                        dbHandler.updateSeen(itemIdClicked);
                         Intent myIntent = new Intent(ActivityItemsOfAList.this, ActivityItem.class);
                         myIntent.putExtra("listId", selectedListId);
                         myIntent.putExtra("listName", listName);

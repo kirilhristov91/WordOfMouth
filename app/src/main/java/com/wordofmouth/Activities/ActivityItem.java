@@ -24,6 +24,8 @@ import com.wordofmouth.Other.ServerRequests;
 import com.wordofmouth.R;
 import com.wordofmouth.SharedPreferences.UserLocalStore;
 
+import java.util.ArrayList;
+
 public class ActivityItem extends BaseActivity implements View.OnClickListener{
 
     int listId;
@@ -73,6 +75,18 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
 
         getSupportActionBar().setTitle(itemName);
         DBHandler dbHandler = DBHandler.getInstance(this);
+
+        ArrayList<Integer> seens = new ArrayList<>();
+        seens = dbHandler.getSeens(listId);
+        boolean flag = false;
+        for(Integer seen: seens){
+            if(seen == 0) flag = true;
+        }
+
+        if(!flag){
+            dbHandler.updateHasNewContent(listId, 0);
+        }
+
         item = dbHandler.getItem(itemId);
 
         Bitmap bitmap = StringToBitMap(item.get_itemImage());

@@ -25,27 +25,6 @@
         android:layout_marginStart="20dp" />
 
     <TextView
-        android:id="@+id/descriptionTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Description:"
-        android:textSize="15sp"
-        android:textStyle="bold"
-        android:layout_below="@+id/listAddedBy"
-        android:layout_alignLeft="@+id/listAddedBy"
-        android:layout_alignStart="@+id/listAddedBy" />
-
-    <TextView
-        android:id="@+id/descriptionText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="desctext:"
-        android:textSize="15sp"
-        android:layout_below="@+id/descriptionTitle"
-        android:layout_alignLeft="@+id/descriptionTitle"
-        android:layout_alignStart="@+id/descriptionTitle" />
-
-    <TextView
         android:id="@+id/listAddedBy"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -62,12 +41,52 @@
         android:layout_height="wrap_content"
         android:text="username:"
         android:textSize="15sp"
-
         android:layout_marginLeft="3dp"
         android:layout_marginStart="3dp"
         android:layout_alignTop="@+id/listAddedBy"
         android:layout_toRightOf="@+id/listAddedBy"
         android:layout_toEndOf="@+id/listAddedBy" />
 
+    <TextView
+        android:id="@+id/sharedWithTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Shared with:"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_below="@+id/listAddedBy"
+        android:layout_alignLeft="@+id/listAddedBy"
+        android:layout_alignStart="@+id/listAddedBy" />
+
+    <TextView
+        android:id="@+id/sharedWithUsernames"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="usernames:"
+        android:textSize="15sp"
+        android:layout_below="@+id/sharedWithTitle"
+        android:layout_alignLeft="@+id/descriptionTitle"
+        android:layout_alignStart="@+id/descriptionTitle" />
+
+    <TextView
+        android:id="@+id/descriptionTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Description:"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_below="@+id/sharedWithUsernames"
+        android:layout_alignLeft="@+id/listAddedBy"
+        android:layout_alignStart="@+id/listAddedBy" />
+
+    <TextView
+        android:id="@+id/descriptionText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="desctext:"
+        android:textSize="15sp"
+        android:layout_below="@+id/descriptionTitle"
+        android:layout_alignLeft="@+id/descriptionTitle"
+        android:layout_alignStart="@+id/descriptionTitle" />
 
 </RelativeLayout>

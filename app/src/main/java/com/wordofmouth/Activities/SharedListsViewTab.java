@@ -16,6 +16,7 @@ import android.widget.ListView;
 import com.wordofmouth.Interfaces.GetBitmap;
 import com.wordofmouth.Interfaces.GetLists;
 import com.wordofmouth.ObjectClasses.MyList;
+import com.wordofmouth.ObjectClasses.Shared;
 import com.wordofmouth.Other.DBGetData;
 import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.Other.StringToBitmapRequests;
@@ -29,7 +30,7 @@ public class SharedListsViewTab extends Fragment {
     MainActivity mainActivity;
     ListView sharedListView;
     ArrayList<MyList> sharedLists;
-    DBHandler dbHandler;
+    ArrayList <Shared> usernames;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -37,11 +38,11 @@ public class SharedListsViewTab extends Fragment {
 
         mainActivity = (MainActivity) getActivity();
         sharedListView = (ListView) v.findViewById(R.id.sharedListsListView);
-        dbHandler = DBHandler.getInstance(mainActivity);
         String username = UserLocalStore.getInstance(mainActivity).getUserLoggedIn().getUsername();
         // get the user`s lists to display on fragment
         sharedLists = new ArrayList<MyList>();
         DBGetData dbGetData = DBGetData.getInstance(mainActivity);
+
         final ProgressDialog progressDialogFetching = new ProgressDialog(mainActivity,R.style.MyTheme);
         progressDialogFetching.setCancelable(false);
         progressDialogFetching.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
@@ -68,6 +69,9 @@ public class SharedListsViewTab extends Fragment {
             //System.out.println(myLists.get(i).get_listId());
         }
 
+        DBHandler dbHandler = DBHandler.getInstance(mainActivity);
+        usernames = dbHandler.getUsernames();
+
         StringToBitmapRequests stbr = StringToBitmapRequests.getInstance(mainActivity);
         final ProgressDialog progressDialogShared = new ProgressDialog(mainActivity,R.style.MyTheme);
         progressDialogShared.setCancelable(false);
@@ -78,7 +82,7 @@ public class SharedListsViewTab extends Fragment {
             public void done(ArrayList<Bitmap> resultShared) {
                 progressDialogShared.dismiss();
                 ArrayAdapter<String> listAdapterShared =
-                        new CustomListRowAdapter(mainActivity, listNames, sharedLists, resultShared);
+                        new CustomListRowAdapter(mainActivity, listNames, sharedLists, resultShared, usernames);
                 sharedListView.setAdapter(listAdapterShared);
             }
         });
@@ -90,7 +94,6 @@ public class SharedListsViewTab extends Fragment {
                         int idClicked;
                         String list = String.valueOf(parent.getItemAtPosition(position));
                         idClicked = sharedLists.get(position).get_listId();
-                        dbHandler.updateHasNewContent(idClicked, 0);
                         Intent myIntent = new Intent(mainActivity, ActivityItemsOfAList.class);
                         myIntent.putExtra("listId", idClicked);
                         myIntent.putExtra("name", list);

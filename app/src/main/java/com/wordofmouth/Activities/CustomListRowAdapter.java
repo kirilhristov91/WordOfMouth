@@ -10,6 +10,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.wordofmouth.ObjectClasses.MyList;
+import com.wordofmouth.ObjectClasses.Shared;
+import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.R;
 import java.util.ArrayList;
 
@@ -17,10 +19,12 @@ public class CustomListRowAdapter extends ArrayAdapter<String> {
 
     ArrayList<Bitmap> bitmaps;
     ArrayList<MyList> lists;
-    public CustomListRowAdapter(Context context, String[] listNames, ArrayList<MyList> lists, ArrayList<Bitmap> bitmaps) {
+    ArrayList<Shared> usernames;
+    public CustomListRowAdapter(Context context, String[] listNames, ArrayList<MyList> lists, ArrayList<Bitmap> bitmaps, ArrayList<Shared> usernames) {
         super(context, R.layout.custom_list_row, listNames);
         this.lists = lists;
         this.bitmaps = bitmaps;
+        this.usernames = usernames;
     }
 
     static class ViewHolderItem{
@@ -30,6 +34,8 @@ public class CustomListRowAdapter extends ArrayAdapter<String> {
         TextView descriptionText;
         TextView listAddedBy;
         TextView listAddedByUsername;
+        TextView sharedWithTitle;
+        TextView sharedWithUsernames;
     }
 
     @Override
@@ -47,11 +53,25 @@ public class CustomListRowAdapter extends ArrayAdapter<String> {
             viewHolder.descriptionText = (TextView) convertView.findViewById(R.id.descriptionText);
             viewHolder.listAddedBy = (TextView) convertView.findViewById(R.id.listAddedBy);
             viewHolder.listAddedByUsername = (TextView) convertView.findViewById(R.id.listAddedByUsername);
+            viewHolder.sharedWithTitle = (TextView) convertView.findViewById(R.id.sharedWithTitle);
+            viewHolder.sharedWithUsernames = (TextView) convertView.findViewById(R.id.sharedWithUsernames);
 
             convertView.setTag(viewHolder);
         }else{
             viewHolder = (ViewHolderItem) convertView.getTag();
         }
+
+        String sharedWith = "";
+        for(int i=0; i<usernames.size(); i++){
+            if(usernames.get(position).getListId() == lists.get(position).get_listId()){
+                sharedWith += usernames.get(position).getUsername() + ", ";
+            }
+        }
+
+        if(sharedWith.length()>0){
+            sharedWith = sharedWith.substring(0, sharedWith.length()-2);
+        }
+        viewHolder.sharedWithUsernames.setText(sharedWith);
 
         String title = getItem(position);
         String image = lists.get(position).getImage();

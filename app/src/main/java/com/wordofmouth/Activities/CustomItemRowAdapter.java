@@ -3,6 +3,7 @@ package com.wordofmouth.Activities;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.widget.ArrayAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,6 +63,11 @@ public class CustomItemRowAdapter extends ArrayAdapter<String> {
         viewHolder.itemTitle.setText(singleItem);
         viewHolder.addedBy.setText(itemsList.get(position).get_creatorUsername());
         viewHolder.ratingBar.setRating((float) itemsList.get(position).get_rating());
+        if(itemsList.get(position).getSeen() == 0){
+            int c = Color.parseColor("#2ecc71");
+            convertView.setBackgroundColor(c);
+        }
+
         return convertView;
     }
 }

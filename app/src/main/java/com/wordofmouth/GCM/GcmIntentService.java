@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -24,16 +23,13 @@ import com.wordofmouth.R;
 import com.wordofmouth.SharedPreferences.UserLocalStore;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class GcmIntentService extends IntentService {
     public static final int NOTIFICATION_ID = 1;
-    private NotificationManager mNotificationManager;
-    NotificationCompat.Builder builder;
-    String TAG="wom";
     UserLocalStore userLocalStore;
     DBHandler dbHandler;
-
 
     public GcmIntentService() {
         super("GcmIntentService");
@@ -70,11 +66,9 @@ public class GcmIntentService extends IntentService {
 
                 String recieved_message=intent.getStringExtra("text_message");
                 userLocalStore = UserLocalStore.getInstance(this);
-                //dbHandler = DBHandler.getInstance(this);
                 dbHandler = DBHandler.getInstance(this);
                 if(recieved_message.contains("invited")) {
 
-                    int userId = userLocalStore.getUserLoggedIn().getId();
                     int index = recieved_message.length()-1;
                     while(recieved_message.charAt(index)!=' '){
                         index--;
@@ -91,7 +85,7 @@ public class GcmIntentService extends IntentService {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                     String date = sdf.format(new Date());
 
-                    Notification n = new Notification(listId, userId, preparedMessage, date, 0);
+                    Notification n = new Notification(listId, preparedMessage, date, 0);
                     dbHandler.addNotification(n);
 
                     sendNotification(preparedMessage);
@@ -113,6 +107,20 @@ public class GcmIntentService extends IntentService {
                             }
                         }
                     });
+                }
+
+                else if(recieved_message.contains("new user to list:")){
+
+                    ArrayList<String> splittedString = new ArrayList<>();
+                    for (String retval: recieved_message.split(" ")){
+                        splittedString.add(retval);
+                    }
+
+                    String username = splittedString.get(splittedString.size()-1);
+                    String id = splittedString.get(splittedString.size()-2);
+
+                    Integer listId = Integer.parseInt(id);
+                    dbHandler.addUserToSharedWith(listId, username);
                 }
 
                 else {
@@ -144,7 +152,7 @@ public class GcmIntentService extends IntentService {
     // This is just one simple example of what you might choose to do with
     // a GCM message.
     private void sendNotification(String msg) {
-        mNotificationManager = (NotificationManager)
+        NotificationManager mNotificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
 
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,

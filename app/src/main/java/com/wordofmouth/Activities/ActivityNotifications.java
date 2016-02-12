@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.wordofmouth.Interfaces.GetItems;
 import com.wordofmouth.Interfaces.GetListId;
+import com.wordofmouth.Interfaces.GetUsernames;
 import com.wordofmouth.ObjectClasses.Item;
 import com.wordofmouth.ObjectClasses.MyList;
 import com.wordofmouth.ObjectClasses.Notification;
@@ -31,16 +32,19 @@ public class ActivityNotifications extends BaseActivity {
     ArrayList<Notification> notifications;
     ListView notificationItemListView;
     int notificationId;
+    DBHandler dbHandler;
+    ServerRequests serverRequests;
+    int listId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_activity_notifications);
 
-        UserLocalStore userLocalStore = UserLocalStore.getInstance(this);
-        int userId = userLocalStore.getUserLoggedIn().getId();
-        DBHandler dbHandler = DBHandler.getInstance(this);
-        notifications = dbHandler.getNotifications(userId);
+        dbHandler = DBHandler.getInstance(this);
+        serverRequests = ServerRequests.getInstance(this);
+
+        notifications = dbHandler.getNotifications();
         String[] messages = new String[notifications.size()];
         for(int i = 0; i<notifications.size();i++){
             messages[i] = notifications.get(i).getMsg();
@@ -57,10 +61,9 @@ public class ActivityNotifications extends BaseActivity {
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         //Toast.makeText(ActivityNotifications.this, notifications.get(position).getMsg(), Toast.LENGTH_SHORT).show();
 
-                        if(notifications.get(position).getAccepted() == 1){
+                        if (notifications.get(position).getAccepted() == 1) {
                             showAlreadyAccepted();
-                        }
-                        else {
+                        } else {
                             notificationId = notifications.get(position).getId();
                             showConfirmationDialog(notifications.get(position));
                         }
@@ -81,12 +84,12 @@ public class ActivityNotifications extends BaseActivity {
                 if (!isNetworkAvailable()) {
                     showConnectionError();
                 } else {
-                    ServerRequests serverRequests = ServerRequests.getInstance(ActivityNotifications.this);
-                    final ProgressDialog progressDialogDownloadList = new ProgressDialog(ActivityNotifications.this,R.style.MyTheme);
+                    UserLocalStore userLocalStore = UserLocalStore.getInstance(ActivityNotifications.this);
+                    final ProgressDialog progressDialogDownloadList = new ProgressDialog(ActivityNotifications.this, R.style.MyTheme);
                     progressDialogDownloadList.setCancelable(false);
                     progressDialogDownloadList.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
                     progressDialogDownloadList.show();
-                    serverRequests.downloadListInBackgroudn(n.getListId(), n.getUserId(), new GetListId() {
+                    serverRequests.downloadListInBackgroudn(n.getListId(), userLocalStore.getUserLoggedIn().getId(), new GetListId() {
                         @Override
                         public void done(MyList myList) {
                             progressDialogDownloadList.dismiss();
@@ -118,9 +121,8 @@ public class ActivityNotifications extends BaseActivity {
 
     private void downloadItems(MyList list){
 
-        int listId = list.get_listId();
+        listId = list.get_listId();
 
-        ServerRequests serverRequests = ServerRequests.getInstance(this);
         final ProgressDialog progressDialogDownloadItem = new ProgressDialog(ActivityNotifications.this,R.style.MyTheme);
         progressDialogDownloadItem.setCancelable(false);
         progressDialogDownloadItem.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
@@ -129,15 +131,40 @@ public class ActivityNotifications extends BaseActivity {
             @Override
             public void done(ArrayList<Item> items) {
                 progressDialogDownloadItem.dismiss();
-                DBHandler dbHandler = DBHandler.getInstance(ActivityNotifications.this);
-                if (items.size() > 0) {
-                    dbHandler.addMultipleItems(items);
+
+                if (items.get(0).get_itemId() == -1) {
+                    showConnectionError();
+                } else {
+                    if (items.size() > 0) {
+                        dbHandler.addMultipleItems(items);
+                    }
+                    downloadUsernames();
                 }
-                dbHandler.updateAccepted(notificationId);
-                Intent intent = new Intent(ActivityNotifications.this, MainActivity.class);
-                intent.putExtra("tab", 1);
-                startActivity(intent);
-                finish();
+            }
+        });
+    }
+
+    private void downloadUsernames(){
+        final ProgressDialog progressDialogDownloadItem = new ProgressDialog(ActivityNotifications.this,R.style.MyTheme);
+        progressDialogDownloadItem.setCancelable(false);
+        progressDialogDownloadItem.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
+        progressDialogDownloadItem.show();
+        serverRequests.downloadUsernamesInBackground(listId, new GetUsernames() {
+            @Override
+            public void done(ArrayList<String> usernames) {
+                if(usernames.get(0).equals("Error: Timeout")){
+                    showConnectionError();
+                }
+                else {
+                    if(usernames.size()>0){
+                        dbHandler.addMultipleUsersToSharedWith(listId, usernames);
+                    }
+                    dbHandler.updateAccepted(notificationId);
+                    Intent intent = new Intent(ActivityNotifications.this, MainActivity.class);
+                    intent.putExtra("tab", 1);
+                    startActivity(intent);
+                    finish();
+                }
             }
         });
     }
@@ -169,5 +196,4 @@ public class ActivityNotifications extends BaseActivity {
         allertBuilder.setPositiveButton("OK", null);
         allertBuilder.show();
     }
-
 }

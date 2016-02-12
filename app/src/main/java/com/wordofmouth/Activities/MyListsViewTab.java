@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.wordofmouth.Interfaces.GetBitmap;
 import com.wordofmouth.Interfaces.GetLists;
 import com.wordofmouth.ObjectClasses.MyList;
+import com.wordofmouth.ObjectClasses.Shared;
 import com.wordofmouth.Other.DBGetData;
 import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.Other.StringToBitmapRequests;
@@ -31,6 +32,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
     ListView myListView;
     MainActivity mainActivity;
     ArrayList<MyList> myLists;
+    ArrayList <Shared> usernames;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -70,6 +72,9 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
             listNames[i] = myLists.get(i).get_name();
         }
 
+        DBHandler dbHandler = DBHandler.getInstance(mainActivity);
+        usernames = dbHandler.getUsernames();
+
         StringToBitmapRequests stbr = StringToBitmapRequests.getInstance(mainActivity);
         final ProgressDialog progressDialog = new ProgressDialog(mainActivity,R.style.MyTheme);
         progressDialog.setCancelable(false);
@@ -80,7 +85,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
             public void done(ArrayList<Bitmap> result) {
                 progressDialog.dismiss();
                 ArrayAdapter<String> listAdapter =
-                        new CustomListRowAdapter(mainActivity, listNames, myLists, result);
+                        new CustomListRowAdapter(mainActivity, listNames, myLists, result, usernames);
                 myListView.setAdapter(listAdapter);
             }
         });
@@ -92,8 +97,6 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
                         int idClicked;
                         String list = String.valueOf(parent.getItemAtPosition(position));
                         idClicked = myLists.get(position).get_listId();
-                        DBHandler dbHandler = DBHandler.getInstance(mainActivity);
-                        dbHandler.updateHasNewContent(idClicked, 0);
                         Intent myIntent = new Intent(mainActivity, ActivityItemsOfAList.class);
                         myIntent.putExtra("listId", idClicked);
                         myIntent.putExtra("name", list);

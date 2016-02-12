@@ -11,6 +11,7 @@ import com.wordofmouth.Interfaces.GetItems;
 import com.wordofmouth.Interfaces.GetListId;
 import com.wordofmouth.Interfaces.GetRateResponce;
 import com.wordofmouth.Interfaces.GetUserCallback;
+import com.wordofmouth.Interfaces.GetUsernames;
 import com.wordofmouth.Interfaces.GetUsers;
 import com.wordofmouth.Interfaces.SendInviteResponse;
 import com.wordofmouth.ObjectClasses.Item;
@@ -35,7 +36,6 @@ import java.util.Map;
 public class ServerRequests {
 
     private static ServerRequests INSTANCE = null;
-    private ProgressDialog progressDialog;
     private static final int CONNECTION_TIMEOUT = 1000 * 6;
     private static final String SERVER_ADDRESS = "http://wordofmouth.netau.net/";
 
@@ -97,6 +97,10 @@ public class ServerRequests {
 
     public void sendFeedbackInBackground(String feedback, GetFeedbackResponse getFeedbackResponse){
         new sendFeedbackAsyncTask(feedback, getFeedbackResponse).execute();
+    }
+
+    public void downloadUsernamesInBackground(int listId, GetUsernames getUsernames){
+        new downloadUsernamesAsyncTask(listId, getUsernames).execute();
     }
 
     // method to encode the data needed to be sent o the server
@@ -560,6 +564,7 @@ public class ServerRequests {
                             String image = jResult.getString("picture");
                             returnedItem = new Item(lId, creatorId, username, name, rating, ratingCounter, description, image);
                             returnedItem.set_itemId(id);
+                            returnedItem.setSeen(1);
                         }
                     }
                 }
@@ -927,10 +932,11 @@ public class ServerRequests {
                             String image = jResult.getString("picture");
                             Item itemToAdd = new Item(lId, creatorId, username, name, r, ratingCounter, description, image);
                             itemToAdd.set_itemId(id);
+                            itemToAdd.setSeen(0);
                             items.add(itemToAdd);
                         }
                     }
-                }
+                } else items.add(new Item(-1, -1, "Timeout", "Timeout", -1, 1, "Timeout", "Timeout"));
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1019,6 +1025,7 @@ public class ServerRequests {
                         String image = jResult.getString("picture");
                         returnedItem = new Item(lId, creatorId, username, name, r, ratingCounter, description, image);
                         returnedItem.set_itemId(id);
+                        returnedItem.setSeen(0);
                     }
                 }
                 else return new Item(-1, -1, "Timeout", "Timeout", -1, 1, "Timeout", "Timeout");
@@ -1181,8 +1188,8 @@ public class ServerRequests {
                         sb.append(line + "\n");
                     }
                     line = sb.toString();
-                    Log.i("rate", "The values received are as follows:");
-                    Log.i("rate", line);
+                    Log.i("sendFeedback", "The values received are as follows:");
+                    Log.i("sendFeedback", line);
 
                     response = line;
                 }
@@ -1209,4 +1216,87 @@ public class ServerRequests {
             super.onPostExecute(response);
         }
     }
+
+
+    ////////////////////////////////////////////////////////////////////////
+    private static class downloadUsernamesAsyncTask extends AsyncTask<Void, Void, ArrayList<String>>{
+        int listId;
+        GetUsernames getUsernames;
+
+        public downloadUsernamesAsyncTask(int listId, GetUsernames getUsernames) {
+            this.listId = listId;
+            this.getUsernames = getUsernames;
+        }
+
+        @Override
+        protected ArrayList<String> doInBackground(Void... params) {
+
+            Map<String,String> dataToSend = new HashMap<>();
+            Integer lId = listId;
+            String listIdString = lId.toString();
+
+            dataToSend.put("listId", listIdString);
+
+            String encodedStr = getEncodedData(dataToSend);
+            BufferedReader reader = null;
+            ArrayList<String> usernames = new ArrayList<>();
+
+            //Connection Handling
+            try {
+                URL url = new URL(SERVER_ADDRESS + "downloadUsernames.php");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+                //Post Method
+                con.setRequestMethod("POST");
+                con.setConnectTimeout(CONNECTION_TIMEOUT);
+                con.setDoOutput(true);
+                OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
+                writer.write(encodedStr);
+                writer.flush();
+
+                if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    //Data Read Procedure
+                    StringBuilder sb = new StringBuilder();
+                    reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line + "\n");
+                    }
+                    line = sb.toString();
+                    Log.i("downloadUsernames", "The values received are as follows:");
+                    Log.i("downloadUsernames", line);
+
+                    if (!line.equals("null\n")) {
+                        JSONArray array = new JSONArray(line);
+                        for (int n = 0; n < array.length(); n++) {
+                            JSONObject jResult = array.getJSONObject(n);
+                            String singleUsername = jResult.getString("singleUsername");
+                            jResult = new JSONObject(singleUsername);
+                            String username = jResult.getString("username");
+                            usernames.add(username);
+                        }
+                    }
+                }
+                else usernames.add("Error: Timeout");
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if(reader != null) {
+                    try {
+                        reader.close();     //Closing the
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return usernames;
+        }
+        @Override
+        protected void onPostExecute(ArrayList<String> usernames) {
+            getUsernames.done(usernames);
+            super.onPostExecute(usernames);
+        }
+    }
+
 }

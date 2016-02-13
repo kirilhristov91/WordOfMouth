@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -9,84 +10,87 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_add_item_view" tools:context="com.wordofmouth.Activities.ActivityAddItem">
 
-
-    <ImageView
-        android:id="@+id/addImageToItem"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginTop="10dp"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/add_file"/>
-
-
-    <ImageView
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:id="@+id/rotateRightItem"
-        android:src="@drawable/rotate_right"
-
-        android:layout_alignTop="@+id/rotateLeftItem"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <ImageView
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:id="@+id/rotateLeftItem"
-        android:src="@drawable/rotate_left"
-        android:layout_marginTop="44dp"
-        android:layout_alignTop="@+id/addImageToItem"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <EditText
-        android:id="@+id/itemNameField"
-        android:layout_below="@id/addImageToItem"
-        android:layout_marginTop="15dp"
-        android:hint="Name"
-        android:textColor="#FFF"
-        android:background="#d3d3d3"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp" />
+        android:layout_height="wrap_content">
 
-    <EditText
-        android:id="@+id/itemDescriptionField"
-        android:layout_marginTop="10dp"
-        android:layout_below="@+id/itemNameField"
-        android:hint="Description"
-        android:textColor="#FFF"
-        android:background="#d3d3d3"
-        android:layout_width="match_parent"
-        android:layout_height="80dp" />
+        <ImageView
+            android:id="@+id/addImageToItem"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="10dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/add_file"/>
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/rotateRightItem"
+            android:src="@drawable/rotate_right"
+
+            android:layout_alignTop="@+id/rotateLeftItem"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/rotateLeftItem"
+            android:src="@drawable/rotate_left"
+            android:layout_marginTop="44dp"
+            android:layout_alignTop="@+id/addImageToItem"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+        <EditText
+            android:id="@+id/itemNameField"
+            android:layout_below="@id/addImageToItem"
+            android:layout_marginTop="15dp"
+            android:hint="Name"
+            android:textColor="#FFF"
+            android:background="#d3d3d3"
+            android:layout_width="match_parent"
+            android:layout_height="40dp" />
+
+        <EditText
+            android:id="@+id/itemDescriptionField"
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/itemNameField"
+            android:hint="Description"
+            android:textColor="#FFF"
+            android:background="#d3d3d3"
+            android:layout_width="match_parent"
+            android:layout_height="80dp" />
 
 
-    <TextView
-        android:id="@+id/RateTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text = "Rate"
-        android:textSize="20sp"
-        android:layout_below="@id/itemDescriptionField"
-        android:layout_marginTop="25dp"
-        android:layout_centerHorizontal="true" />
+        <TextView
+            android:id="@+id/RateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text = "Rate"
+            android:textSize="20sp"
+            android:layout_below="@id/itemDescriptionField"
+            android:layout_marginTop="25dp"
+            android:layout_centerHorizontal="true" />
 
-    <RatingBar
-        android:id="@+id/ratingBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:numStars="5"
-        android:stepSize="0.5"
-        android:progressTint="@color/colorPrimary"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:layout_below="@+id/RateTextView" />
+        <RatingBar
+            android:id="@+id/ratingBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:numStars="5"
+            android:stepSize="0.5"
+            android:progressTint="@color/colorPrimary"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/RateTextView" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="30dp"
-        android:id="@+id/addItemButton"
-        android:text="Add"
-        android:layout_below="@+id/ratingBar" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="30dp"
+            android:id="@+id/addItemButton"
+            android:text="Add"
+            android:layout_below="@+id/ratingBar" />
 
-</RelativeLayout>
+    </RelativeLayout>
+</ScrollView>

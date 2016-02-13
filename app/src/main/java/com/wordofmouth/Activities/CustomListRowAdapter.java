@@ -61,10 +61,14 @@ public class CustomListRowAdapter extends ArrayAdapter<String> {
             viewHolder = (ViewHolderItem) convertView.getTag();
         }
 
+        /*for(int i=0; i<usernames.size(); i++){
+            System.out.println(usernames.get(i).getUsername());
+        }*/
+
         String sharedWith = "";
         for(int i=0; i<usernames.size(); i++){
-            if(usernames.get(position).getListId() == lists.get(position).get_listId()){
-                sharedWith += usernames.get(position).getUsername() + ", ";
+            if(usernames.get(i).getListId() == lists.get(position).get_listId()){
+                sharedWith += usernames.get(i).getUsername() + ", ";
             }
         }
 
@@ -87,7 +91,7 @@ public class CustomListRowAdapter extends ArrayAdapter<String> {
         }
         viewHolder.listAddedByUsername.setText(lists.get(position).get_username());
         if(lists.get(position).getHasNewContent() == 1){
-            int c = Color.parseColor("#2ecc71");
+            int c = Color.parseColor("#A5D6A7");
             convertView.setBackgroundColor(c);
         }
         return convertView;

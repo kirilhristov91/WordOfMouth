@@ -131,16 +131,15 @@ public class ActivityNotifications extends BaseActivity {
             @Override
             public void done(ArrayList<Item> items) {
                 progressDialogDownloadItem.dismiss();
-
-                if (items.get(0).get_itemId() == -1) {
-                    showConnectionError();
-                } else {
-                    if (items.size() > 0) {
+                if (items.size() > 0)
+                    if (items.get(0).get_itemId() == -1) {
+                        showConnectionError();
+                    } else {
                         dbHandler.addMultipleItems(items);
                     }
-                    downloadUsernames();
-                }
+                downloadUsernames();
             }
+
         });
     }
 
@@ -152,19 +151,20 @@ public class ActivityNotifications extends BaseActivity {
         serverRequests.downloadUsernamesInBackground(listId, new GetUsernames() {
             @Override
             public void done(ArrayList<String> usernames) {
-                if(usernames.get(0).equals("Error: Timeout")){
-                    showConnectionError();
-                }
-                else {
-                    if(usernames.size()>0){
+                if(usernames.size()>0) {
+
+                    if (usernames.get(0).equals("Error: Timeout")) {
+                        showConnectionError();
+                    } else {
                         dbHandler.addMultipleUsersToSharedWith(listId, usernames);
                     }
-                    dbHandler.updateAccepted(notificationId);
-                    Intent intent = new Intent(ActivityNotifications.this, MainActivity.class);
-                    intent.putExtra("tab", 1);
-                    startActivity(intent);
-                    finish();
                 }
+                dbHandler.updateAccepted(notificationId);
+                Intent intent = new Intent(ActivityNotifications.this, MainActivity.class);
+                intent.putExtra("tab", 1);
+                startActivity(intent);
+                finish();
+
             }
         });
     }

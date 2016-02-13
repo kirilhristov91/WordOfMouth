@@ -52,7 +52,7 @@ public class CustomNotificationRowAdapter extends ArrayAdapter<String> {
         viewHolder.notificationText.setText(msg);
         viewHolder.notificationDate.setText(notifications.get(position).getDate());
         if(notifications.get(position).getAccepted() == 0){
-            int c = Color.parseColor("#2ecc71");
+            int c = Color.parseColor("#A5D6A7");
             convertView.setBackgroundColor(c);
         }
         return convertView;

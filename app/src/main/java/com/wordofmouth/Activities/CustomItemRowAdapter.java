@@ -64,7 +64,7 @@ public class CustomItemRowAdapter extends ArrayAdapter<String> {
         viewHolder.addedBy.setText(itemsList.get(position).get_creatorUsername());
         viewHolder.ratingBar.setRating((float) itemsList.get(position).get_rating());
         if(itemsList.get(position).getSeen() == 0){
-            int c = Color.parseColor("#2ecc71");
+            int c = Color.parseColor("#A5D6A7");
             convertView.setBackgroundColor(c);
         }
 

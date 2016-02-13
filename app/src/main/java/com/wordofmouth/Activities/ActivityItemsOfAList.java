@@ -71,6 +71,13 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
     public void Display(ArrayList<Item> returnedItems){
         items = returnedItems;
         // display via adapter
+
+        // if there are no items in that list set has new content to 0
+        if(items.size() == 0){
+            DBHandler dbHandler = DBHandler.getInstance(this);
+            dbHandler.updateHasNewContent(selectedListId, 0);
+        }
+
         itemNames = new String[items.size()];
         for(int i =0; i< items.size();i++){
             itemNames[i] = items.get(i).get_name();

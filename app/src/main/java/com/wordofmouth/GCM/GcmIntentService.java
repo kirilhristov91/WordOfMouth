@@ -110,7 +110,6 @@ public class GcmIntentService extends IntentService {
                 }
 
                 else if(recieved_message.contains("new user to list:")){
-                    System.out.println("POLIUCHENOTO SYOBSHTENIE PRI NOV USER " + recieved_message);
                     ArrayList<String> splittedString = new ArrayList<>();
                     for (String retval: recieved_message.split(" ")){
                         splittedString.add(retval);

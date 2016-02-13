@@ -61,19 +61,10 @@ public class CustomListRowAdapter extends ArrayAdapter<String> {
             viewHolder = (ViewHolderItem) convertView.getTag();
         }
 
-        /*for(int i=0; i<usernames.size(); i++){
-            System.out.println(usernames.get(i).getUsername());
-        }*/
-
-        System.out.println("USERNAMES SIZE " + usernames.size());
-
         String sharedWith = "";
         for(int i=0; i<usernames.size(); i++){
             if(usernames.get(i).getListId() == lists.get(position).get_listId()){
                 sharedWith += usernames.get(i).getUsername() + ", ";
-                System.out.println("SEGA SHTE IMA PRINT");
-                System.out.println(lists.get(position).get_name() + " " + usernames.get(i).getListId() + " " + lists.get(position).get_listId());
-                System.out.println("INDEXI position " + position + " i" + i);
             }
         }
 

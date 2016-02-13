@@ -18,7 +18,7 @@ public class DBHandler extends SQLiteOpenHelper{
     private static DBHandler sInstance;
 
     //if updating the database change the version:
-    private static final int DATABASE_VERSION = 27;
+    private static final int DATABASE_VERSION = 30;
     private static final String DATABASE_NAME = "WOM.db";
 
     //Lists table
@@ -444,8 +444,8 @@ public class DBHandler extends SQLiteOpenHelper{
         ArrayList<MyList> lists = new ArrayList<>();
 
         String myLists = "SELECT * FROM " + TABLE_List +
-                       " WHERE " + COLUMN_Username + "=\"" + currentUserUsername + "\"" +
-                       " ORDER BY " + COLUMN_ID + " DESC;";
+                       " WHERE " + COLUMN_Username + "=\"" + currentUserUsername + "\""; //+
+                       //" ORDER BY " + COLUMN_ID + " DESC;";
         String sharedLists = "SELECT * FROM " + TABLE_List +
                        " WHERE " + COLUMN_Username + "!=\"" + currentUserUsername + "\"" +
                        " ORDER BY " + COLUMN_ID + " DESC;";

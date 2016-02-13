@@ -152,7 +152,10 @@ public class ActivityNotifications extends BaseActivity {
             @Override
             public void done(ArrayList<String> usernames) {
                 if(usernames.size()>0) {
-
+                    for(int i = 0; i<usernames.size(); i++){
+                        System.out.println("Userite koito poluchavam na teglene na user lists");
+                        System.out.println(usernames.get(i));
+                    }
                     if (usernames.get(0).equals("Error: Timeout")) {
                         showConnectionError();
                     } else {

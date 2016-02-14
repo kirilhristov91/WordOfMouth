@@ -249,30 +249,6 @@ public class DBHandler extends SQLiteOpenHelper{
         return toReturn;
     }
 
-    public ArrayList<String> getUsernames(int lid){
-        ArrayList<String> toReturn = new ArrayList<>();
-        int listId;
-        String username ="";
-        SQLiteDatabase db = getWritableDatabase();
-        String getUsernames = "SELECT * FROM " + TABLE_SharedWith +
-                " WHERE " + COLUMN_SharedListId + " = " + lid;
-
-        Cursor c = db.rawQuery(getUsernames, null);
-        c.moveToFirst();
-        while (!c.isAfterLast()) {
-
-            if(c.getString(c.getColumnIndex(COLUMN_SharedWithUsername)) != null){
-                username = c.getString(c.getColumnIndex(COLUMN_SharedWithUsername));
-            }
-            toReturn.add(username);
-            c.moveToNext();
-        }
-        c.close();
-        db.close();
-        return toReturn;
-    }
-
-
     public void updateRating(Item item){
         SQLiteDatabase db = getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_Item +

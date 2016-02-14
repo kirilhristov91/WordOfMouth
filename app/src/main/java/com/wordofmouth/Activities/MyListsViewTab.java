@@ -32,7 +32,6 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
     ListView myListView;
     MainActivity mainActivity;
     ArrayList<MyList> myLists;
-    ArrayList <Shared> usernames;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -45,7 +44,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
         //context = container.getContext();
         String username = UserLocalStore.getInstance(mainActivity).getUserLoggedIn().getUsername();
         // get the user`s lists to display on fragment
-        myLists = new ArrayList<MyList>();
+        //myLists = new ArrayList<MyList>();
 
         DBGetData dbGetData = DBGetData.getInstance(mainActivity);
         final ProgressDialog progressDialogFetching = new ProgressDialog(mainActivity,R.style.MyTheme);
@@ -73,7 +72,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
         }
 
         DBHandler dbHandler = DBHandler.getInstance(mainActivity);
-        usernames = dbHandler.getUsernames();
+        final ArrayList<Shared> usernames = dbHandler.getUsernames();
 
         StringToBitmapRequests stbr = StringToBitmapRequests.getInstance(mainActivity);
         final ProgressDialog progressDialog = new ProgressDialog(mainActivity,R.style.MyTheme);

@@ -76,8 +76,7 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
         getSupportActionBar().setTitle(itemName);
         DBHandler dbHandler = DBHandler.getInstance(this);
 
-        ArrayList<Integer> seens = new ArrayList<>();
-        seens = dbHandler.getSeens(listId);
+        ArrayList<Integer> seens = dbHandler.getSeens(listId);
         boolean flag = false;
         for(Integer seen: seens){
             if(seen == 0) flag = true;
@@ -107,7 +106,7 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
             ratedBy.setText("Rated by " + item.getRatingCounter() + " users");
         }
         else{
-            ratedBy.setText("Rated by " + item.getRatingCounter() + " user");
+            ratedBy.setText("Rated by 1 user");
         }
 
         serverRequests = ServerRequests.getInstance(this);

@@ -31,6 +31,7 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
     String listName;
     String[] itemNames;
     int tabToreturn;
+    DBGetData dbGetData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,12 +53,17 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
 
         // create an instance of the local database
         items = new ArrayList<>();
-        DBGetData dbGetData = DBGetData.getInstance(this);
+        dbGetData = DBGetData.getInstance(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         final ProgressDialog progressDialogFetching = new ProgressDialog(this,R.style.MyTheme);
         progressDialogFetching.setCancelable(false);
         progressDialogFetching.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
         progressDialogFetching.show();
-        
+
         dbGetData.GetItemsInBackground(selectedListId, new GetItems() {
             @Override
             public void done(ArrayList<Item> returnedItems) {

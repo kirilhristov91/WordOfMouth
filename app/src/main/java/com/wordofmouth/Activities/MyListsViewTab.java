@@ -32,6 +32,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
     ListView myListView;
     MainActivity mainActivity;
     ArrayList<MyList> myLists;
+    String username;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -41,11 +42,14 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
         createList = (TextView) v.findViewById(R.id.createListText);
         myListView = (ListView) v.findViewById(R.id.myListsListView);
         createList.setOnClickListener(this);
-        //context = container.getContext();
-        String username = UserLocalStore.getInstance(mainActivity).getUserLoggedIn().getUsername();
-        // get the user`s lists to display on fragment
-        //myLists = new ArrayList<MyList>();
+        username = UserLocalStore.getInstance(mainActivity).getUserLoggedIn().getUsername();
+        return v;
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        // get the user`s lists to display on fragment
         DBGetData dbGetData = DBGetData.getInstance(mainActivity);
         final ProgressDialog progressDialogFetching = new ProgressDialog(mainActivity,R.style.MyTheme);
         progressDialogFetching.setCancelable(false);
@@ -59,9 +63,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
                 display(lists);
             }
         });
-        return v;
     }
-
 
     public void display(ArrayList<MyList> lists){
 

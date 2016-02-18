@@ -28,6 +28,7 @@
     <ListView
         android:paddingTop="10dp"
         android:layout_marginTop="140dp"
+        android:dividerHeight="2dp"
         android:id="@+id/fetchedUsersList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

@@ -14,11 +14,14 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 
 import com.wordofmouth.Interfaces.GetItemId;
 import com.wordofmouth.ObjectClasses.Item;
@@ -46,6 +49,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
     Bitmap photo;
     static final int REQUEST_BROWSE_GALLERY = 1;
     int tabToreturn;
+    RelativeLayout addItemLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +83,15 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
         rotateLeftItem.setOnClickListener(this);
         addItemPhoto.setOnClickListener(this);
         addItemButton.setOnClickListener(this);
+
+        addItemLayout = (RelativeLayout) findViewById(R.id.addItemLayout);
+        addItemLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                hideKeyboard(v);
+                return false;
+            }
+        });
     }
 
 
@@ -242,4 +255,9 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
         return Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);
     }
 
+    protected void hideKeyboard(View view)
+    {
+        InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        in.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
 }

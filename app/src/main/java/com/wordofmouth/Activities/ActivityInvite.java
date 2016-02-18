@@ -10,12 +10,14 @@ import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -40,6 +42,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
     private UserLocalStore userLocalStore;
     int tabToreturn;
     int userClicked;
+    RelativeLayout inviteLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,15 +70,23 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
 
         fetchedUserList = (ListView) findViewById(R.id.fetchedUsersList);
 
+        inviteLayout = (RelativeLayout) findViewById(R.id.inviteLayout);
+        inviteLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                hideKeyboard(v);
+                return false;
+            }
+        });
+
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.searchUsersButton:
-                InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
-
+                hideKeyboard(v);
+                searchView.clearFocus();
                 if (!isNetworkAvailable()) {
                     showError("Network error! Check your internet connection and try again!");
                 } else {
@@ -117,9 +128,6 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
         for(int i =0; i< users.size();i++){
             usernames[i] = users.get(i).getUsername();
         }
-
-        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
 
         ArrayAdapter<String> userAdapter = new CustomUserRowAdapter(ActivityInvite.this, usernames, users);
         fetchedUserList.setAdapter(userAdapter);
@@ -197,5 +205,11 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
         intent.putExtra("tab", tabToreturn);
         startActivity(intent);
         finish();
+    }
+
+    protected void hideKeyboard(View view)
+    {
+        InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        in.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 }

@@ -36,7 +36,7 @@ import java.util.Map;
 public class ServerRequests {
 
     private static ServerRequests INSTANCE = null;
-    private static final int CONNECTION_TIMEOUT = 1000 * 6;
+    private static final int CONNECTION_TIMEOUT = 1000 * 5;
     private static final String SERVER_ADDRESS = "http://wordofmouth.netau.net/";
 
 

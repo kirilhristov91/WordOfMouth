@@ -11,6 +11,7 @@
     tools:showIn="@layout/activity_add_item_view" tools:context="com.wordofmouth.Activities.ActivityAddItem">
 
     <RelativeLayout
+        android:id="@+id/addItemLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

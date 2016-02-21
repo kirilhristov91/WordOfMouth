@@ -9,6 +9,7 @@ import com.wordofmouth.Interfaces.GetFeedbackResponse;
 import com.wordofmouth.Interfaces.GetItemId;
 import com.wordofmouth.Interfaces.GetItems;
 import com.wordofmouth.Interfaces.GetListId;
+import com.wordofmouth.Interfaces.GetPasswordResetResponse;
 import com.wordofmouth.Interfaces.GetRateResponce;
 import com.wordofmouth.Interfaces.GetUserCallback;
 import com.wordofmouth.Interfaces.GetUsernames;
@@ -103,6 +104,10 @@ public class ServerRequests {
         new downloadUsernamesAsyncTask(listId, getUsernames).execute();
     }
 
+    public void resetPasswordInBackground(String email, GetPasswordResetResponse getPasswordResetResponse){
+        new resetPasswordAsyncTask(email, getPasswordResetResponse).execute();
+    }
+
     // method to encode the data needed to be sent o the server
     private static String getEncodedData(Map<String,String> data) {
         StringBuilder sb = new StringBuilder();
@@ -155,7 +160,6 @@ public class ServerRequests {
                 //Converting address String to URL
                 URL url = new URL(SERVER_ADDRESS + "Register.php");
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                //con.setConnectTimeout(5000);
 
                 //Post Method
                 con.setRequestMethod("POST");
@@ -188,6 +192,10 @@ public class ServerRequests {
                     if (line.equals("Username Already Exists")) {
                         Log.i("ZAETO", "VLQZAH");
                         returnedUser = new User(-1, "Exists", "Exists", "Exists", "Exists");
+                    }
+
+                    if (line.equals("Email Already Exists")) {
+                        returnedUser = new User(-1, "Email", "Email", "Email", "Email");
                     }
 
                     else {
@@ -1296,6 +1304,84 @@ public class ServerRequests {
         protected void onPostExecute(ArrayList<String> usernames) {
             getUsernames.done(usernames);
             super.onPostExecute(usernames);
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    private static class resetPasswordAsyncTask extends AsyncTask<Void, Void, String>{
+        String email;
+        GetPasswordResetResponse getPasswordResetResponse;
+
+        public resetPasswordAsyncTask(String email, GetPasswordResetResponse getPasswordResetResponse) {
+            this.email = email;
+            this.getPasswordResetResponse = getPasswordResetResponse;
+        }
+
+
+        @Override
+        protected String doInBackground(Void... params) {
+
+            Map<String,String> dataToSend = new HashMap<>();
+
+            dataToSend.put("email", email);
+            String encodedStr = getEncodedData(dataToSend);
+            BufferedReader reader = null;
+
+            String response="";
+
+            //Connection Handling
+            try {
+                URL url = new URL(SERVER_ADDRESS + "resetPassword.php");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+                //Post Method
+                con.setRequestMethod("POST");
+                con.setConnectTimeout(CONNECTION_TIMEOUT);
+                con.setDoOutput(true);
+                OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
+                writer.write(encodedStr);
+                writer.flush();
+
+                if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    //Data Read Procedure
+                    StringBuilder sb = new StringBuilder();
+                    reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    line = sb.toString();
+                    Log.i("resetPassword", "The values received are as follows:");
+                    Log.i("resetPassword", line);
+
+                    if(line.length()>0) {
+
+                        response = line;
+                    }
+                    else response = "Timeout";
+                }
+                else {
+                    return "Timeout";
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if(reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            getPasswordResetResponse.done(response);
+            super.onPostExecute(response);
         }
     }
 

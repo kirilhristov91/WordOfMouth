@@ -27,6 +27,7 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
     Button loginButton;
     EditText usernameField, passwordField;
     TextView registerNow;
+    TextView forgotPassword;
     UserLocalStore userLocalStore;
 
     @Override
@@ -37,10 +38,12 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
         usernameField = (EditText) findViewById(R.id.usernameField);
         passwordField = (EditText) findViewById(R.id.passwordField);
         registerNow = (TextView) findViewById(R.id.registerNow);
+        forgotPassword = (TextView) findViewById(R.id.forgotPassword);
         loginButton = (Button) findViewById(R.id.loginButton);
 
         loginButton.setOnClickListener(this);
         registerNow.setOnClickListener(this);
+        forgotPassword.setOnClickListener(this);
         userLocalStore = UserLocalStore.getInstance(this);
 
     }
@@ -81,15 +84,10 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
                 startActivity(new Intent(this, ActivityRegister.class));
                 finish();
                 break;
+            case R.id.forgotPassword:
+                startActivity(new Intent(this,ActivityPasswordReset.class));
+                break;
         }
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        InputMethodManager imm = (InputMethodManager)getSystemService(Context.
-                INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-        return true;
     }
 
     private void authenticate(User user){
@@ -120,6 +118,14 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
                 }
             });
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.
+                INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        return true;
     }
 
     private void logUserIn(User user){

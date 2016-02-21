@@ -151,8 +151,8 @@ public class ActivityNotifications extends BaseActivity {
         serverRequests.downloadUsernamesInBackground(listId, new GetUsernames() {
             @Override
             public void done(ArrayList<String> usernames) {
-                if(usernames.size()>0) {
-                    for(int i = 0; i<usernames.size(); i++){
+                if (usernames.size() > 0) {
+                    for (int i = 0; i < usernames.size(); i++) {
                         System.out.println("Userite koito poluchavam na teglene na user lists");
                         System.out.println(usernames.get(i));
                     }
@@ -198,5 +198,20 @@ public class ActivityNotifications extends BaseActivity {
         allertBuilder.setMessage("You have already accepted that notification!");
         allertBuilder.setPositiveButton("OK", null);
         allertBuilder.show();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //System.out.println(userLocalStore.userLocalDatabase.getAll().toString());
+        if(!authenticate()){
+            startActivity(new Intent(ActivityNotifications.this, ActivityLogin.class));
+            finish();
+        }
+    }
+
+    private boolean authenticate(){
+        UserLocalStore userLocalStore = UserLocalStore.getInstance(this);
+        return userLocalStore.getIfLoggedIn();
     }
 }

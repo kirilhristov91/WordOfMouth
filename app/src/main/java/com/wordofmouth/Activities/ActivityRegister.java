@@ -143,6 +143,8 @@ public class ActivityRegister extends AppCompatActivity implements View.OnClickL
                         showError("Network error! Check your internet connection and try again!");
                     } else if (returnedUser.getUsername().equals("Exists")) {
                         showError("Username is already taken");
+                    } else if (returnedUser.getUsername().equals("Email")) {
+                        showError("This email was used for another registration");
                     } else {
                         login(returnedUser);
                     }

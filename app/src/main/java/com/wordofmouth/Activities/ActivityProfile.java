@@ -85,18 +85,11 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
         updatePicture.setOnClickListener(this);
         chooseFromGallery.setOnClickListener(this);
         savePictureChanges.setOnClickListener(this);
+        changePassword.setOnClickListener(this);
         oldPasswordField.setOnTouchListener(this);
         newPasswordField.setOnTouchListener(this);
         newPasswordAgainField.setOnTouchListener(this);
-        changePassword.setOnClickListener(this);
-
-        profileLayout.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                hideKeyboard(v);
-                return false;
-            }
-        });
+        profileLayout.setOnTouchListener(this);
 
 
         if(!hasCamera()){
@@ -155,15 +148,16 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
             case R.id.changePassword:
                 updatePassword();
                 break;
-
         }
     }
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         switch(v.getId()) {
+            case R.id.profileLayout:
+                hideKeyboard(v);
+                break;
             case R.id.oldPasswordField:
-                System.out.println("SCROLL OLD");
                 profileScroll.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -173,7 +167,6 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
                 }, 500);
                 break;
             case R.id.newPasswordField:
-                System.out.println("SCROLL NEW");
                 profileScroll.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -183,7 +176,6 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
                 }, 500);
                 break;
             case R.id.newPasswordAgainField:
-                System.out.println("SCROLL NEWAGAIN");
                 profileScroll.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -192,7 +184,6 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
                     }
                 }, 500);
                 break;
-
         }
         return false;
     }

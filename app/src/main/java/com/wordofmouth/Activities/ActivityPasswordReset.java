@@ -76,7 +76,7 @@ public class ActivityPasswordReset extends AppCompatActivity implements View.OnC
         allertBuilder.setMessage("Are you sure that you want to reset your password?");
         allertBuilder.setCancelable(false);
 
-        allertBuilder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+        allertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 if (!isNetworkAvailable()) {
                     showError("Network error! Check your internet connection and try again!");
@@ -93,7 +93,6 @@ public class ActivityPasswordReset extends AppCompatActivity implements View.OnC
                                 showError("Network error! Check your internet connection and try again!");
                             }
                             else if(response.equals("No user with such email")){
-                                System.out.println("TUK");
                                 showError("There is no user with such email!");
                             }
 
@@ -107,7 +106,7 @@ public class ActivityPasswordReset extends AppCompatActivity implements View.OnC
             }
         });
 
-        allertBuilder.setNegativeButton("Decline", new DialogInterface.OnClickListener() {
+        allertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //Toast.makeText(ActivityPasswordReset.this, "DECLINED", Toast.LENGTH_SHORT).show();

@@ -97,7 +97,7 @@
         <activity
             android:name=".Activities.ActivityProfile"
             android:label="Profile"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/AppTheme">
         </activity>
         <activity
             android:name=".Activities.ActivityPasswordReset"

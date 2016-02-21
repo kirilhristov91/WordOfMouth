@@ -3,6 +3,7 @@ package com.wordofmouth.Activities;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,12 +16,19 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.util.Base64;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.content.pm.PackageManager;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.wordofmouth.Interfaces.GetPasswordResetResponse;
 import com.wordofmouth.Interfaces.GetUserCallback;
 import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.Other.ServerRequests;
@@ -30,36 +38,66 @@ import com.wordofmouth.SharedPreferences.UserLocalStore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
-public class ActivityProfile extends BaseActivity implements View.OnClickListener{
+public class ActivityProfile extends BaseActivity implements View.OnClickListener, View.OnTouchListener{
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_BROWSE_GALLERY = 2;
-    ImageView profilePictureinProfile;
-    ImageView rotateRight;
-    ImageView rotateLeft;
-    Button updatePicture;
-    Button chooseFromGallery;
-    Button saveChanges;
+    ImageView profilePictureinProfile, rotateRight, rotateLeft;
+    Button updatePicture, chooseFromGallery, savePictureChanges, changePassword;
+    EditText oldPasswordField, newPasswordField, newPasswordAgainField;
+    private String oldPassword, newPassword;
     private int angle = 0;
     Bitmap toSave =null;
     private DBHandler dbHandler;
     private UserLocalStore userLocalStore;
+    ServerRequests serverRequests;
+    RelativeLayout profileLayout;
+    ScrollView profileScroll;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_activity_profile);
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        dbHandler = DBHandler.getInstance(this);
+        userLocalStore = UserLocalStore.getInstance(this);
+        serverRequests = ServerRequests.getInstance(this);
 
         profilePictureinProfile = (ImageView) findViewById(R.id.profilePicture);
         updatePicture = (Button) findViewById(R.id.updatePictureButton);
         chooseFromGallery = (Button) findViewById(R.id.chooseFromGallery);
         rotateRight = (ImageView) findViewById(R.id.rotateRight);
         rotateLeft = (ImageView) findViewById(R.id.rotateLeft);
-        saveChanges = (Button) findViewById(R.id.saveProfileChanges);
+        savePictureChanges = (Button) findViewById(R.id.saveProfilePictureChanges);
+        oldPasswordField = (EditText) findViewById(R.id.oldPasswordField);
+        newPasswordField = (EditText) findViewById(R.id.newPasswordField);
+        newPasswordAgainField = (EditText) findViewById(R.id.newPasswordAgainField);
+        changePassword = (Button) findViewById(R.id.changePassword);
+        profileLayout = (RelativeLayout) findViewById(R.id.profileLayout);
+        profileScroll = (ScrollView) findViewById(R.id.profileScroll);
+        profileLayout.requestFocus();
 
-        dbHandler = DBHandler.getInstance(this);
-        userLocalStore = UserLocalStore.getInstance(this);
+        rotateRight.setOnClickListener(this);
+        rotateLeft.setOnClickListener(this);
+        updatePicture.setOnClickListener(this);
+        chooseFromGallery.setOnClickListener(this);
+        savePictureChanges.setOnClickListener(this);
+        oldPasswordField.setOnTouchListener(this);
+        newPasswordField.setOnTouchListener(this);
+        newPasswordAgainField.setOnTouchListener(this);
+        changePassword.setOnClickListener(this);
+
+        profileLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                hideKeyboard(v);
+                return false;
+            }
+        });
+
 
         if(!hasCamera()){
             updatePicture.setEnabled(false);
@@ -68,9 +106,7 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
         // this is necessary because the activity restarts after the camera closes
         String pictureTakenWithTheCamera;
         if((pictureTakenWithTheCamera = dbHandler.getTemp())!=null){
-            System.out.println("VLIZAM TUKA DA MU EBA MAIKATA");
-            Bitmap pic = StringToBitMap(pictureTakenWithTheCamera);
-            toSave = pic;
+            toSave = StringToBitMap(pictureTakenWithTheCamera);
             profilePictureinProfile.setImageBitmap(toSave);
         }
 
@@ -79,17 +115,10 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
             User currentUser = userLocalStore.getUserLoggedIn();
             String pic = dbHandler.getProfilePicture(currentUser.getId());
             if (pic != null) {
-                Bitmap bitmap = StringToBitMap(pic);
-                toSave = bitmap;
+                toSave = StringToBitMap(pic);
                 profilePictureinProfile.setImageBitmap(toSave);
             }
         }
-        rotateRight.setOnClickListener(this);
-        rotateLeft.setOnClickListener(this);
-        updatePicture.setOnClickListener(this);
-        chooseFromGallery.setOnClickListener(this);
-        saveChanges.setOnClickListener(this);
-
     }
 
     @Override
@@ -120,11 +149,52 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
                 bm2 = Bitmap.createBitmap(bm2, 0, 0, bm2.getWidth(), bm2.getHeight(), matrix2, true);
                 toSave = bm2;
                 break;
-            case R.id.saveProfileChanges:
+            case R.id.saveProfilePictureChanges:
                 if (toSave != null) saveImageToDB();
+                break;
+            case R.id.changePassword:
+                updatePassword();
                 break;
 
         }
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        switch(v.getId()) {
+            case R.id.oldPasswordField:
+                System.out.println("SCROLL OLD");
+                profileScroll.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        profileScroll.fullScroll(ScrollView.FOCUS_DOWN);
+                        oldPasswordField.requestFocus();
+                    }
+                }, 500);
+                break;
+            case R.id.newPasswordField:
+                System.out.println("SCROLL NEW");
+                profileScroll.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        profileScroll.fullScroll(ScrollView.FOCUS_DOWN);
+                        newPasswordField.requestFocus();
+                    }
+                }, 500);
+                break;
+            case R.id.newPasswordAgainField:
+                System.out.println("SCROLL NEWAGAIN");
+                profileScroll.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        profileScroll.fullScroll(ScrollView.FOCUS_DOWN);
+                        newPasswordAgainField.requestFocus();
+                    }
+                }, 500);
+                break;
+
+        }
+        return false;
     }
 
     @Override
@@ -193,13 +263,12 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
 
     public void saveImageToDB(){
         if(!isNetworkAvailable()){
-            showConnectionError();
+            showError("Network error! Check your internet connection and try again!");
         }
 
         else {
             User currentUser = userLocalStore.getUserLoggedIn();
             String imageToSave = BitMapToString(toSave);
-            currentUser.getId();
             dbHandler.addProfilePicture(currentUser.getId(), imageToSave);
             dbHandler.deleteTemp();
 
@@ -207,16 +276,15 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
             progressDialog.setCancelable(false);
             progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
             progressDialog.show();
-            ServerRequests serverRequests = ServerRequests.getInstance(this);
             serverRequests.UploadProfilePictureAsyncTask(currentUser.getUsername(), imageToSave, new GetUserCallback() {
                 @Override
                 public void done(User returnedUser) {
                     progressDialog.dismiss();
                     if (returnedUser != null) {
                         if (returnedUser.getUsername().equals("Timeout")) {
-                            showConnectionError();
+                            showError("Network error! Check your internet connection and try again!");
                         } else if (returnedUser.getUsername().equals("failure")) {
-                            showUploadError();
+                            showError("Server Error! Failed to upload your picture!");
                         }
                     } else {
                         Toast.makeText(ActivityProfile.this, "Your profile picture was updated!", Toast.LENGTH_SHORT).show();
@@ -229,16 +297,69 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
         }
     }
 
-    private void showConnectionError(){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(ActivityProfile.this);
-        allertBuilder.setMessage("Network error! Check your internet connection and try again!");
-        allertBuilder.setPositiveButton("OK", null);
-        allertBuilder.show();
+    public void updatePassword(){
+        oldPassword = oldPasswordField.getText().toString();
+        newPassword = newPasswordField.getText().toString();
+        String newPasswordAgain = newPasswordAgainField.getText().toString();
+
+        if(oldPassword.equals("") || newPassword.equals("") || newPasswordAgain.equals("")){
+            showError("Empty field(s)!");
+        }
+
+        else if(!newPassword.equals(newPasswordAgain)){
+            showError("New password mismatch!");
+        }
+
+        else{
+            android.app.AlertDialog.Builder allertBuilder = new android.app.AlertDialog.Builder(this);
+            allertBuilder.setMessage("Are you sure that you want to change your password?");
+            allertBuilder.setCancelable(false);
+
+            allertBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    if (!isNetworkAvailable()) {
+                        showError("Network error! Check your internet connection and try again!");
+                    } else {
+                        final ProgressDialog changePasswordPD = new ProgressDialog(ActivityProfile.this, R.style.MyTheme);
+                        changePasswordPD.setCancelable(false);
+                        changePasswordPD.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
+                        changePasswordPD.show();
+
+                        int userId = userLocalStore.getUserLoggedIn().getId();
+                        oldPassword = hashPassword(oldPassword);
+                        newPassword = hashPassword(newPassword);
+                        serverRequests.updatePasswordInBackground(userId, oldPassword, newPassword, new GetPasswordResetResponse() {
+                            @Override
+                            public void done(String response) {
+                                changePasswordPD.dismiss();
+                                if (response.equals("Timeout")) {
+                                    showError("Network error! Check your internet connection and try again!");
+                                } else if (response.equals("Incorrect password")) {
+                                    showError("The old password you entered is incorrect");
+                                } else if (response.equals("fail to update")) {
+                                    showError("Server error!");
+                                } else {
+                                    Toast.makeText(ActivityProfile.this, "Your password has been updated!", Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+
+            allertBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    //Toast.makeText(ActivityPasswordReset.this, "DECLINED", Toast.LENGTH_SHORT).show();
+                }
+            });
+            allertBuilder.create().show();
+        }
     }
 
-    private void showUploadError(){
+    private void showError(String message){
         AlertDialog.Builder allertBuilder = new AlertDialog.Builder(ActivityProfile.this);
-        allertBuilder.setMessage("Server Error! Failed to upload your picture!");
+        allertBuilder.setMessage(message);
         allertBuilder.setPositiveButton("OK", null);
         allertBuilder.show();
     }
@@ -247,7 +368,7 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
     public String BitMapToString(Bitmap bitmap){
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         // shrink the file size of the image - nz kolko da e pomisli si
-        bitmap.compress(Bitmap.CompressFormat.JPEG,100 , stream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         return Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);
     }
 
@@ -266,7 +387,32 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
 
         BitmapFactory.Options outOptions = new BitmapFactory.Options();
         outOptions.inSampleSize = scale;
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length,outOptions);
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length, outOptions);
     }
+
+    public String hashPassword(String password){
+        String generatedPassword = null;
+        try {
+            // Hash the password in MD5 format
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(password.getBytes());
+            byte[] bytes = md.digest();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < bytes.length; i++) {
+                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+            }
+            generatedPassword = sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return generatedPassword;
+    }
+
+    protected void hideKeyboard(View view)
+    {
+        InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        in.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
 
 }

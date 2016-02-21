@@ -108,6 +108,10 @@ public class ServerRequests {
         new resetPasswordAsyncTask(email, getPasswordResetResponse).execute();
     }
 
+    public void updatePasswordInBackground(int userId, String oldPassword, String newPassword, GetPasswordResetResponse getPasswordResetResponse){
+        new updatePasswordAsyncTask(userId, oldPassword, newPassword, getPasswordResetResponse).execute();
+    }
+
     // method to encode the data needed to be sent o the server
     private static String getEncodedData(Map<String,String> data) {
         StringBuilder sb = new StringBuilder();
@@ -1357,6 +1361,92 @@ public class ServerRequests {
 
                     if(line.length()>0) {
 
+                        response = line;
+                    }
+                    else response = "Timeout";
+                }
+                else {
+                    return "Timeout";
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if(reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            getPasswordResetResponse.done(response);
+            super.onPostExecute(response);
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    private static class updatePasswordAsyncTask extends AsyncTask<Void, Void, String>{
+        int userId;
+        String oldPassword;
+        String newPassword;
+        GetPasswordResetResponse getPasswordResetResponse;
+
+        public updatePasswordAsyncTask(int userId, String oldPassword, String newPassword, GetPasswordResetResponse getPasswordResetResponse) {
+            this.userId = userId;
+            this.oldPassword = oldPassword;
+            this.newPassword = newPassword;
+            this.getPasswordResetResponse = getPasswordResetResponse;
+        }
+
+
+        @Override
+        protected String doInBackground(Void... params) {
+
+            Map<String,String> dataToSend = new HashMap<>();
+
+            Integer uId = userId;
+            String userIdAsString = uId.toString();
+
+            dataToSend.put("userId", userIdAsString);
+            dataToSend.put("oldPassword", oldPassword);
+            dataToSend.put("newPassword", newPassword);
+            String encodedStr = getEncodedData(dataToSend);
+            BufferedReader reader = null;
+
+            String response="";
+
+            //Connection Handling
+            try {
+                URL url = new URL(SERVER_ADDRESS + "updatePassword.php");
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+                //Post Method
+                con.setRequestMethod("POST");
+                con.setConnectTimeout(CONNECTION_TIMEOUT);
+                con.setDoOutput(true);
+                OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
+                writer.write(encodedStr);
+                writer.flush();
+
+                if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    //Data Read Procedure
+                    StringBuilder sb = new StringBuilder();
+                    reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    line = sb.toString();
+                    Log.i("updatePassword", "The values received are as follows:");
+                    Log.i("updatePassword", line);
+
+                    if(line.length()>0) {
                         response = line;
                     }
                     else response = "Timeout";

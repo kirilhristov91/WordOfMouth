@@ -49,7 +49,7 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_activity_profile);
+        setContentView(R.layout.activity_profile);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         dbHandler = DBHandler.getInstance(this);
         userLocalStore = UserLocalStore.getInstance(this);

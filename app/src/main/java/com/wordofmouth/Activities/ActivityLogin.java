@@ -78,7 +78,6 @@ public class ActivityLogin extends BaseActivity implements View.OnClickListener 
                 break;
             case R.id.registerNow:
                 startActivity(new Intent(this, ActivityRegister.class));
-                finish();
                 break;
             case R.id.forgotPassword:
                 startActivity(new Intent(this,ActivityPasswordReset.class));
@@ -121,5 +120,6 @@ public class ActivityLogin extends BaseActivity implements View.OnClickListener 
         userLocalStore.setUserLoggedIn(true);
         startActivity(new Intent(this, MainActivity.class));
         finish();
+        System.gc();
     }
 }

@@ -35,7 +35,7 @@ public class ActivityNotifications extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_activity_notifications);
+        setContentView(R.layout.activity_notifications);
 
         dbHandler = DBHandler.getInstance(this);
         serverRequests = ServerRequests.getInstance(this);

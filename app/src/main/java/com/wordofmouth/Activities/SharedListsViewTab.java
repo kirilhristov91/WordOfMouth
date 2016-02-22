@@ -35,7 +35,7 @@ public class SharedListsViewTab extends Fragment {
     String username;
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.shared_lists_view_tab,container,false);
+        View v = inflater.inflate(R.layout.shared_lists_tab,container,false);
 
         mainActivity = (MainActivity) getActivity();
         sharedListView = (ListView) v.findViewById(R.id.sharedListsListView);

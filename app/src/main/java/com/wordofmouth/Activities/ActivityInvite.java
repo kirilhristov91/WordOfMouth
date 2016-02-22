@@ -45,7 +45,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        setContentView(R.layout.activity_activity_invite);
+        setContentView(R.layout.activity_invite);
 
         Intent intent = getIntent();
         selectedListId = intent.getIntExtra("listId", 0);

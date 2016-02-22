@@ -14,7 +14,7 @@ public class CustomMenuItemAdapter extends ArrayAdapter<String> {
     String[] menuItems;
 
     public CustomMenuItemAdapter(Context context, String[] menuItems) {
-        super(context, R.layout.drawer_listview_item, menuItems);
+        super(context, R.layout.drawer_row, menuItems);
         this.menuItems = menuItems;
     }
 
@@ -29,7 +29,7 @@ public class CustomMenuItemAdapter extends ArrayAdapter<String> {
 
         if(convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.drawer_listview_item, parent, false);
+            convertView = inflater.inflate(R.layout.drawer_row, parent, false);
             viewHolder = new ViewHolderItem();
 
             viewHolder.menuItemText  = (TextView) convertView.findViewById(R.id.menuItemText);

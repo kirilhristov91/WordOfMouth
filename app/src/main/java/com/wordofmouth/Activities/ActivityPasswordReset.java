@@ -34,12 +34,12 @@ public class ActivityPasswordReset extends BaseActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_activity_password_reset);
+        setContentView(R.layout.activity_password_reset);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         serverRequests = ServerRequests.getInstance(this);
         utilities = Utilities.getInstance(this);
-        emailField = (EditText) findViewById(R.id.emailPasswordReset);
+        emailField = (EditText) findViewById(R.id.emailforReset);
         resetButton = (Button) findViewById(R.id.resetButton);
         resetButton.setOnClickListener(this);
         resetPasswordLayout = (LinearLayout) findViewById(R.id.resetPasswordLayout);

@@ -36,7 +36,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.my_lists_view_tab, container, false);
+        View v = inflater.inflate(R.layout.my_lists_tab, container, false);
 
         mainActivity = (MainActivity) getActivity();
         createList = (TextView) v.findViewById(R.id.createListText);

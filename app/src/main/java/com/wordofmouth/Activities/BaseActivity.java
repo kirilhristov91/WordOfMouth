@@ -131,7 +131,6 @@ public abstract class BaseActivity extends AppCompatActivity{
                    }
                    else {
                        Intent home = new Intent(context, MainActivity.class);
-                       //home.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                        context.startActivity(home);
                        mDrawerLayout.closeDrawers();
                    }
@@ -142,7 +141,6 @@ public abstract class BaseActivity extends AppCompatActivity{
                    }
                    else {
                        Intent notifications = new Intent(context, ActivityNotifications.class);
-                       //notifications.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                        context.startActivity(notifications);
                        mDrawerLayout.closeDrawers();
                    }
@@ -153,7 +151,6 @@ public abstract class BaseActivity extends AppCompatActivity{
                    }
                    else {
                        Intent feedback = new Intent(context, ActivityFeedback.class);
-                       //feedback.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                        context.startActivity(feedback);
                        mDrawerLayout.closeDrawers();
                    }
@@ -164,7 +161,6 @@ public abstract class BaseActivity extends AppCompatActivity{
                    }
                    else {
                        Intent about = new Intent(context, ActivityAbout.class);
-                       //about.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                        context.startActivity(about);
                        mDrawerLayout.closeDrawers();
                    }
@@ -177,6 +173,8 @@ public abstract class BaseActivity extends AppCompatActivity{
                    userLocalStore.setUserLoggedIn(false);
                    context.startActivity(logout);
                    mDrawerLayout.closeDrawers();
+                   finish();
+                   System.gc();
                    break;
            }
         }

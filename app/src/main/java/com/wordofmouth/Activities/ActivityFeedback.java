@@ -25,7 +25,7 @@ public class ActivityFeedback extends BaseActivity implements View.OnClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_activity_feedback);
+        setContentView(R.layout.activity_feedback);
 
         serverRequests = ServerRequests.getInstance(this);
 

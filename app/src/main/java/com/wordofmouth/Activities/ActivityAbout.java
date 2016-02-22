@@ -12,7 +12,7 @@ public class ActivityAbout extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_activity_about);
+        setContentView(R.layout.activity_about);
 
         aboutText = (TextView) findViewById(R.id.aboutText);
         String about = "Word Of Mouth is a mobile application that allows users to share their interests with each other."

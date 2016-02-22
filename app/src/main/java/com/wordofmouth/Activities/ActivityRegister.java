@@ -152,6 +152,7 @@ public class ActivityRegister extends BaseActivity implements View.OnClickListen
         userLocalStore.setUserLoggedIn(true);
         startActivity(new Intent(this, MainActivity.class));
         finish();
+        System.gc();
     }
 
     public static boolean isValidEmail(CharSequence target) {

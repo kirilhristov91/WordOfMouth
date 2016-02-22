@@ -77,7 +77,6 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
                 return false;
             }
         });
-
     }
 
     @Override
@@ -94,6 +93,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.searchUsersButton:
+                searchView.clearFocus();
                 hideKeyboard(v);
                 searchView.clearFocus();
                 if (!isNetworkAvailable()) {
@@ -115,8 +115,10 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
                                 } else {
                                     display(returnedUsers);
                                 }
-                            } else
+                            } else {
                                 Toast.makeText(ActivityInvite.this, "No users were found matching this criteria", Toast.LENGTH_SHORT).show();
+                                display(returnedUsers);
+                            }
                         }
                     });
                 }
@@ -133,6 +135,9 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
 
         ArrayAdapter<String> userAdapter = new CustomUserRowAdapter(ActivityInvite.this, usernames, users);
         fetchedUserList.setAdapter(userAdapter);
+        if (usernames.length == 0){
+            userAdapter.clear();
+        }
         fetchedUserList.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override

@@ -31,6 +31,7 @@ public class ActivityNotifications extends BaseActivity {
     int notificationId, listId;
     DBHandler dbHandler;
     ServerRequests serverRequests;
+    UserLocalStore userLocalStore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +40,7 @@ public class ActivityNotifications extends BaseActivity {
 
         dbHandler = DBHandler.getInstance(this);
         serverRequests = ServerRequests.getInstance(this);
+        userLocalStore = UserLocalStore.getInstance(ActivityNotifications.this);
     }
 
     @Override
@@ -97,7 +99,6 @@ public class ActivityNotifications extends BaseActivity {
                 if (!isNetworkAvailable()) {
                     showError("Network error! Check your internet connection and try again!");
                 } else {
-                    UserLocalStore userLocalStore = UserLocalStore.getInstance(ActivityNotifications.this);
                     final ProgressDialog progressDialogDownloadList = new ProgressDialog(ActivityNotifications.this, R.style.MyTheme);
                     progressDialogDownloadList.setCancelable(false);
                     progressDialogDownloadList.setProgressStyle(android.R.style.Widget_ProgressBar_Large);

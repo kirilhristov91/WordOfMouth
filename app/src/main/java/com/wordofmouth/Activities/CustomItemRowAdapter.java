@@ -67,6 +67,9 @@ public class CustomItemRowAdapter extends ArrayAdapter<String> {
             int c = Color.parseColor("#A5D6A7");
             convertView.setBackgroundColor(c);
         }
+        else{
+            convertView.setBackgroundColor(Color.TRANSPARENT);
+        }
 
         return convertView;
     }

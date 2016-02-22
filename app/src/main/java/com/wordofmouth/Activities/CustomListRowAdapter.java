@@ -62,7 +62,6 @@ public class CustomListRowAdapter extends ArrayAdapter<String> {
             viewHolder = (ViewHolderItem) convertView.getTag();
         }
 
-
         String title = getItem(position);
         String image = lists.get(position).getImage();
         viewHolder.listAddedByUsername.setText(lists.get(position).get_username());
@@ -96,6 +95,9 @@ public class CustomListRowAdapter extends ArrayAdapter<String> {
         if(lists.get(position).getHasNewContent() == 1){
             int c = Color.parseColor("#A5D6A7");
             convertView.setBackgroundColor(c);
+        }
+        else{
+            convertView.setBackgroundColor(Color.TRANSPARENT);
         }
         return convertView;
     }

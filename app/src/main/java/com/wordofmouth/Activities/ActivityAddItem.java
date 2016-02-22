@@ -1,14 +1,10 @@
 package com.wordofmouth.Activities;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -20,7 +16,7 @@ import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
-import com.wordofmouth.Interfaces.GetItemId;
+import com.wordofmouth.Interfaces.GetItem;
 import com.wordofmouth.ObjectClasses.Item;
 import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.Other.ServerRequests;
@@ -126,7 +122,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
                         progressDialog.show();
 
                         ServerRequests serverRequests = ServerRequests.getInstance(this);
-                        serverRequests.UploadItemAsyncTask(i, new GetItemId() {
+                        serverRequests.UploadItemAsyncTask(i, new GetItem() {
                             @Override
                             public void done(Item item) {
                                 progressDialog.dismiss();
@@ -162,7 +158,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
     public boolean onTouch(View v, MotionEvent event) {
         switch(v.getId()) {
             case R.id.addItemLayout:
-                utilities.hideKeyboard(v);
+                hideKeyboard(v);
                 break;
             case R.id.itemNameField:
                 itemScroll.postDelayed(new Runnable() {
@@ -199,20 +195,6 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
     public void browseGallery(){
         Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, REQUEST_BROWSE_GALLERY);
-    }
-
-    public boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
-    public void showError(String message){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
-        allertBuilder.setMessage(message);
-        allertBuilder.setPositiveButton("OK", null);
-        allertBuilder.show();
     }
 
     @Override

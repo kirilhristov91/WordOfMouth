@@ -1,28 +1,23 @@
 package com.wordofmouth.Activities;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import com.wordofmouth.Interfaces.GetUserCallback;
+import com.wordofmouth.Interfaces.GetUser;
 import com.wordofmouth.Other.Utilities;
 import com.wordofmouth.R;
 import com.wordofmouth.Other.ServerRequests;
 import com.wordofmouth.ObjectClasses.User;
 import com.wordofmouth.SharedPreferences.UserLocalStore;
 
-public class ActivityLogin extends AppCompatActivity implements View.OnClickListener {
+public class ActivityLogin extends BaseActivity implements View.OnClickListener {
 
     Button loginButton;
     EditText usernameField, passwordField;
@@ -30,6 +25,11 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
     LinearLayout loginLayout;
     UserLocalStore userLocalStore;
     Utilities utilities;
+
+    @Override
+    public boolean usesToolbar() {
+        return false;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +49,7 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
         loginLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                utilities.hideKeyboard(v);
+                hideKeyboard(v);
                 return false;
             }
         });
@@ -98,7 +98,7 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
             progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
             progressDialog.show();
 
-            serverRequests.fetchUserDataInBackground(user, new GetUserCallback() {
+            serverRequests.fetchUserDataInBackground(user, new GetUser() {
                 @Override
                 public void done(User returnedUser) {
                     progressDialog.dismiss();
@@ -121,19 +121,5 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
         userLocalStore.setUserLoggedIn(true);
         startActivity(new Intent(this, MainActivity.class));
         finish();
-    }
-
-    public boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
-    public void showError(String message){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
-        allertBuilder.setMessage(message);
-        allertBuilder.setPositiveButton("OK", null);
-        allertBuilder.show();
     }
 }

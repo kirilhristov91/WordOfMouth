@@ -2,13 +2,9 @@ package com.wordofmouth.Activities;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -16,12 +12,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.wordofmouth.Interfaces.GetPasswordResetResponse;
+import com.wordofmouth.Interfaces.GetResponse;
 import com.wordofmouth.Other.ServerRequests;
 import com.wordofmouth.Other.Utilities;
 import com.wordofmouth.R;
 
-public class ActivityPasswordReset extends AppCompatActivity implements View.OnClickListener{
+public class ActivityPasswordReset extends BaseActivity implements View.OnClickListener{
 
     EditText emailField;
     Button resetButton;
@@ -29,6 +25,11 @@ public class ActivityPasswordReset extends AppCompatActivity implements View.OnC
     String email="";
     LinearLayout resetPasswordLayout;
     Utilities utilities;
+
+    @Override
+    public boolean usesToolbar() {
+        return false;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +46,7 @@ public class ActivityPasswordReset extends AppCompatActivity implements View.OnC
         resetPasswordLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                utilities.hideKeyboard(v);
+                hideKeyboard(v);
                 return false;
             }
         });
@@ -55,7 +56,7 @@ public class ActivityPasswordReset extends AppCompatActivity implements View.OnC
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.resetButton:
-                utilities.hideKeyboard(v);
+                hideKeyboard(v);
                 email = emailField.getText().toString();
                 if(emailField.getText().toString().equals("")){
                     showError("Please provide an email!");
@@ -81,7 +82,7 @@ public class ActivityPasswordReset extends AppCompatActivity implements View.OnC
                     progressDialogDownloadList.setCancelable(false);
                     progressDialogDownloadList.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
                     progressDialogDownloadList.show();
-                    serverRequests.resetPasswordInBackground(email, new GetPasswordResetResponse() {
+                    serverRequests.resetPasswordInBackground(email, new GetResponse() {
                         @Override
                         public void done(String response) {
                             progressDialogDownloadList.dismiss();
@@ -106,19 +107,5 @@ public class ActivityPasswordReset extends AppCompatActivity implements View.OnC
             }
         });
         allertBuilder.create().show();
-    }
-
-    public boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
-    public void showError(String message){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
-        allertBuilder.setMessage(message);
-        allertBuilder.setPositiveButton("OK", null);
-        allertBuilder.show();
     }
 }

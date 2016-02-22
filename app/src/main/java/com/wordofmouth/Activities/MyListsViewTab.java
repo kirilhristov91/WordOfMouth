@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import com.wordofmouth.Interfaces.GetBitmap;
 import com.wordofmouth.Interfaces.GetLists;
-import com.wordofmouth.ObjectClasses.MyList;
+import com.wordofmouth.ObjectClasses.List;
 import com.wordofmouth.ObjectClasses.Shared;
 import com.wordofmouth.Other.DBGetData;
 import com.wordofmouth.Other.DBHandler;
@@ -31,7 +31,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
     TextView createList;
     ListView myListView;
     MainActivity mainActivity;
-    ArrayList<MyList> myLists;
+    ArrayList<List> myLists;
     String username;
 
     @Override
@@ -58,14 +58,14 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
 
         dbGetData.GetListsInBackground(username, 0, new GetLists() {
             @Override
-            public void done(ArrayList<MyList> lists) {
+            public void done(ArrayList<List> lists) {
                 progressDialogFetching.dismiss();
                 display(lists);
             }
         });
     }
 
-    public void display(ArrayList<MyList> lists){
+    public void display(ArrayList<List> lists){
 
         myLists = lists;
         final String[] listNames = new String[myLists.size()];

@@ -1,10 +1,6 @@
 package com.wordofmouth.Activities;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,9 +10,8 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
-import com.wordofmouth.Interfaces.GetFeedbackResponse;
+import com.wordofmouth.Interfaces.GetResponse;
 import com.wordofmouth.Other.ServerRequests;
-import com.wordofmouth.Other.Utilities;
 import com.wordofmouth.R;
 
 public class ActivityFeedback extends BaseActivity implements View.OnClickListener, View.OnTouchListener{
@@ -25,7 +20,6 @@ public class ActivityFeedback extends BaseActivity implements View.OnClickListen
     Button feedbackButton;
     ServerRequests serverRequests;
     LinearLayout feedbackLayout;
-    Utilities utilities;
     ScrollView feedbackScroll;
 
     @Override
@@ -34,7 +28,6 @@ public class ActivityFeedback extends BaseActivity implements View.OnClickListen
         setContentView(R.layout.activity_activity_feedback);
 
         serverRequests = ServerRequests.getInstance(this);
-        utilities = Utilities.getInstance(this);
 
         feedbackScroll = (ScrollView) findViewById(R.id.feedbackScroll);
         feedbackLayout = (LinearLayout) findViewById(R.id.feedbackLayout);
@@ -69,7 +62,7 @@ public class ActivityFeedback extends BaseActivity implements View.OnClickListen
                         progressDialog.setCancelable(false);
                         progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
                         progressDialog.show();
-                        serverRequests.sendFeedbackInBackground(feedback, new GetFeedbackResponse() {
+                        serverRequests.sendFeedbackInBackground(feedback, new GetResponse() {
                             @Override
                             public void done(String response) {
                                 progressDialog.dismiss();
@@ -90,7 +83,7 @@ public class ActivityFeedback extends BaseActivity implements View.OnClickListen
     public boolean onTouch(View v, MotionEvent event) {
         switch(v.getId()) {
             case R.id.feedbackLayout:
-                utilities.hideKeyboard(v);
+                hideKeyboard(v);
                 break;
             case R.id.feedbackField:
                 feedbackScroll.postDelayed(new Runnable() {
@@ -103,19 +96,5 @@ public class ActivityFeedback extends BaseActivity implements View.OnClickListen
                 break;
         }
         return false;
-    }
-
-    public boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
-    public void showError(String message){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
-        allertBuilder.setMessage(message);
-        allertBuilder.setPositiveButton("OK", null);
-        allertBuilder.show();
     }
 }

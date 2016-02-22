@@ -1,7 +1,7 @@
 package com.wordofmouth.ObjectClasses;
 
 
-public class MyList {
+public class List {
     private int _listId;
 
     private int userId;
@@ -11,9 +11,9 @@ public class MyList {
     private String _description;
     private int hasNewContent;
 
-    public MyList(){}
+    public List(){}
 
-    public MyList(int userId, String _username, String name, String description, String image) {
+    public List(int userId, String _username, String name, String description, String image) {
         this.userId = userId;
         this._username = _username;
         this._name = name;

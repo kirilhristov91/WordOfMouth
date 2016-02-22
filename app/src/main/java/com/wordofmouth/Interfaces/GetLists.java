@@ -1,11 +1,11 @@
 package com.wordofmouth.Interfaces;
 
 
-import com.wordofmouth.ObjectClasses.MyList;
+import com.wordofmouth.ObjectClasses.List;
 
 import java.util.ArrayList;
 
 public interface GetLists {
 
-    void done(ArrayList<MyList> lists);
+    void done(ArrayList<List> lists);
 }

@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.ContentValues;
 
 import com.wordofmouth.ObjectClasses.Item;
-import com.wordofmouth.ObjectClasses.MyList;
+import com.wordofmouth.ObjectClasses.List;
 import com.wordofmouth.ObjectClasses.Notification;
 import com.wordofmouth.ObjectClasses.Shared;
 
@@ -146,7 +146,7 @@ public class DBHandler extends SQLiteOpenHelper{
     }
 
     //Add a new row to table lists
-    public void addList(MyList ul){
+    public void addList(List ul){
         ContentValues values = new ContentValues();
         values.put(COLUMN_ID, ul.get_listId());
         values.put(COLUMN_UserId, ul.getUserId());
@@ -433,7 +433,7 @@ public class DBHandler extends SQLiteOpenHelper{
     ////////////////////////////////////////////////////////////////////
 
     // get the lists as list of objects
-    public ArrayList<MyList> getLists(String currentUserUsername, int flag){
+    public ArrayList<List> getLists(String currentUserUsername, int flag){
         // prepare the variables to store a row
         int id;
         int userId;
@@ -441,7 +441,7 @@ public class DBHandler extends SQLiteOpenHelper{
         String listName = "";
         String image="";
         String des = "";
-        ArrayList<MyList> lists = new ArrayList<>();
+        ArrayList<List> lists = new ArrayList<>();
 
         String myLists = "SELECT * FROM " + TABLE_List +
                        " WHERE " + COLUMN_Username + "=\"" + currentUserUsername + "\"" +
@@ -481,7 +481,7 @@ public class DBHandler extends SQLiteOpenHelper{
                 image = c.getString(c.getColumnIndex(COLUMN_ListImage));
             }
             int hasNewC = c.getInt(c.getColumnIndex(COLUMN_HasNewContent));
-            MyList ul = new MyList(userId, username, listName, des, image);
+            List ul = new List(userId, username, listName, des, image);
             ul.set_listId(id);
             ul.setHasNewContent(hasNewC);
             lists.add(ul);
@@ -492,7 +492,7 @@ public class DBHandler extends SQLiteOpenHelper{
         return lists;
     }
 
-    public ArrayList getSeens (int listID){
+    public ArrayList<Integer> getSeens (int listID){
         Integer seen;
         ArrayList<Integer> toReturn= new ArrayList<>();
 

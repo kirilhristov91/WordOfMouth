@@ -2,12 +2,9 @@ package com.wordofmouth.Activities;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,8 +16,8 @@ import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.wordofmouth.Interfaces.GetResponse;
 import com.wordofmouth.Interfaces.GetUsers;
-import com.wordofmouth.Interfaces.SendInviteResponse;
 import com.wordofmouth.Other.Utilities;
 import com.wordofmouth.R;
 import com.wordofmouth.Other.ServerRequests;
@@ -76,7 +73,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
         inviteLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                utilities.hideKeyboard(v);
+                hideKeyboard(v);
                 return false;
             }
         });
@@ -97,7 +94,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.searchUsersButton:
-                utilities.hideKeyboard(v);
+                hideKeyboard(v);
                 searchView.clearFocus();
                 if (!isNetworkAvailable()) {
                     showError("Network error! Check your internet connection and try again!");
@@ -159,7 +156,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
                                     progressDialog.show();
 
                                     ServerRequests serverRequests = ServerRequests.getInstance(ActivityInvite.this);
-                                    serverRequests.inviteInBackground(selectedListId, currentUserId, sharedWithId, new SendInviteResponse() {
+                                    serverRequests.inviteInBackground(selectedListId, currentUserId, sharedWithId, new GetResponse() {
                                         @Override
                                         public void done(String response) {
                                             progressDialog.dismiss();
@@ -194,19 +191,4 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
                 }
         );
     }
-
-    public boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
-    public void showError(String message){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
-        allertBuilder.setMessage(message);
-        allertBuilder.setPositiveButton("OK", null);
-        allertBuilder.show();
-    }
-
 }

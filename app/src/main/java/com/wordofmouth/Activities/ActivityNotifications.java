@@ -2,11 +2,8 @@ package com.wordofmouth.Activities;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,14 +12,13 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.wordofmouth.Interfaces.GetItems;
-import com.wordofmouth.Interfaces.GetListId;
+import com.wordofmouth.Interfaces.GetList;
 import com.wordofmouth.Interfaces.GetUsernames;
 import com.wordofmouth.ObjectClasses.Item;
-import com.wordofmouth.ObjectClasses.MyList;
+import com.wordofmouth.ObjectClasses.List;
 import com.wordofmouth.ObjectClasses.Notification;
 import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.Other.ServerRequests;
-import com.wordofmouth.Other.Utilities;
 import com.wordofmouth.R;
 import com.wordofmouth.SharedPreferences.UserLocalStore;
 
@@ -35,7 +31,6 @@ public class ActivityNotifications extends BaseActivity {
     int notificationId, listId;
     DBHandler dbHandler;
     ServerRequests serverRequests;
-    Utilities utilities;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +39,6 @@ public class ActivityNotifications extends BaseActivity {
 
         dbHandler = DBHandler.getInstance(this);
         serverRequests = ServerRequests.getInstance(this);
-        utilities = Utilities.getInstance(this);
 
         notifications = dbHandler.getNotifications();
         String[] messages = new String[notifications.size()];
@@ -105,19 +99,19 @@ public class ActivityNotifications extends BaseActivity {
                     progressDialogDownloadList.setCancelable(false);
                     progressDialogDownloadList.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
                     progressDialogDownloadList.show();
-                    serverRequests.downloadListInBackgroudn(n.getListId(), userLocalStore.getUserLoggedIn().getId(), new GetListId() {
+                    serverRequests.downloadListInBackgroudn(n.getListId(), userLocalStore.getUserLoggedIn().getId(), new GetList() {
                         @Override
-                        public void done(MyList myList) {
+                        public void done(List list) {
                             progressDialogDownloadList.dismiss();
-                            if (myList.get_username().equals("Timeout")) {
+                            if (list.get_username().equals("Timeout")) {
                                 showError("Network error! Check your internet connection and try again!");
-                            } else if (myList.get_username().equals("UpdError")) {
+                            } else if (list.get_username().equals("UpdError")) {
                                 showError("Server error");
                             } else {
                                 DBHandler dbHandler = DBHandler.getInstance(ActivityNotifications.this);
-                                myList.setHasNewContent(1);
-                                dbHandler.addList(myList);
-                                downloadItems(myList);
+                                list.setHasNewContent(1);
+                                dbHandler.addList(list);
+                                downloadItems(list);
                             }
                         }
                     });
@@ -135,7 +129,7 @@ public class ActivityNotifications extends BaseActivity {
         allertBuilder.create().show();
     }
 
-    private void downloadItems(MyList list){
+    private void downloadItems(List list){
 
         listId = list.get_listId();
 
@@ -186,19 +180,5 @@ public class ActivityNotifications extends BaseActivity {
 
             }
         });
-    }
-
-    public boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
-    public void showError(String message){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
-        allertBuilder.setMessage(message);
-        allertBuilder.setPositiveButton("OK", null);
-        allertBuilder.show();
     }
 }

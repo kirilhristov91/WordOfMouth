@@ -1,12 +1,9 @@
 package com.wordofmouth.Activities;
 
-import android.app.AlertDialog;
+
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -14,8 +11,7 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.wordofmouth.Interfaces.GetRateResponce;
+import com.wordofmouth.Interfaces.GetResponse;
 import com.wordofmouth.ObjectClasses.Item;
 import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.Other.ServerRequests;
@@ -38,6 +34,7 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
     ServerRequests serverRequests;
     UserLocalStore userLocalStore;
     Utilities utilities;
+    DBHandler dbHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +64,19 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
                 ratingSelected = (double) rating;
             }
         });
-        DBHandler dbHandler = DBHandler.getInstance(this);
+        dbHandler = DBHandler.getInstance(this);
         utilities = Utilities.getInstance(this);
+
+
+        serverRequests = ServerRequests.getInstance(this);
+        userLocalStore = UserLocalStore.getInstance(this);
+        userId = userLocalStore.getUserLoggedIn().getId();
+        rateButton.setOnClickListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
         ArrayList<Integer> seens = dbHandler.getSeens(listId);
         boolean flag = false;
@@ -103,10 +111,6 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
             ratedBy.setText("Rated by 1 user");
         }
 
-        serverRequests = ServerRequests.getInstance(this);
-        userLocalStore = UserLocalStore.getInstance(this);
-        userId = userLocalStore.getUserLoggedIn().getId();
-        rateButton.setOnClickListener(this);
     }
 
     @Override
@@ -131,7 +135,7 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
                     progressDialog.setCancelable(false);
                     progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
                     progressDialog.show();
-                    serverRequests.rateInBackground(listId, itemId, userId, ratingSelected, new GetRateResponce() {
+                    serverRequests.rateInBackground(listId, itemId, userId, ratingSelected, new GetResponse() {
                         @Override
                         public void done(String response) {
                             progressDialog.dismiss();
@@ -148,20 +152,6 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
                 }
                 break;
         }
-    }
-
-    public boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
-    public void showError(String message){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
-        allertBuilder.setMessage(message);
-        allertBuilder.setPositiveButton("OK", null);
-        allertBuilder.show();
     }
 }
 

@@ -3,7 +3,7 @@ package com.wordofmouth.Activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import com.wordofmouth.ObjectClasses.MyList;
+import com.wordofmouth.ObjectClasses.List;
 import com.wordofmouth.R;
 import com.wordofmouth.SharedPreferences.UserLocalStore;
 
@@ -18,7 +18,7 @@ public class MainActivity extends BaseActivity{
     SlidingTabLayout tabs;
     CharSequence Titles[]={"My Lists","Shared With Me"};
     int NumberOfTabs =2;
-    ArrayList<MyList> myLists;
+    ArrayList<List> lists;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

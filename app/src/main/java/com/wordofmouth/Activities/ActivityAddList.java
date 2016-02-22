@@ -1,14 +1,10 @@
 package com.wordofmouth.Activities;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -19,8 +15,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
-import com.wordofmouth.Interfaces.GetListId;
-import com.wordofmouth.ObjectClasses.MyList;
+import com.wordofmouth.Interfaces.GetList;
+import com.wordofmouth.ObjectClasses.List;
 import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.Other.ServerRequests;
 import com.wordofmouth.Other.Utilities;
@@ -102,7 +98,7 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
                         UserLocalStore userLocalStore = UserLocalStore.getInstance(this);
                         int currentUserId = userLocalStore.getUserLoggedIn().getId();
                         String currentUserUsername = userLocalStore.getUserLoggedIn().getUsername();
-                        MyList list = new MyList(currentUserId, currentUserUsername, listNameField.getText().toString(), listDescriptionField.getText().toString(), image);
+                        List list = new List(currentUserId, currentUserUsername, listNameField.getText().toString(), listDescriptionField.getText().toString(), image);
 
                         final ProgressDialog progressDialog = new ProgressDialog(this,R.style.MyTheme);
                         progressDialog.setCancelable(false);
@@ -110,9 +106,9 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
                         progressDialog.show();
 
                         ServerRequests serverRequests = ServerRequests.getInstance(this);
-                        serverRequests.UploadListAsyncTask(list, new GetListId() {
+                        serverRequests.UploadListAsyncTask(list, new GetList() {
                             @Override
-                            public void done(MyList returnedList) {
+                            public void done(List returnedList) {
                                 progressDialog.dismiss();
                                 if (returnedList == null) {
                                     showError("You have already created a list with that name!");
@@ -142,7 +138,7 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
     public boolean onTouch(View v, MotionEvent event) {
         switch(v.getId()) {
             case R.id.addListLayout:
-                utilities.hideKeyboard(v);
+                hideKeyboard(v);
                 break;
             case R.id.listNameField:
                 listScroll.postDelayed(new Runnable() {
@@ -164,20 +160,6 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
                 break;
         }
         return false;
-    }
-
-    public boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
-    public void showError(String message){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
-        allertBuilder.setMessage(message);
-        allertBuilder.setPositiveButton("OK", null);
-        allertBuilder.show();
     }
 
     public void closeActivity(){

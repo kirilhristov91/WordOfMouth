@@ -1,7 +1,6 @@
 package com.wordofmouth.Interfaces;
 
-
-public interface GetFeedbackResponse {
+public interface GetResponse {
 
     void done(String response);
 }

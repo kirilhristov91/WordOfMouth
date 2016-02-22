@@ -1,15 +1,11 @@
 package com.wordofmouth.Activities;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,8 +15,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.wordofmouth.Interfaces.GetGCM;
-import com.wordofmouth.Interfaces.GetUserCallback;
+import com.wordofmouth.Interfaces.GetResponse;
+import com.wordofmouth.Interfaces.GetUser;
 import com.wordofmouth.Other.Utilities;
 import com.wordofmouth.R;
 import com.wordofmouth.Other.ServerRequests;
@@ -28,7 +24,7 @@ import com.wordofmouth.ObjectClasses.User;
 import com.wordofmouth.SharedPreferences.UserLocalStore;
 import java.io.IOException;
 
-public class ActivityRegister extends AppCompatActivity implements View.OnClickListener{
+public class ActivityRegister extends BaseActivity implements View.OnClickListener{
 
     Button registerButton;
     EditText regnameField, regusernameField, regemailField, regpasswordField;
@@ -36,6 +32,12 @@ public class ActivityRegister extends AppCompatActivity implements View.OnClickL
     User user;
     Utilities utilities;
     LinearLayout registerLayout;
+    UserLocalStore userLocalStore;
+
+    @Override
+    public boolean usesToolbar() {
+        return false;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,7 @@ public class ActivityRegister extends AppCompatActivity implements View.OnClickL
         setContentView(R.layout.activity_register);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+        userLocalStore = UserLocalStore.getInstance(this);
         utilities = Utilities.getInstance(this);
         regnameField = (EditText) findViewById(R.id.regnameField);
         regemailField = (EditText) findViewById(R.id.regemailField);
@@ -54,7 +57,7 @@ public class ActivityRegister extends AppCompatActivity implements View.OnClickL
         registerLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                utilities.hideKeyboard(v);
+                hideKeyboard(v);
                 return false;
             }
         });
@@ -109,7 +112,7 @@ public class ActivityRegister extends AppCompatActivity implements View.OnClickL
             progressDialogGCM.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
             progressDialogGCM.show();
             GCMRequest gcmRequest = GCMRequest.getInstance(this);
-            gcmRequest.getGCMidInBackground(new GetGCM() {
+            gcmRequest.getGCMidInBackground(new GetResponse() {
                 @Override
                 public void done(String gcmId) {
                     progressDialogGCM.dismiss();
@@ -125,7 +128,7 @@ public class ActivityRegister extends AppCompatActivity implements View.OnClickL
         progressDialog.setCancelable(false);
         progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
         progressDialog.show();
-        serverRequests.storeUserDataInBackground(user, gcmId, new GetUserCallback() {
+        serverRequests.storeUserDataInBackground(user, gcmId, new GetUser() {
             @Override
             public void done(User returnedUser) {
                 progressDialog.dismiss();
@@ -145,7 +148,6 @@ public class ActivityRegister extends AppCompatActivity implements View.OnClickL
     }
 
     private void login(User returnedUser){
-        UserLocalStore userLocalStore = UserLocalStore.getInstance(this);
         userLocalStore.storeUserData(returnedUser);
         userLocalStore.setUserLoggedIn(true);
         startActivity(new Intent(this, MainActivity.class));
@@ -175,14 +177,14 @@ public class ActivityRegister extends AppCompatActivity implements View.OnClickL
             this.context = context;
         }
 
-        public void getGCMidInBackground(GetGCM getGCM){
+        public void getGCMidInBackground(GetResponse getGCM){
             new getGcmIdAsyncTask(getGCM).execute();
         }
 
         private static class getGcmIdAsyncTask extends AsyncTask<Void, Void, String> {
-            GetGCM getGCM;
+            GetResponse getGCM;
 
-            public getGcmIdAsyncTask(GetGCM getGCM) {
+            public getGcmIdAsyncTask(GetResponse getGCM) {
                 this.getGCM = getGCM;
             }
 
@@ -208,19 +210,5 @@ public class ActivityRegister extends AppCompatActivity implements View.OnClickL
             }
 
         }
-    }
-
-    public boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
-    public void showError(String message){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
-        allertBuilder.setMessage(message);
-        allertBuilder.setPositiveButton("OK", null);
-        allertBuilder.show();
     }
 }

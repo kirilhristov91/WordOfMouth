@@ -14,7 +14,7 @@ import android.util.Log;
 import com.wordofmouth.Activities.*;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.wordofmouth.Interfaces.GetItemId;
+import com.wordofmouth.Interfaces.GetItem;
 import com.wordofmouth.ObjectClasses.Item;
 import com.wordofmouth.ObjectClasses.Notification;
 import com.wordofmouth.Other.DBHandler;
@@ -99,7 +99,7 @@ public class GcmIntentService extends IntentService {
                     String idString = recieved_message.substring(index+1, recieved_message.length());
                     Integer itemId = Integer.parseInt(idString);
                     ServerRequests serverRequests = ServerRequests.getInstance(this);
-                    serverRequests.downloadNewItemInBackgroudn(itemId, new GetItemId() {
+                    serverRequests.downloadNewItemInBackgroudn(itemId, new GetItem() {
                         @Override
                         public void done(Item item) {
                             if (item!= null && item.get_itemId()!=-1){
@@ -125,7 +125,7 @@ public class GcmIntentService extends IntentService {
                 else {
                     Integer itemId = Integer.parseInt(recieved_message);
                     ServerRequests serverRequests = ServerRequests.getInstance(this);
-                    serverRequests.downloadNewItemInBackgroudn(itemId, new GetItemId() {
+                    serverRequests.downloadNewItemInBackgroudn(itemId, new GetItem() {
                         @Override
                         public void done(Item item) {
                             if (item!= null && item.get_itemId()!=-1){

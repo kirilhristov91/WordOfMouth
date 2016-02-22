@@ -9,7 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.wordofmouth.ObjectClasses.MyList;
+
+import com.wordofmouth.ObjectClasses.List;
 import com.wordofmouth.ObjectClasses.Shared;
 import com.wordofmouth.R;
 import java.util.ArrayList;
@@ -17,10 +18,10 @@ import java.util.ArrayList;
 public class CustomListRowAdapter extends ArrayAdapter<String> {
 
     ArrayList<Bitmap> bitmaps;
-    ArrayList<MyList> lists;
+    ArrayList<List> lists;
     ArrayList<Shared> usernames;
 
-    public CustomListRowAdapter(Context context, String[] listNames, ArrayList<MyList> lists, ArrayList<Bitmap> bitmaps, ArrayList<Shared> usernames) {
+    public CustomListRowAdapter(Context context, String[] listNames, ArrayList<List> lists, ArrayList<Bitmap> bitmaps, ArrayList<Shared> usernames) {
         super(context, R.layout.custom_list_row, listNames);
         this.lists = lists;
         this.bitmaps = bitmaps;

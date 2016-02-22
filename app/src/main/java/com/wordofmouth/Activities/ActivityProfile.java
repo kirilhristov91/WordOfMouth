@@ -1,15 +1,11 @@
 package com.wordofmouth.Activities;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -24,8 +20,8 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
-import com.wordofmouth.Interfaces.GetPasswordResetResponse;
-import com.wordofmouth.Interfaces.GetUserCallback;
+import com.wordofmouth.Interfaces.GetResponse;
+import com.wordofmouth.Interfaces.GetUser;
 import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.Other.ServerRequests;
 import com.wordofmouth.Other.Utilities;
@@ -140,7 +136,7 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
     public boolean onTouch(View v, MotionEvent event) {
         switch(v.getId()) {
             case R.id.profileLayout:
-                utilities.hideKeyboard(v);
+                hideKeyboard(v);
                 break;
             case R.id.oldPasswordField:
                 profileScroll.postDelayed(new Runnable() {
@@ -230,7 +226,7 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
             progressDialog.setCancelable(false);
             progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
             progressDialog.show();
-            serverRequests.UploadProfilePictureAsyncTask(currentUser.getUsername(), imageToSave, new GetUserCallback() {
+            serverRequests.UploadProfilePictureAsyncTask(currentUser.getUsername(), imageToSave, new GetUser() {
                 @Override
                 public void done(User returnedUser) {
                     progressDialog.dismiss();
@@ -282,7 +278,7 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
                         int userId = userLocalStore.getUserLoggedIn().getId();
                         oldPassword = utilities.hashPassword(oldPassword);
                         newPassword = utilities.hashPassword(newPassword);
-                        serverRequests.updatePasswordInBackground(userId, oldPassword, newPassword, new GetPasswordResetResponse() {
+                        serverRequests.updatePasswordInBackground(userId, oldPassword, newPassword, new GetResponse() {
                             @Override
                             public void done(String response) {
                                 changePasswordPD.dismiss();
@@ -309,19 +305,5 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
             });
             allertBuilder.create().show();
         }
-    }
-
-    public boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
-    public void showError(String message){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
-        allertBuilder.setMessage(message);
-        allertBuilder.setPositiveButton("OK", null);
-        allertBuilder.show();
     }
 }

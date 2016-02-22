@@ -15,7 +15,7 @@ import android.widget.ListView;
 
 import com.wordofmouth.Interfaces.GetBitmap;
 import com.wordofmouth.Interfaces.GetLists;
-import com.wordofmouth.ObjectClasses.MyList;
+import com.wordofmouth.ObjectClasses.List;
 import com.wordofmouth.ObjectClasses.Shared;
 import com.wordofmouth.Other.DBGetData;
 import com.wordofmouth.Other.DBHandler;
@@ -29,7 +29,7 @@ public class SharedListsViewTab extends Fragment {
 
     MainActivity mainActivity;
     ListView sharedListView;
-    ArrayList<MyList> sharedLists;
+    ArrayList<List> sharedLists;
     ArrayList <Shared> usernames;
     DBGetData dbGetData;
     String username;
@@ -40,7 +40,7 @@ public class SharedListsViewTab extends Fragment {
         mainActivity = (MainActivity) getActivity();
         sharedListView = (ListView) v.findViewById(R.id.sharedListsListView);
         username = UserLocalStore.getInstance(mainActivity).getUserLoggedIn().getUsername();
-        sharedLists = new ArrayList<MyList>();
+        sharedLists = new ArrayList<List>();
         dbGetData = DBGetData.getInstance(mainActivity);
         return v;
     }
@@ -56,20 +56,19 @@ public class SharedListsViewTab extends Fragment {
 
         dbGetData.GetListsInBackground(username, 1, new GetLists() {
             @Override
-            public void done(ArrayList<MyList> lists) {
+            public void done(ArrayList<List> lists) {
                 progressDialogFetching.dismiss();
                 display(lists);
             }
         });
     }
 
-    public void display(ArrayList<MyList> lists){
+    public void display(ArrayList<List> lists){
 
         sharedLists = lists;
         final String[] listNames = new String[sharedLists.size()];
         for (int i = 0; i < sharedLists.size(); i++) {
             listNames[i] = sharedLists.get(i).get_name();
-            //System.out.println(myLists.get(i).get_listId());
         }
 
         DBHandler dbHandler = DBHandler.getInstance(mainActivity);

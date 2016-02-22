@@ -1,25 +1,22 @@
 package com.wordofmouth.Other;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.wordofmouth.Interfaces.GetFeedbackResponse;
-import com.wordofmouth.Interfaces.GetItemId;
+import com.wordofmouth.Interfaces.GetItem;
 import com.wordofmouth.Interfaces.GetItems;
-import com.wordofmouth.Interfaces.GetListId;
-import com.wordofmouth.Interfaces.GetPasswordResetResponse;
-import com.wordofmouth.Interfaces.GetRateResponce;
-import com.wordofmouth.Interfaces.GetUserCallback;
+import com.wordofmouth.Interfaces.GetList;
+import com.wordofmouth.Interfaces.GetResponse;
+import com.wordofmouth.Interfaces.GetUser;
 import com.wordofmouth.Interfaces.GetUsernames;
 import com.wordofmouth.Interfaces.GetUsers;
-import com.wordofmouth.Interfaces.SendInviteResponse;
 import com.wordofmouth.ObjectClasses.Item;
-import com.wordofmouth.ObjectClasses.MyList;
+import com.wordofmouth.ObjectClasses.List;
 import com.wordofmouth.ObjectClasses.User;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -28,7 +25,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -53,64 +49,64 @@ public class ServerRequests {
     private ServerRequests(Context context){}
 
     // methods
-    public void storeUserDataInBackground(User user, String gcmId, GetUserCallback userCallback){
+    public void storeUserDataInBackground(User user, String gcmId, GetUser userCallback){
         new StoreUserDataAsyncTask(user, gcmId, userCallback).execute();
     }
 
-    public void fetchUserDataInBackground(User user, GetUserCallback userCallback){
+    public void fetchUserDataInBackground(User user, GetUser userCallback){
         new FetchUserDataAsyncTask(user, userCallback).execute();
     }
 
-    public void UploadProfilePictureAsyncTask(String username, String image, GetUserCallback userCallback){
+    public void UploadProfilePictureAsyncTask(String username, String image, GetUser userCallback){
         new UploadProfilePictureAsyncTask(username, image, userCallback).execute();
     }
 
-    public void UploadListAsyncTask(MyList list, GetListId getListId){
-        new UploadListAsyncTask(list, getListId).execute();
+    public void UploadListAsyncTask(List list, GetList getList){
+        new UploadListAsyncTask(list, getList).execute();
     }
 
-    public void UploadItemAsyncTask(Item item, GetItemId getItemId){
-        new UploadItemAsyncTask(item, getItemId).execute();
+    public void UploadItemAsyncTask(Item item, GetItem getItem){
+        new UploadItemAsyncTask(item, getItem).execute();
     }
 
     public void fetchUsersInBackground(String requestedName, int currentUserId, GetUsers getUsers){
         new FetchUsersAsyncTask(requestedName, currentUserId, getUsers).execute();
     }
 
-    public void inviteInBackground(int listId, int currentUserId, int invitedUserId, SendInviteResponse sendInviteResponse){
-        new inviteAsyncTask(listId, currentUserId, invitedUserId, sendInviteResponse).execute();
+    public void inviteInBackground(int listId, int currentUserId, int invitedUserId, GetResponse getResponse){
+        new inviteAsyncTask(listId, currentUserId, invitedUserId, getResponse).execute();
     }
 
-    public void downloadListInBackgroudn(int listId, int userId, GetListId getListId){
-        new downloadListAsyncTask(listId, userId, getListId).execute();
+    public void downloadListInBackgroudn(int listId, int userId, GetList getList){
+        new downloadListAsyncTask(listId, userId, getList).execute();
     }
 
     public void downloadItemsInBackgroudn(int listId, GetItems getItems){
         new downloadItemsAsyncTask(listId, getItems).execute();
     }
 
-    public void downloadNewItemInBackgroudn(int itemId, GetItemId getItemId){
-        new downloadNewItemAsyncTask(itemId, getItemId).execute();
+    public void downloadNewItemInBackgroudn(int itemId, GetItem getItem){
+        new downloadNewItemAsyncTask(itemId, getItem).execute();
     }
 
-    public void rateInBackground(int listId, int itemId, int userId, double rating, GetRateResponce getRateResponce){
-        new rateInBackgroundAsyncTask(listId, itemId, userId, rating, getRateResponce).execute();
+    public void rateInBackground(int listId, int itemId, int userId, double rating, GetResponse getResponse){
+        new rateInBackgroundAsyncTask(listId, itemId, userId, rating, getResponse).execute();
     }
 
-    public void sendFeedbackInBackground(String feedback, GetFeedbackResponse getFeedbackResponse){
-        new sendFeedbackAsyncTask(feedback, getFeedbackResponse).execute();
+    public void sendFeedbackInBackground(String feedback, GetResponse getResponse){
+        new sendFeedbackAsyncTask(feedback, getResponse).execute();
     }
 
     public void downloadUsernamesInBackground(int listId, GetUsernames getUsernames){
         new downloadUsernamesAsyncTask(listId, getUsernames).execute();
     }
 
-    public void resetPasswordInBackground(String email, GetPasswordResetResponse getPasswordResetResponse){
-        new resetPasswordAsyncTask(email, getPasswordResetResponse).execute();
+    public void resetPasswordInBackground(String email, GetResponse getResponse){
+        new resetPasswordAsyncTask(email, getResponse).execute();
     }
 
-    public void updatePasswordInBackground(int userId, String oldPassword, String newPassword, GetPasswordResetResponse getPasswordResetResponse){
-        new updatePasswordAsyncTask(userId, oldPassword, newPassword, getPasswordResetResponse).execute();
+    public void updatePasswordInBackground(int userId, String oldPassword, String newPassword, GetResponse getResponse){
+        new updatePasswordAsyncTask(userId, oldPassword, newPassword, getResponse).execute();
     }
 
     // method to encode the data needed to be sent o the server
@@ -136,10 +132,10 @@ public class ServerRequests {
 
     private static class StoreUserDataAsyncTask extends AsyncTask<Void, Void, User>{
         User user;
-        GetUserCallback userCallback;
+        GetUser userCallback;
         String gcmId;
 
-        public StoreUserDataAsyncTask(User user, String gcmId, GetUserCallback userCallback) {
+        public StoreUserDataAsyncTask(User user, String gcmId, GetUser userCallback) {
             this.user = user;
             this.userCallback = userCallback;
             this.gcmId = gcmId;
@@ -241,9 +237,9 @@ public class ServerRequests {
 
     private static class FetchUserDataAsyncTask extends AsyncTask<Void, Void, User>{
         User user;
-        GetUserCallback userCallback;
+        GetUser userCallback;
 
-        public FetchUserDataAsyncTask(User user, GetUserCallback userCallback) {
+        public FetchUserDataAsyncTask(User user, GetUser userCallback) {
             this.user = user;
             this.userCallback = userCallback;
         }
@@ -286,16 +282,12 @@ public class ServerRequests {
 
                     JSONObject jResult = new JSONObject(line);
 
-                    if (jResult.length() == 0) {
-                        returnedUser = null;
-                    } else {
-                        int id = jResult.getInt("id");
-                        String gcmId = jResult.getString("gcmId");
-                        String name = jResult.getString("name");
-                        String email = jResult.getString("email");
-                        returnedUser = new User(id, name, email, user.getUsername(), user.getPassword());
-                        returnedUser.setGcmId(gcmId);
-                    }
+                    int id = jResult.getInt("id");
+                    String gcmId = jResult.getString("gcmId");
+                    String name = jResult.getString("name");
+                    String email = jResult.getString("email");
+                    returnedUser = new User(id, name, email, user.getUsername(), user.getPassword());
+                    returnedUser.setGcmId(gcmId);
                 }
 
                 else {
@@ -304,6 +296,9 @@ public class ServerRequests {
 
             } catch (Exception e) {
                 e.printStackTrace();
+                if(e instanceof JSONException){
+                    return null;
+                }
                 returnedUser = new User(-1, "Timeout", "Timeout", "Timeout", "Timeout");
             } finally {
                 if(reader != null) {
@@ -328,15 +323,14 @@ public class ServerRequests {
     ////////////////////////////////////////////////////////////////////////////////////
     private static class UploadProfilePictureAsyncTask extends AsyncTask<Void, Void, User>{
         String username;
-        GetUserCallback userCallback;
+        GetUser userCallback;
         String image;
 
-        public UploadProfilePictureAsyncTask(String username, String image, GetUserCallback userCallback) {
+        public UploadProfilePictureAsyncTask(String username, String image, GetUser userCallback) {
             this.username = username;
             this.userCallback = userCallback;
             this.image = image;
         }
-
 
         @Override
         protected User doInBackground(Void... params) {
@@ -407,17 +401,17 @@ public class ServerRequests {
     }
 
     ////////////////////////////////////////////////////////////////////////
-    private static class UploadListAsyncTask extends AsyncTask<Void, Void, MyList>{
-        MyList list;
-        GetListId getListId;
+    private static class UploadListAsyncTask extends AsyncTask<Void, Void, List>{
+        List list;
+        GetList getList;
 
-        public UploadListAsyncTask(MyList list, GetListId getListId) {
+        public UploadListAsyncTask(List list, GetList getList) {
             this.list = list;
-            this.getListId = getListId;
+            this.getList = getList;
         }
 
         @Override
-        protected MyList doInBackground(Void... params) {
+        protected List doInBackground(Void... params) {
 
             Map<String,String> dataToSend = new HashMap<>();
             Integer uId = list.getUserId();
@@ -431,7 +425,7 @@ public class ServerRequests {
             dataToSend.put("image", list.getImage());
             String encodedStr = getEncodedData(dataToSend);
             BufferedReader reader = null;
-            MyList returnedList = null;
+            List returnedList = null;
 
             try {
                 URL url = new URL(SERVER_ADDRESS + "uploadList.php");
@@ -471,19 +465,19 @@ public class ServerRequests {
                             String name = jResult.getString("name");
                             String description = jResult.getString("description");
                             String image = jResult.getString("image");
-                            returnedList = new MyList(userId, username, name, description, image);
+                            returnedList = new List(userId, username, name, description, image);
                             returnedList.set_listId(id);
                         }
                     }
                 }
 
                 else {
-                    returnedList = new MyList(-1, "Timeout", "Timeout", "Timeout", "Timeout");
+                    returnedList = new List(-1, "Timeout", "Timeout", "Timeout", "Timeout");
                 }
 
             } catch (Exception e) {
                 e.printStackTrace();
-                return new MyList(-1, "Timeout", "Timeout", "Timeout", "Timeout");
+                return new List(-1, "Timeout", "Timeout", "Timeout", "Timeout");
             } finally {
                 if(reader != null) {
                     try {
@@ -497,8 +491,8 @@ public class ServerRequests {
         }
 
         @Override
-        protected void onPostExecute(MyList returnedList) {
-            getListId.done(returnedList);
+        protected void onPostExecute(List returnedList) {
+            getList.done(returnedList);
             super.onPostExecute(returnedList);
         }
     }
@@ -506,11 +500,11 @@ public class ServerRequests {
     ////////////////////////////////////////////////////////////////////////
     private static class UploadItemAsyncTask extends AsyncTask<Void, Void, Item>{
         Item item;
-        GetItemId getItemId;
+        GetItem getItem;
 
-        public UploadItemAsyncTask(Item item, GetItemId getItemId) {
+        public UploadItemAsyncTask(Item item, GetItem getItem) {
             this.item = item;
-            this.getItemId = getItemId;
+            this.getItem = getItem;
         }
 
         @Override
@@ -603,7 +597,7 @@ public class ServerRequests {
 
         @Override
         protected void onPostExecute(Item returnedItem) {
-            getItemId.done(returnedItem);
+            getItem.done(returnedItem);
             super.onPostExecute(returnedItem);
         }
     }
@@ -711,13 +705,13 @@ public class ServerRequests {
         int listId;
         int currentUserId;
         int invitedUserId;
-        SendInviteResponse sendInviteResponse;
+        GetResponse getResponse;
 
-        public inviteAsyncTask(int listId, int currentUserId, int invitedUserId, SendInviteResponse sendInviteResponse) {
+        public inviteAsyncTask(int listId, int currentUserId, int invitedUserId, GetResponse getResponse) {
             this.listId = listId;
             this.currentUserId = currentUserId;
             this.invitedUserId = invitedUserId;
-            this.sendInviteResponse = sendInviteResponse;
+            this.getResponse = getResponse;
         }
 
 
@@ -788,25 +782,25 @@ public class ServerRequests {
 
         @Override
         protected void onPostExecute(String response) {
-            sendInviteResponse.done(response);
+            getResponse.done(response);
             super.onPostExecute(response);
         }
     }
 
     ////////////////////////////////////////////////////////////////////////////////
-    private static class downloadListAsyncTask extends AsyncTask<Void, Void, MyList>{
+    private static class downloadListAsyncTask extends AsyncTask<Void, Void, List>{
         int listId;
         int userId;
-        GetListId getListId;
+        GetList getList;
 
-        public downloadListAsyncTask(int listId, int userId, GetListId getListId) {
+        public downloadListAsyncTask(int listId, int userId, GetList getList) {
             this.listId = listId;
             this.userId = userId;
-            this.getListId = getListId;
+            this.getList = getList;
         }
 
         @Override
-        protected MyList doInBackground(Void... params) {
+        protected List doInBackground(Void... params) {
 
             Map<String,String> dataToSend = new HashMap<>();
             Integer lid = listId;
@@ -818,7 +812,7 @@ public class ServerRequests {
             dataToSend.put("userId", uidString);
             String encodedStr = getEncodedData(dataToSend);
             BufferedReader reader = null;
-            MyList returnedList = null;
+            List returnedList = null;
 
             try {
                 URL url = new URL(SERVER_ADDRESS + "downloadList.php");
@@ -845,7 +839,7 @@ public class ServerRequests {
                     Log.i("downloadList", line);
 
                     if (line.equals("Could not update table Shared\n")) {
-                        return new MyList(-1, "UpdError", "UpdError", "UpdError", "UpdError");
+                        return new List(-1, "UpdError", "UpdError", "UpdError", "UpdError");
                     }
 
                     else {
@@ -860,19 +854,19 @@ public class ServerRequests {
                         String name = jResult.getString("name");
                         String description = jResult.getString("description");
                         String image = jResult.getString("image");
-                        returnedList = new MyList(userId, username, name, description, image);
+                        returnedList = new List(userId, username, name, description, image);
                         returnedList.set_listId(id);
                         //}
                     }
                 }
 
                 else {
-                    returnedList = new MyList(-1, "Timeout", "Timeout", "Timeout", "Timeout");
+                    returnedList = new List(-1, "Timeout", "Timeout", "Timeout", "Timeout");
                 }
 
             } catch (Exception e) {
                 e.printStackTrace();
-                return new MyList(-1, "Timeout", "Timeout", "Timeout", "Timeout");
+                return new List(-1, "Timeout", "Timeout", "Timeout", "Timeout");
             } finally {
                 if(reader != null) {
                     try {
@@ -886,8 +880,8 @@ public class ServerRequests {
         }
 
         @Override
-        protected void onPostExecute(MyList returnedList) {
-            getListId.done(returnedList);
+        protected void onPostExecute(List returnedList) {
+            getList.done(returnedList);
             super.onPostExecute(returnedList);
         }
     }
@@ -987,11 +981,11 @@ public class ServerRequests {
     ////////////////////////////////////////////////////////////////////////
     private static class downloadNewItemAsyncTask extends AsyncTask<Void, Void, Item>{
         int itemId;
-        GetItemId getItemId;
+        GetItem getItem;
 
-        public downloadNewItemAsyncTask(int itemId, GetItemId getItemId) {
+        public downloadNewItemAsyncTask(int itemId, GetItem getItem) {
             this.itemId = itemId;
-            this.getItemId = getItemId;
+            this.getItem = getItem;
         }
 
         @Override
@@ -1070,7 +1064,7 @@ public class ServerRequests {
 
         @Override
         protected void onPostExecute(Item returnedItem) {
-            getItemId.done(returnedItem);
+            getItem.done(returnedItem);
             super.onPostExecute(returnedItem);
         }
     }
@@ -1081,14 +1075,14 @@ public class ServerRequests {
         int userId;
         int itemId;
         double rating;
-        GetRateResponce getRateResponce;
+        GetResponse getResponse;
 
-        public rateInBackgroundAsyncTask(int listId, int itemId, int userId, double rating, GetRateResponce getRateResponce) {
+        public rateInBackgroundAsyncTask(int listId, int itemId, int userId, double rating, GetResponse getResponse) {
             this.listId = listId;
             this.itemId = itemId;
             this.userId = userId;
             this.rating = rating;
-            this.getRateResponce = getRateResponce;
+            this.getResponse = getResponse;
         }
 
 
@@ -1162,7 +1156,7 @@ public class ServerRequests {
 
         @Override
         protected void onPostExecute(String response) {
-            getRateResponce.done(response);
+            getResponse.done(response);
             super.onPostExecute(response);
         }
     }
@@ -1172,11 +1166,11 @@ public class ServerRequests {
     ////////////////////////////////////////////////////////////////////////////////
     private static class sendFeedbackAsyncTask extends AsyncTask<Void, Void, String>{
         String feedback;
-        GetFeedbackResponse getFeedbackResponse;
+        GetResponse getResponse;
 
-        public sendFeedbackAsyncTask(String feedback, GetFeedbackResponse getFeedbackResponse) {
+        public sendFeedbackAsyncTask(String feedback, GetResponse getResponse) {
             this.feedback = feedback;
-            this. getFeedbackResponse = getFeedbackResponse;
+            this. getResponse = getResponse;
         }
 
 
@@ -1239,7 +1233,7 @@ public class ServerRequests {
 
         @Override
         protected void onPostExecute(String response) {
-            getFeedbackResponse.done(response);
+            getResponse.done(response);
             super.onPostExecute(response);
         }
     }
@@ -1331,11 +1325,11 @@ public class ServerRequests {
     ////////////////////////////////////////////////////////////////////////////////
     private static class resetPasswordAsyncTask extends AsyncTask<Void, Void, String>{
         String email;
-        GetPasswordResetResponse getPasswordResetResponse;
+        GetResponse getResponse;
 
-        public resetPasswordAsyncTask(String email, GetPasswordResetResponse getPasswordResetResponse) {
+        public resetPasswordAsyncTask(String email, GetResponse getResponse) {
             this.email = email;
-            this.getPasswordResetResponse = getPasswordResetResponse;
+            this.getResponse = getResponse;
         }
 
 
@@ -1402,7 +1396,7 @@ public class ServerRequests {
 
         @Override
         protected void onPostExecute(String response) {
-            getPasswordResetResponse.done(response);
+            getResponse.done(response);
             super.onPostExecute(response);
         }
     }
@@ -1412,13 +1406,13 @@ public class ServerRequests {
         int userId;
         String oldPassword;
         String newPassword;
-        GetPasswordResetResponse getPasswordResetResponse;
+        GetResponse getResponse;
 
-        public updatePasswordAsyncTask(int userId, String oldPassword, String newPassword, GetPasswordResetResponse getPasswordResetResponse) {
+        public updatePasswordAsyncTask(int userId, String oldPassword, String newPassword, GetResponse getResponse) {
             this.userId = userId;
             this.oldPassword = oldPassword;
             this.newPassword = newPassword;
-            this.getPasswordResetResponse = getPasswordResetResponse;
+            this.getResponse = getResponse;
         }
 
 
@@ -1489,7 +1483,7 @@ public class ServerRequests {
 
         @Override
         protected void onPostExecute(String response) {
-            getPasswordResetResponse.done(response);
+            getResponse.done(response);
             super.onPostExecute(response);
         }
     }

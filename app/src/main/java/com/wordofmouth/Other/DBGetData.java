@@ -1,13 +1,12 @@
 package com.wordofmouth.Other;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 
 import com.wordofmouth.Interfaces.GetItems;
 import com.wordofmouth.Interfaces.GetLists;
 import com.wordofmouth.ObjectClasses.Item;
-import com.wordofmouth.ObjectClasses.MyList;
+import com.wordofmouth.ObjectClasses.List;
 
 import java.util.ArrayList;
 
@@ -36,10 +35,10 @@ public class DBGetData {
         new getListsAsyncTask(username, flag, getLists, dbHandler).execute();
     }
 
-    private static class getListsAsyncTask extends AsyncTask<Void, Void, ArrayList<MyList>> {
+    private static class getListsAsyncTask extends AsyncTask<Void, Void, ArrayList<List>> {
         String username;
         GetLists getLists;
-        ArrayList<MyList> result;
+        ArrayList<List> result;
         int flag;
         DBHandler dbHandler;
 
@@ -52,7 +51,7 @@ public class DBGetData {
         }
 
         @Override
-        protected ArrayList<MyList> doInBackground(Void... params) {
+        protected ArrayList<List> doInBackground(Void... params) {
 
            /* if(flag == 0) {
                 result = dbHandler.getLists(username);
@@ -66,7 +65,7 @@ public class DBGetData {
         }
 
         @Override
-        protected void onPostExecute(ArrayList<MyList> result) {
+        protected void onPostExecute(ArrayList<List> result) {
             getLists.done(result);
             super.onPostExecute(result);
         }

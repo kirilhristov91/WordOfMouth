@@ -2,13 +2,11 @@ package com.wordofmouth.Other;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.util.Base64;
 
 import com.wordofmouth.Interfaces.GetBitmap;
 import com.wordofmouth.ObjectClasses.Item;
-import com.wordofmouth.ObjectClasses.MyList;
+import com.wordofmouth.ObjectClasses.List;
 
 import java.util.ArrayList;
 
@@ -32,17 +30,17 @@ public class StringToBitmapRequests {
         new StringToBitmapAsyncTask(items, getBitmap).execute();
     }
 
-    public void ListsStringToBitmapInBackground(ArrayList<MyList> lists, GetBitmap getBitmap){
+    public void ListsStringToBitmapInBackground(ArrayList<List> lists, GetBitmap getBitmap){
         new ListStringToBitmapAsyncTask(lists, getBitmap).execute();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////
     private static class ListStringToBitmapAsyncTask extends AsyncTask<Void, Void, ArrayList<Bitmap>> {
-        ArrayList<MyList> lists;
+        ArrayList<List> lists;
         GetBitmap getBitmap;
         ArrayList<Bitmap> bitmaps;
 
-        public ListStringToBitmapAsyncTask(ArrayList<MyList> lists, GetBitmap getBitmap) {
+        public ListStringToBitmapAsyncTask(ArrayList<List> lists, GetBitmap getBitmap) {
             this.lists = lists;
             this.getBitmap = getBitmap;
             bitmaps = new ArrayList<>();

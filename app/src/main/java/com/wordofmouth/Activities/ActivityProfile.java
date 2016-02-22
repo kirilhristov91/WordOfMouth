@@ -226,7 +226,7 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
             progressDialog.setCancelable(false);
             progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
             progressDialog.show();
-            serverRequests.UploadProfilePictureAsyncTask(currentUser.getUsername(), imageToSave, new GetResponse() {
+            serverRequests.UploadProfilePictureInBackground(currentUser.getUsername(), imageToSave, new GetResponse() {
                 @Override
                 public void done(String response) {
                     progressDialog.dismiss();

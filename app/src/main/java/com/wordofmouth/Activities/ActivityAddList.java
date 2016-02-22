@@ -106,7 +106,7 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
                         progressDialog.show();
 
                         ServerRequests serverRequests = ServerRequests.getInstance(this);
-                        serverRequests.UploadListAsyncTask(list, new GetList() {
+                        serverRequests.UploadListInBackground(list, new GetList() {
                             @Override
                             public void done(List returnedList) {
                                 progressDialog.dismiss();

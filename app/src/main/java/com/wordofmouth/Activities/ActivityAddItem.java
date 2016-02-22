@@ -122,7 +122,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
                         progressDialog.show();
 
                         ServerRequests serverRequests = ServerRequests.getInstance(this);
-                        serverRequests.UploadItemAsyncTask(i, new GetItem() {
+                        serverRequests.UploadItemInBackground(i, new GetItem() {
                             @Override
                             public void done(Item item) {
                                 progressDialog.dismiss();

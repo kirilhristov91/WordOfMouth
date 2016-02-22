@@ -57,15 +57,15 @@ public class ServerRequests {
         new FetchUserDataAsyncTask(user, userCallback).execute();
     }
 
-    public void UploadProfilePictureAsyncTask(String username, String image, GetResponse getResponse){
+    public void UploadProfilePictureInBackground(String username, String image, GetResponse getResponse){
         new UploadProfilePictureAsyncTask(username, image, getResponse).execute();
     }
 
-    public void UploadListAsyncTask(List list, GetList getList){
+    public void UploadListInBackground(List list, GetList getList){
         new UploadListAsyncTask(list, getList).execute();
     }
 
-    public void UploadItemAsyncTask(Item item, GetItem getItem){
+    public void UploadItemInBackground(Item item, GetItem getItem){
         new UploadItemAsyncTask(item, getItem).execute();
     }
 
@@ -77,15 +77,15 @@ public class ServerRequests {
         new inviteAsyncTask(listId, currentUserId, invitedUserId, getResponse).execute();
     }
 
-    public void downloadListInBackgroudn(int listId, int userId, GetList getList){
+    public void downloadListInBackground(int listId, int userId, GetList getList){
         new downloadListAsyncTask(listId, userId, getList).execute();
     }
 
-    public void downloadItemsInBackgroudn(int listId, GetItems getItems){
+    public void downloadItemsInBackground(int listId, GetItems getItems){
         new downloadItemsAsyncTask(listId, getItems).execute();
     }
 
-    public void downloadNewItemInBackgroudn(int itemId, GetItem getItem){
+    public void downloadNewItemInBackground(int itemId, GetItem getItem){
         new downloadNewItemAsyncTask(itemId, getItem).execute();
     }
 
@@ -109,7 +109,7 @@ public class ServerRequests {
         new updatePasswordAsyncTask(userId, oldPassword, newPassword, getResponse).execute();
     }
 
-    // method to encode the data needed to be sent o the server
+    // method to encode the data needed to be sent to the server
     private static String getEncodedData(Map<String,String> data) {
         StringBuilder sb = new StringBuilder();
         for(String key : data.keySet()) {

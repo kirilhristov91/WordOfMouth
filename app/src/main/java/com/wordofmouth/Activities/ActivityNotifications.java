@@ -103,7 +103,7 @@ public class ActivityNotifications extends BaseActivity {
                     progressDialogDownloadList.setCancelable(false);
                     progressDialogDownloadList.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
                     progressDialogDownloadList.show();
-                    serverRequests.downloadListInBackgroudn(n.getListId(), userLocalStore.getUserLoggedIn().getId(), new GetList() {
+                    serverRequests.downloadListInBackground(n.getListId(), userLocalStore.getUserLoggedIn().getId(), new GetList() {
                         @Override
                         public void done(List list) {
                             progressDialogDownloadList.dismiss();
@@ -141,7 +141,7 @@ public class ActivityNotifications extends BaseActivity {
         progressDialogDownloadItem.setCancelable(false);
         progressDialogDownloadItem.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
         progressDialogDownloadItem.show();
-        serverRequests.downloadItemsInBackgroudn(listId, new GetItems() {
+        serverRequests.downloadItemsInBackground(listId, new GetItems() {
             @Override
             public void done(ArrayList<Item> items) {
                 progressDialogDownloadItem.dismiss();

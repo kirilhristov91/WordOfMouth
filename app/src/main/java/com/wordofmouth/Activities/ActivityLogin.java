@@ -4,48 +4,60 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.wordofmouth.Interfaces.GetUserCallback;
+import com.wordofmouth.Other.Utilities;
 import com.wordofmouth.R;
 import com.wordofmouth.Other.ServerRequests;
 import com.wordofmouth.ObjectClasses.User;
 import com.wordofmouth.SharedPreferences.UserLocalStore;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class ActivityLogin extends AppCompatActivity implements View.OnClickListener {
 
     Button loginButton;
     EditText usernameField, passwordField;
-    TextView registerNow;
-    TextView forgotPassword;
+    TextView registerNow, forgotPassword;
+    LinearLayout loginLayout;
     UserLocalStore userLocalStore;
+    Utilities utilities;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+        utilities = Utilities.getInstance(this);
+
+        loginLayout = (LinearLayout) findViewById(R.id.loginLayout);
         usernameField = (EditText) findViewById(R.id.usernameField);
         passwordField = (EditText) findViewById(R.id.passwordField);
         registerNow = (TextView) findViewById(R.id.registerNow);
         forgotPassword = (TextView) findViewById(R.id.forgotPassword);
         loginButton = (Button) findViewById(R.id.loginButton);
 
+        loginLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                utilities.hideKeyboard(v);
+                return false;
+            }
+        });
+
         loginButton.setOnClickListener(this);
         registerNow.setOnClickListener(this);
         forgotPassword.setOnClickListener(this);
         userLocalStore = UserLocalStore.getInstance(this);
-
     }
 
     @Override
@@ -58,24 +70,8 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
                 if(username.equals("") || password.equals("")){
                     showError("Incorrect username or password");
                 }
-
                 else {
-                    String generatedPassword = null;
-                    try {
-                        // Hash the password in MD5 format
-                        MessageDigest md = MessageDigest.getInstance("MD5");
-                        md.update(password.getBytes());
-                        byte[] bytes = md.digest();
-                        StringBuilder sb = new StringBuilder();
-                        for (int i = 0; i < bytes.length; i++) {
-                            sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
-                        }
-                        generatedPassword = sb.toString();
-                    } catch (NoSuchAlgorithmException e) {
-                        e.printStackTrace();
-                    }
-                    System.out.println("LOGIN " + generatedPassword);
-
+                    String generatedPassword = utilities.hashPassword(password);
                     User user = new User(username, generatedPassword);
                     authenticate(user);
                 }
@@ -110,7 +106,7 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
                         showError("Incorrect username or password");
                     } else {
                         if (returnedUser.getUsername().equals("Timeout")) {
-                            showError("Network error! Check your internet connection and try again!");
+                           showError("Network error! Check your internet connection and try again!");
                         } else {
                             logUserIn(returnedUser);
                         }
@@ -120,14 +116,6 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        InputMethodManager imm = (InputMethodManager)getSystemService(Context.
-                INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-        return true;
-    }
-
     private void logUserIn(User user){
         userLocalStore.storeUserData(user);
         userLocalStore.setUserLoggedIn(true);
@@ -135,15 +123,15 @@ public class ActivityLogin extends AppCompatActivity implements View.OnClickList
         finish();
     }
 
-    private boolean isNetworkAvailable() {
+    public boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    private void showError(String message){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(ActivityLogin.this);
+    public void showError(String message){
+        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
         allertBuilder.setMessage(message);
         allertBuilder.setPositiveButton("OK", null);
         allertBuilder.show();

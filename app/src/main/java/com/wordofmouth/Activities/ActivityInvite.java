@@ -1,6 +1,5 @@
 package com.wordofmouth.Activities;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -12,7 +11,6 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -23,6 +21,7 @@ import android.widget.Toast;
 
 import com.wordofmouth.Interfaces.GetUsers;
 import com.wordofmouth.Interfaces.SendInviteResponse;
+import com.wordofmouth.Other.Utilities;
 import com.wordofmouth.R;
 import com.wordofmouth.Other.ServerRequests;
 import com.wordofmouth.ObjectClasses.User;
@@ -43,6 +42,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
     int tabToreturn;
     int userClicked;
     RelativeLayout inviteLayout;
+    Utilities utilities;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +55,9 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
         listName = intent.getStringExtra("name");
         tabToreturn = intent.getIntExtra("tab", 0);
         getSupportActionBar().setTitle("Invite to: " + listName);
+
         userLocalStore = UserLocalStore.getInstance(this);
+        utilities = Utilities.getInstance(this);
 
         searchView = (SearchView) findViewById(R.id.searchUsersField);
         searchView.setOnClickListener(new View.OnClickListener() {
@@ -74,7 +76,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
         inviteLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                hideKeyboard(v);
+                utilities.hideKeyboard(v);
                 return false;
             }
         });
@@ -82,10 +84,20 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
     }
 
     @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, ActivityItemsOfAList.class);
+        intent.putExtra("listId", selectedListId);
+        intent.putExtra("name", listName);
+        intent.putExtra("tab", tabToreturn);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.searchUsersButton:
-                hideKeyboard(v);
+                utilities.hideKeyboard(v);
                 searchView.clearFocus();
                 if (!isNetworkAvailable()) {
                     showError("Network error! Check your internet connection and try again!");
@@ -115,13 +127,6 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
         }
     }
 
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
     public void display(ArrayList<User> returnedUsers){
         users = returnedUsers;
         usernames = new String[users.size()];
@@ -148,7 +153,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
                                     int sharedWithId = users.get(userClicked).getId();
                                     int currentUserId = userLocalStore.getUserLoggedIn().getId();
 
-                                    final ProgressDialog progressDialog = new ProgressDialog(ActivityInvite.this,R.style.MyTheme);
+                                    final ProgressDialog progressDialog = new ProgressDialog(ActivityInvite.this, R.style.MyTheme);
                                     progressDialog.setCancelable(false);
                                     progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
                                     progressDialog.show();
@@ -159,7 +164,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
                                         public void done(String response) {
                                             progressDialog.dismiss();
                                             if (response.equals("That person has already been invited to that list!\n")) {
-                                                showError("That person has already been invited to list '" + listName +"'!");
+                                                showError("That person has already been invited to list '" + listName + "'!");
                                             } else if (response.equals("Cannot invite the creator of the list!\n")) {
                                                 showError("That is the creator of the list '" + listName + "'! He/She already has acces to this list!");
                                             } else if (response.equals("Timeout")) {
@@ -190,26 +195,18 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
         );
     }
 
-    private void showError(String message){
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    public void showError(String message){
         AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
         allertBuilder.setMessage(message);
         allertBuilder.setPositiveButton("OK", null);
         allertBuilder.show();
     }
 
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(this, ActivityItemsOfAList.class);
-        intent.putExtra("listId", selectedListId);
-        intent.putExtra("name", listName);
-        intent.putExtra("tab", tabToreturn);
-        startActivity(intent);
-        finish();
-    }
-
-    protected void hideKeyboard(View view)
-    {
-        InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        in.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-    }
 }

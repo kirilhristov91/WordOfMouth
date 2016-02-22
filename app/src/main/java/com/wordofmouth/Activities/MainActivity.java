@@ -1,6 +1,5 @@
 package com.wordofmouth.Activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -9,7 +8,6 @@ import com.wordofmouth.R;
 import com.wordofmouth.SharedPreferences.UserLocalStore;
 
 import java.util.ArrayList;
-
 import TabLibraries.SlidingTabLayout;
 
 public class MainActivity extends BaseActivity{

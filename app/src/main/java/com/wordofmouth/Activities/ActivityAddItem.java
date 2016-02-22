@@ -6,17 +6,13 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Base64;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -27,29 +23,23 @@ import com.wordofmouth.Interfaces.GetItemId;
 import com.wordofmouth.ObjectClasses.Item;
 import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.Other.ServerRequests;
+import com.wordofmouth.Other.Utilities;
 import com.wordofmouth.R;
 import com.wordofmouth.SharedPreferences.UserLocalStore;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-
 public class ActivityAddItem extends BaseActivity implements View.OnClickListener{
 
-    EditText itemNameField;
-    EditText itemDescriptionField;
+    static final int REQUEST_BROWSE_GALLERY = 1;
+    EditText itemNameField, itemDescriptionField;
     RatingBar ratingBar;
     Button addItemButton;
-    ImageView addItemPhoto;
-    ImageView rotateRightItem;
-    ImageView rotateLeftItem;
-    double ratingSelected;
-    int listId;
+    ImageView addItemPhoto, rotateRightItem, rotateLeftItem;
     String listName;
-    int angle = 0;
+    double ratingSelected;
+    int angle = 0 , listId, tabToreturn;
     Bitmap photo;
-    static final int REQUEST_BROWSE_GALLERY = 1;
-    int tabToreturn;
     RelativeLayout addItemLayout;
+    Utilities utilities;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +53,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
 
         ratingSelected = 0.0;
         photo = null;
+        utilities = Utilities.getInstance(this);
 
         addItemPhoto = (ImageView) findViewById(R.id.addImageToItem);
         itemNameField = (EditText) findViewById(R.id.itemNameField);
@@ -88,7 +79,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
         addItemLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                hideKeyboard(v);
+                utilities.hideKeyboard(v);
                 return false;
             }
         });
@@ -102,39 +93,28 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
                 browseGallery();
                 break;
             case R.id.rotateRightItem:
-                System.out.println("ROTATE RIGHT");
                 angle = angle+90;
                 addItemPhoto.setRotation((float) angle);
-                Bitmap bm1=((BitmapDrawable)addItemPhoto.getDrawable()).getBitmap();
-                Matrix matrix1 = new Matrix();
-                matrix1.postRotate(angle);
-                bm1 = Bitmap.createBitmap(bm1, 0, 0, bm1.getWidth(), bm1.getHeight(), matrix1, true);
-                photo = bm1;
+                photo = utilities.rotate(((BitmapDrawable) addItemPhoto.getDrawable()).getBitmap(),angle);
                 break;
             case R.id.rotateLeftItem:
-                System.out.println("ROTATE LEFT");
                 angle = angle-90;
                 addItemPhoto.setRotation((float) angle);
-                Bitmap bm2=((BitmapDrawable)addItemPhoto.getDrawable()).getBitmap();
-                Matrix matrix2 = new Matrix();
-                matrix2.postRotate(angle);
-                bm2 = Bitmap.createBitmap(bm2, 0, 0, bm2.getWidth(), bm2.getHeight(), matrix2, true);
-                photo = bm2;
+                photo = utilities.rotate(((BitmapDrawable) addItemPhoto.getDrawable()).getBitmap(),angle);
                 break;
 
             case R.id.addItemButton:
                 if(itemNameField.getText().toString().equals("")){
-                    showErrorEmptyField();
+                    showError("Please enter a name for the item!");
                 }
                 else {
-                    //System.out.println(userLocalStore.getUserLocalDatabase().getAll().toString());
                     if (!isNetworkAvailable()) {
-                        showConnectionError();
+                        showError("Network error! Check your internet connection and try again!");
                     }
                     else {
                         String imageToSave = "";
                         if (photo != null) {
-                            imageToSave = BitMapToString(photo);
+                            imageToSave = utilities.BitMapToString(photo);
                         }
                         UserLocalStore userLocalStore = UserLocalStore.getInstance(this);
                         Item i = new Item(listId, userLocalStore.getUserLoggedIn().getId(), userLocalStore.getUserLoggedIn().getUsername(),
@@ -151,10 +131,10 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
                             public void done(Item item) {
                                 progressDialog.dismiss();
                                 if (item == null) {
-                                    showAlreadyExistError();
+                                    showError("An item with that name for that list already exists!");
                                 } else {
                                     if (item.get_creatorUsername().equals("Timeout")) {
-                                        showConnectionError();
+                                        showError("Network error! Check your internet connection and try again!");
                                     } else {
                                         DBHandler dbHandler = DBHandler.getInstance(ActivityAddItem.this);
                                         item.setSeen(1);
@@ -178,29 +158,6 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
         }
     }
 
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
-
-    private void showAlreadyExistError(){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
-        allertBuilder.setMessage("An item with that name for that list already exists!");
-        allertBuilder.setPositiveButton("OK", null);
-        allertBuilder.show();
-    }
-
-    private void showErrorEmptyField(){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
-        allertBuilder.setMessage("Please enter a name for the item!");
-        allertBuilder.setPositiveButton("OK", null);
-        allertBuilder.show();
-    }
-
-
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(this, ActivityItemsOfAList.class);
@@ -216,48 +173,28 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
         startActivityForResult(intent, REQUEST_BROWSE_GALLERY);
     }
 
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    public void showError(String message){
+        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
+        allertBuilder.setMessage(message);
+        allertBuilder.setPositiveButton("OK", null);
+        allertBuilder.show();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_BROWSE_GALLERY && resultCode == Activity.RESULT_OK) {
             Uri targetUri = data.getData();
-            Bitmap image;
-            try {
-                image = BitmapFactory.decodeStream(this.getContentResolver().openInputStream(targetUri));
+            photo = utilities.getBitmapFromURI(targetUri, 150, 150);
+            addItemPhoto.setImageBitmap(photo);
 
-                int desiredWidth = image.getWidth();
-                int desiredHeight = image.getHeight();
-                while(desiredWidth/2 >= 150 || desiredHeight/2 >=150){
-                    desiredWidth = desiredWidth/2;
-                    desiredHeight = desiredHeight/2;
-                }
-
-                image = Bitmap.createScaledBitmap(image,desiredWidth, desiredHeight, true);
-
-                photo = image;
-                addItemPhoto.setImageBitmap(photo);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
         }
-    }
-
-    private void showConnectionError(){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(ActivityAddItem.this);
-        allertBuilder.setMessage("Network error! Check your internet connection and try again!");
-        allertBuilder.setPositiveButton("OK", null);
-        allertBuilder.show();
-    }
-
-    public String BitMapToString(Bitmap bitmap){
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-        return Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);
-    }
-
-    protected void hideKeyboard(View view)
-    {
-        InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        in.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 }

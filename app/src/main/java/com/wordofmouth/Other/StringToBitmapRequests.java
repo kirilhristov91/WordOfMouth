@@ -15,6 +15,7 @@ import java.util.ArrayList;
 public class StringToBitmapRequests {
 
     private static StringToBitmapRequests INSTANCE;
+    private static Utilities utilities;
 
     public static synchronized StringToBitmapRequests getInstance(Context context){
         if(INSTANCE == null){
@@ -23,7 +24,9 @@ public class StringToBitmapRequests {
         return INSTANCE;
     }
 
-    private StringToBitmapRequests(Context context){}
+    private StringToBitmapRequests(Context context){
+        utilities = Utilities.getInstance(context);
+    }
 
     public void stringToBitmapInBackground(ArrayList<Item> items, GetBitmap getBitmap){
         new StringToBitmapAsyncTask(items, getBitmap).execute();
@@ -50,22 +53,7 @@ public class StringToBitmapRequests {
             //final BitmapFactory.Options options = new BitmapFactory.Options();
             for(int i=0;i< lists.size();i++){
                 if(!lists.get(i).getImage().equals("")) {
-                    byte[] bytes = Base64.decode(lists.get(i).getImage(), Base64.DEFAULT);
-
-                    BitmapFactory.Options scaleOptions = new BitmapFactory.Options();
-                    scaleOptions.inJustDecodeBounds = true;
-                    BitmapFactory.decodeByteArray(bytes, 0, bytes.length, scaleOptions);
-
-                    int scale = 1;
-                    while (scaleOptions.outWidth / scale / 2 >= 100
-                            && scaleOptions.outHeight / scale / 2 >= 100) {
-                        scale *= 2;
-                    }
-
-                    BitmapFactory.Options outOptions = new BitmapFactory.Options();
-                    outOptions.inSampleSize = scale;
-
-                    bitmaps.add(BitmapFactory.decodeByteArray(bytes, 0, bytes.length, outOptions));
+                    bitmaps.add(utilities.StringToBitMap(lists.get(i).getImage(), 100, 100));
                 }
                 else bitmaps.add(null);
             }
@@ -96,22 +84,7 @@ public class StringToBitmapRequests {
             //final BitmapFactory.Options options = new BitmapFactory.Options();
             for(int i=0;i< items.size();i++){
                 if(!items.get(i).get_itemImage().equals("")) {
-                    byte[] bytes = Base64.decode(items.get(i).get_itemImage(), Base64.DEFAULT);
-
-                    BitmapFactory.Options scaleOptions = new BitmapFactory.Options();
-                    scaleOptions.inJustDecodeBounds = true;
-                    BitmapFactory.decodeByteArray(bytes, 0, bytes.length, scaleOptions);
-
-                    int scale = 1;
-                    while (scaleOptions.outWidth / scale / 2 >= 100
-                            && scaleOptions.outHeight / scale / 2 >= 100) {
-                        scale *= 2;
-                    }
-
-                    BitmapFactory.Options outOptions = new BitmapFactory.Options();
-                    outOptions.inSampleSize = scale;
-
-                    bitmaps.add(BitmapFactory.decodeByteArray(bytes, 0, bytes.length, outOptions));
+                    bitmaps.add(utilities.StringToBitMap(items.get(i).get_itemImage(), 100, 100));
                 }
                 else bitmaps.add(null);
             }

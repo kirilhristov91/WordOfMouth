@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.wordofmouth.ObjectClasses.User;
+import com.wordofmouth.Other.Utilities;
 import com.wordofmouth.R;
 
 import java.util.ArrayList;
@@ -21,11 +22,14 @@ public class CustomUserRowAdapter extends ArrayAdapter<String> {
 
     ArrayList<User> users;
     String [] usernames;
+    Context context;
+    Utilities utilities;
 
     public CustomUserRowAdapter(Context context, String[] usernames, ArrayList<User> users) {
         super(context, R.layout.custom_user_row, usernames);
         this.users = users;
         this.usernames = usernames;
+        utilities = Utilities.getInstance(context);
     }
 
     static class ViewHolderItem{
@@ -56,7 +60,7 @@ public class CustomUserRowAdapter extends ArrayAdapter<String> {
         String name = users.get(position).getName();
         String image = users.get(position).getPicture();
         if(!image.equals("null")){
-            viewHolder.customRowPicture.setImageBitmap(StringToBitMap(image));
+            viewHolder.customRowPicture.setImageBitmap(utilities.StringToBitMap(image, 100, 100));
         }
         else {
             viewHolder.customRowPicture.setImageResource(R.drawable.profiledefault);
@@ -64,22 +68,5 @@ public class CustomUserRowAdapter extends ArrayAdapter<String> {
         viewHolder.customRowUsername.setText(username);
         viewHolder.customRowName.setText(name);
         return convertView;
-    }
-
-    public Bitmap StringToBitMap(String encodedString){
-        byte[] bytes = Base64.decode(encodedString, Base64.DEFAULT);
-        BitmapFactory.Options scaleOptions = new BitmapFactory.Options();
-        scaleOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeByteArray(bytes, 0, bytes.length, scaleOptions);
-
-        int scale = 1;
-        while (scaleOptions.outWidth / scale / 2 >= 100
-                && scaleOptions.outHeight / scale / 2 >= 100) {
-            scale *= 2;
-        }
-
-        BitmapFactory.Options outOptions = new BitmapFactory.Options();
-        outOptions.inSampleSize = scale;
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length,outOptions);
     }
 }

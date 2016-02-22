@@ -5,19 +5,15 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
@@ -27,6 +23,7 @@ import android.widget.ListView;
 
 import com.wordofmouth.ObjectClasses.User;
 import com.wordofmouth.Other.DBHandler;
+import com.wordofmouth.Other.Utilities;
 import com.wordofmouth.R;
 import com.wordofmouth.SharedPreferences.UserLocalStore;
 
@@ -34,21 +31,13 @@ import com.wordofmouth.SharedPreferences.UserLocalStore;
 public abstract class BaseActivity extends AppCompatActivity{
 
     private DrawerLayout mDrawerLayout;
-    private ListView menuListView;
-    private String [] drawerListViewItems;
-    private ArrayAdapter<String> menuAdapter;
     private ActionBarDrawerToggle actionBarDrawerToggle;
-    private ImageView menuProfilePicture;
-    private DBHandler dbHandler;
     private UserLocalStore userLocalStore;
-    private DrawerItemClickListener drawerItemClickListener;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
 
     @Override
     public void setContentView(int layoutResID) {
@@ -57,11 +46,11 @@ public abstract class BaseActivity extends AppCompatActivity{
         View view = getLayoutInflater().inflate(layoutResID, null);
 
         mDrawerLayout = (DrawerLayout) baseLayout.findViewById(R.id.drawer_layout);
-        menuListView = (ListView) mDrawerLayout.findViewById(R.id.list_slidermenu);
-        drawerListViewItems = getResources().getStringArray(R.array.menu_items);
-        menuAdapter= new CustomMenuItemAdapter(this, drawerListViewItems);
+        ListView menuListView = (ListView) mDrawerLayout.findViewById(R.id.list_slidermenu);
+        String[] drawerListViewItems = getResources().getStringArray(R.array.menu_items);
+        ArrayAdapter<String> menuAdapter = new CustomMenuItemAdapter(this, drawerListViewItems);
         menuListView.setAdapter(menuAdapter);
-        drawerItemClickListener = new DrawerItemClickListener(this, mDrawerLayout);
+        DrawerItemClickListener drawerItemClickListener = new DrawerItemClickListener(this, mDrawerLayout);
         menuListView.setOnItemClickListener(drawerItemClickListener);
 
         actionBarDrawerToggle = new ActionBarDrawerToggle(
@@ -78,14 +67,13 @@ public abstract class BaseActivity extends AppCompatActivity{
         actContent.addView(view);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        menuProfilePicture = (ImageView) mDrawerLayout.findViewById(R.id.menuProfilePicture);
+        ImageView menuProfilePicture = (ImageView) mDrawerLayout.findViewById(R.id.menuProfilePicture);
         menuProfilePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(BaseActivity.this.toString().contains("ActivityProfile")){
+                if (BaseActivity.this.toString().contains("ActivityProfile")) {
                     mDrawerLayout.closeDrawers();
-                }
-                else{
+                } else {
                     Intent myIntent = new Intent(BaseActivity.this, ActivityProfile.class);
                     startActivity(myIntent);
                     mDrawerLayout.closeDrawers();
@@ -94,11 +82,12 @@ public abstract class BaseActivity extends AppCompatActivity{
         });
 
         userLocalStore = UserLocalStore.getInstance(this);
-        dbHandler = DBHandler.getInstance(this);
+        DBHandler dbHandler = DBHandler.getInstance(this);
+        Utilities utilities = Utilities.getInstance(this);
         User currentUser = userLocalStore.getUserLoggedIn();
         String pic = dbHandler.getProfilePicture(currentUser.getId());
         if (pic != null) {
-            Bitmap bitmap = StringToBitMap(pic);
+            Bitmap bitmap = utilities.StringToBitMap(pic, 100, 100);
             menuProfilePicture.setImageBitmap(bitmap);
         }
 
@@ -108,8 +97,6 @@ public abstract class BaseActivity extends AppCompatActivity{
 
         setContentView(baseLayout);
     }
-
-    //TODO napravi go static !!! maybe
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         Context context;
@@ -222,44 +209,4 @@ public abstract class BaseActivity extends AppCompatActivity{
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
     }
-
-    public Bitmap StringToBitMap(String encodedString){
-        byte[] bytes = Base64.decode(encodedString, Base64.DEFAULT);
-        BitmapFactory.Options scaleOptions = new BitmapFactory.Options();
-        scaleOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeByteArray(bytes, 0, bytes.length, scaleOptions);
-
-        int scale = 1;
-        while (scaleOptions.outWidth / scale / 2 >= 100
-                && scaleOptions.outHeight / scale / 2 >= 100) {
-            scale *= 2;
-        }
-
-        BitmapFactory.Options outOptions = new BitmapFactory.Options();
-        outOptions.inSampleSize = scale;
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length,outOptions);
-    }
-
-    /*
-    public static Bitmap getRoundedCornerBitmap(Bitmap bitmap, int pixels) {
-        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap
-                .getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(output);
-
-        final int color = 0xff424242;
-        final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-        final RectF rectF = new RectF(rect);
-        final float roundPx = pixels;
-
-        paint.setAntiAlias(true);
-        canvas.drawARGB(0, 0, 0, 0);
-        paint.setColor(color);
-        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
-
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(bitmap, rect, rect, paint);
-
-        return output;
-    }*/
 }

@@ -42,10 +42,6 @@ public class SharedListsViewTab extends Fragment {
         username = UserLocalStore.getInstance(mainActivity).getUserLoggedIn().getUsername();
         sharedLists = new ArrayList<MyList>();
         dbGetData = DBGetData.getInstance(mainActivity);
-
-
-
-
         return v;
     }
 

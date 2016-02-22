@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.wordofmouth.ObjectClasses.MyList;
 import com.wordofmouth.ObjectClasses.Shared;
-import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.R;
 import java.util.ArrayList;
 

@@ -22,6 +22,7 @@ import com.wordofmouth.ObjectClasses.MyList;
 import com.wordofmouth.ObjectClasses.Notification;
 import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.Other.ServerRequests;
+import com.wordofmouth.Other.Utilities;
 import com.wordofmouth.R;
 import com.wordofmouth.SharedPreferences.UserLocalStore;
 
@@ -31,10 +32,10 @@ public class ActivityNotifications extends BaseActivity {
 
     ArrayList<Notification> notifications;
     ListView notificationItemListView;
-    int notificationId;
+    int notificationId, listId;
     DBHandler dbHandler;
     ServerRequests serverRequests;
-    int listId;
+    Utilities utilities;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,7 @@ public class ActivityNotifications extends BaseActivity {
 
         dbHandler = DBHandler.getInstance(this);
         serverRequests = ServerRequests.getInstance(this);
+        utilities = Utilities.getInstance(this);
 
         notifications = dbHandler.getNotifications();
         String[] messages = new String[notifications.size()];
@@ -62,7 +64,7 @@ public class ActivityNotifications extends BaseActivity {
                         //Toast.makeText(ActivityNotifications.this, notifications.get(position).getMsg(), Toast.LENGTH_SHORT).show();
 
                         if (notifications.get(position).getAccepted() == 1) {
-                            showAlreadyAccepted();
+                            showError("You have already accepted that invitation!");
                         } else {
                             notificationId = notifications.get(position).getId();
                             showConfirmationDialog(notifications.get(position));
@@ -71,6 +73,20 @@ public class ActivityNotifications extends BaseActivity {
                 }
         );
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(!authenticate()){
+            startActivity(new Intent(ActivityNotifications.this, ActivityLogin.class));
+            finish();
+        }
+    }
+
+    private boolean authenticate(){
+        UserLocalStore userLocalStore = UserLocalStore.getInstance(this);
+        return userLocalStore.getIfLoggedIn();
     }
 
     private void showConfirmationDialog(Notification notification){
@@ -82,7 +98,7 @@ public class ActivityNotifications extends BaseActivity {
         allertBuilder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 if (!isNetworkAvailable()) {
-                    showConnectionError();
+                    showError("Network error! Check your internet connection and try again!");
                 } else {
                     UserLocalStore userLocalStore = UserLocalStore.getInstance(ActivityNotifications.this);
                     final ProgressDialog progressDialogDownloadList = new ProgressDialog(ActivityNotifications.this, R.style.MyTheme);
@@ -94,9 +110,9 @@ public class ActivityNotifications extends BaseActivity {
                         public void done(MyList myList) {
                             progressDialogDownloadList.dismiss();
                             if (myList.get_username().equals("Timeout")) {
-                                showConnectionError();
+                                showError("Network error! Check your internet connection and try again!");
                             } else if (myList.get_username().equals("UpdError")) {
-                                showServerError();
+                                showError("Server error");
                             } else {
                                 DBHandler dbHandler = DBHandler.getInstance(ActivityNotifications.this);
                                 myList.setHasNewContent(1);
@@ -133,7 +149,7 @@ public class ActivityNotifications extends BaseActivity {
                 progressDialogDownloadItem.dismiss();
                 if (items.size() > 0)
                     if (items.get(0).get_itemId() == -1) {
-                        showConnectionError();
+                        showError("Network error! Check your internet connection and try again!");
                     } else {
                         dbHandler.addMultipleItems(items);
                     }
@@ -157,7 +173,7 @@ public class ActivityNotifications extends BaseActivity {
                         System.out.println(usernames.get(i));
                     }
                     if (usernames.get(0).equals("Error: Timeout")) {
-                        showConnectionError();
+                        showError("Network error! Check your internet connection and try again!");
                     } else {
                         dbHandler.addMultipleUsersToSharedWith(listId, usernames);
                     }
@@ -172,46 +188,17 @@ public class ActivityNotifications extends BaseActivity {
         });
     }
 
-    private boolean isNetworkAvailable() {
+    public boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    private void showServerError(){
+    public void showError(String message){
         AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
-        allertBuilder.setMessage("Server Error");
+        allertBuilder.setMessage(message);
         allertBuilder.setPositiveButton("OK", null);
         allertBuilder.show();
-    }
-
-    private void showConnectionError(){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
-        allertBuilder.setMessage("Network error! Check your internet connection and try again!");
-        allertBuilder.setPositiveButton("OK", null);
-        allertBuilder.show();
-    }
-
-    private void showAlreadyAccepted(){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
-        allertBuilder.setMessage("You have already accepted that notification!");
-        allertBuilder.setPositiveButton("OK", null);
-        allertBuilder.show();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        //System.out.println(userLocalStore.userLocalDatabase.getAll().toString());
-        if(!authenticate()){
-            startActivity(new Intent(ActivityNotifications.this, ActivityLogin.class));
-            finish();
-        }
-    }
-
-    private boolean authenticate(){
-        UserLocalStore userLocalStore = UserLocalStore.getInstance(this);
-        return userLocalStore.getIfLoggedIn();
     }
 }

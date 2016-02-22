@@ -5,11 +5,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -21,6 +19,7 @@ import com.wordofmouth.Interfaces.GetRateResponce;
 import com.wordofmouth.ObjectClasses.Item;
 import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.Other.ServerRequests;
+import com.wordofmouth.Other.Utilities;
 import com.wordofmouth.R;
 import com.wordofmouth.SharedPreferences.UserLocalStore;
 
@@ -28,24 +27,18 @@ import java.util.ArrayList;
 
 public class ActivityItem extends BaseActivity implements View.OnClickListener{
 
-    int listId;
-    String listName;
-    int itemId;
-    int userId;
+    String listName, itemName;
+    int itemId, userId, listId, tabToreturn;
     double ratingSelected;
-    String itemName;
     ImageView itemPicture;
-    TextView itemNameTitle;
-    TextView usernameText;
-    TextView description;
-    RatingBar itemRating;
-    TextView ratedBy;
-    RatingBar rateItYourselfRatingBar;
+    TextView itemNameTitle, usernameText, description, ratedBy;
+    RatingBar itemRating, rateItYourselfRatingBar;
     Button rateButton;
     Item item;
     ServerRequests serverRequests;
     UserLocalStore userLocalStore;
-    int tabToreturn;
+    Utilities utilities;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,13 +52,6 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
         rateButton = (Button) findViewById(R.id.rateButton);
         ratedBy = (TextView) findViewById(R.id.ratedBy);
 
-        rateItYourselfRatingBar = (RatingBar) findViewById(R.id.rateItYourselfRatingBar);
-        rateItYourselfRatingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                ratingSelected = (double) rating;
-            }
-        });
-
         Intent intent = getIntent();
         listId = intent.getIntExtra("listId", 0);
         listName = intent.getStringExtra("listName");
@@ -74,7 +60,15 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
         tabToreturn = intent.getIntExtra("tab", 0);
 
         getSupportActionBar().setTitle(itemName);
+
+        rateItYourselfRatingBar = (RatingBar) findViewById(R.id.rateItYourselfRatingBar);
+        rateItYourselfRatingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                ratingSelected = (double) rating;
+            }
+        });
         DBHandler dbHandler = DBHandler.getInstance(this);
+        utilities = Utilities.getInstance(this);
 
         ArrayList<Integer> seens = dbHandler.getSeens(listId);
         boolean flag = false;
@@ -88,7 +82,7 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
 
         item = dbHandler.getItem(itemId);
 
-        Bitmap bitmap = StringToBitMap(item.get_itemImage());
+        Bitmap bitmap = utilities.StringToBitMap(item.get_itemImage(), 150, 150);
 
         itemNameTitle.setText(item.get_name());
         if(bitmap!=null) {
@@ -125,50 +119,12 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
         finish();
     }
 
-    public Bitmap StringToBitMap(String encodedString){
-        byte[] bytes = Base64.decode(encodedString, Base64.DEFAULT);
-        BitmapFactory.Options scaleOptions = new BitmapFactory.Options();
-        scaleOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeByteArray(bytes, 0, bytes.length, scaleOptions);
-
-        int scale = 1;
-        while (scaleOptions.outWidth / scale / 2 >= 150
-                && scaleOptions.outHeight / scale / 2 >= 150) {
-            scale *= 2;
-        }
-
-        BitmapFactory.Options outOptions = new BitmapFactory.Options();
-        outOptions.inSampleSize = scale;
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length,outOptions);
-    }
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
-    private void showConnectionError(){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
-        allertBuilder.setMessage("Network error! Check your internet connection and try again!");
-        allertBuilder.setPositiveButton("OK", null);
-        allertBuilder.show();
-    }
-
-    private void showAlreadyRated(){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
-        allertBuilder.setMessage("You have already rated that item!");
-        allertBuilder.setPositiveButton("OK", null);
-        allertBuilder.show();
-    }
-
     @Override
     public void onClick(View v) {
         switch(v.getId()) {
             case R.id.rateButton:
                 if (!isNetworkAvailable()) {
-                    showConnectionError();
+                    showError("Network error! Check your internet connection and try again!");
                 }
                 else {
                     final ProgressDialog progressDialog = new ProgressDialog(this,R.style.MyTheme);
@@ -180,10 +136,10 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
                         public void done(String response) {
                             progressDialog.dismiss();
                             if (response.equals("Timeout")) {
-                                showConnectionError();
+                                showError("Network error! Check your internet connection and try again!");
                             }
-                            else if (response.equals("You have already rated that item\n")){
-                                showAlreadyRated();
+                            else if (response.equals("You have already rated that item\n")) {
+                                showError("You have already rated that item!");
                             }
                             else  Toast.makeText(ActivityItem.this, "Your rating was uploaded to server", Toast.LENGTH_SHORT).show();
                         }
@@ -192,6 +148,20 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
                 }
                 break;
         }
+    }
+
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    public void showError(String message){
+        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
+        allertBuilder.setMessage(message);
+        allertBuilder.setPositiveButton("OK", null);
+        allertBuilder.show();
     }
 }
 

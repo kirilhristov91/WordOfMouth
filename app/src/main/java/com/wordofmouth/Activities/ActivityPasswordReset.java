@@ -4,29 +4,22 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.wordofmouth.Interfaces.GetListId;
 import com.wordofmouth.Interfaces.GetPasswordResetResponse;
-import com.wordofmouth.ObjectClasses.MyList;
-import com.wordofmouth.ObjectClasses.Notification;
-import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.Other.ServerRequests;
+import com.wordofmouth.Other.Utilities;
 import com.wordofmouth.R;
-import com.wordofmouth.SharedPreferences.UserLocalStore;
 
 public class ActivityPasswordReset extends AppCompatActivity implements View.OnClickListener{
 
@@ -35,13 +28,16 @@ public class ActivityPasswordReset extends AppCompatActivity implements View.OnC
     ServerRequests serverRequests;
     String email="";
     LinearLayout resetPasswordLayout;
+    Utilities utilities;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_activity_password_reset);
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         serverRequests = ServerRequests.getInstance(this);
+        utilities = Utilities.getInstance(this);
         emailField = (EditText) findViewById(R.id.emailPasswordReset);
         resetButton = (Button) findViewById(R.id.resetButton);
         resetButton.setOnClickListener(this);
@@ -49,7 +45,7 @@ public class ActivityPasswordReset extends AppCompatActivity implements View.OnC
         resetPasswordLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                hideKeyboard(v);
+                utilities.hideKeyboard(v);
                 return false;
             }
         });
@@ -59,7 +55,7 @@ public class ActivityPasswordReset extends AppCompatActivity implements View.OnC
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.resetButton:
-                hideKeyboard(v);
+                utilities.hideKeyboard(v);
                 email = emailField.getText().toString();
                 if(emailField.getText().toString().equals("")){
                     showError("Please provide an email!");
@@ -91,12 +87,9 @@ public class ActivityPasswordReset extends AppCompatActivity implements View.OnC
                             progressDialogDownloadList.dismiss();
                             if (response.equals("Timeout")) {
                                 showError("Network error! Check your internet connection and try again!");
-                            }
-                            else if(response.equals("No user with such email")){
+                            } else if (response.equals("No user with such email")) {
                                 showError("There is no user with such email!");
-                            }
-
-                            else{
+                            } else {
                                 Toast.makeText(ActivityPasswordReset.this, "Check your email for your new password!", Toast.LENGTH_LONG).show();
                             }
                         }
@@ -115,23 +108,17 @@ public class ActivityPasswordReset extends AppCompatActivity implements View.OnC
         allertBuilder.create().show();
     }
 
-    public void showError(String message){
-        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
-        allertBuilder.setMessage(message);
-        allertBuilder.setPositiveButton("OK", null);
-        allertBuilder.show();
-    }
-
-    private boolean isNetworkAvailable() {
+    public boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    protected void hideKeyboard(View view)
-    {
-        InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        in.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    public void showError(String message){
+        AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
+        allertBuilder.setMessage(message);
+        allertBuilder.setPositiveButton("OK", null);
+        allertBuilder.show();
     }
 }

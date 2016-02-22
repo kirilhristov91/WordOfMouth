@@ -28,6 +28,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -216,6 +217,7 @@ public class ServerRequests {
 
             } catch (Exception e) {
                 e.printStackTrace();
+                return new User(-1, "Timeout", "Timeout", "Timeout", "Timeout");
             } finally {
                 if(reader != null) {
                     try {
@@ -302,6 +304,7 @@ public class ServerRequests {
 
             } catch (Exception e) {
                 e.printStackTrace();
+                returnedUser = new User(-1, "Timeout", "Timeout", "Timeout", "Timeout");
             } finally {
                 if(reader != null) {
                     try {
@@ -383,6 +386,7 @@ public class ServerRequests {
 
             } catch (Exception e) {
                 e.printStackTrace();
+                return new User(-1, "Timeout", "Timeout", "Timeout", "Timeout");
             } finally {
                 if(reader != null) {
                     try {
@@ -479,6 +483,7 @@ public class ServerRequests {
 
             } catch (Exception e) {
                 e.printStackTrace();
+                return new MyList(-1, "Timeout", "Timeout", "Timeout", "Timeout");
             } finally {
                 if(reader != null) {
                     try {
@@ -583,6 +588,7 @@ public class ServerRequests {
                 else return new Item(-1, -1, "Timeout", "Timeout", -1, 1, "Timeout", "Timeout");
             } catch (Exception e) {
                 e.printStackTrace();
+                return new Item(-1, -1, "Timeout", "Timeout", -1, 1, "Timeout", "Timeout");
             } finally {
                 if(reader != null) {
                     try {
@@ -677,6 +683,8 @@ public class ServerRequests {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                returnedUsers.add(new User(-1, "Timeout", "Timeout", "Timeout", "Timeout"));
+                return returnedUsers;
             } finally {
                 if(reader != null) {
                     try {
@@ -765,6 +773,7 @@ public class ServerRequests {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                return "Timeout";
             } finally {
                 if(reader != null) {
                     try {
@@ -863,6 +872,7 @@ public class ServerRequests {
 
             } catch (Exception e) {
                 e.printStackTrace();
+                return new MyList(-1, "Timeout", "Timeout", "Timeout", "Timeout");
             } finally {
                 if(reader != null) {
                     try {
@@ -952,6 +962,8 @@ public class ServerRequests {
 
             } catch (Exception e) {
                 e.printStackTrace();
+                items.add(new Item(-1, -1, "Timeout", "Timeout", -1, 1, "Timeout", "Timeout"));
+                return items;
             } finally {
                 if(reader != null) {
                     try {
@@ -1043,6 +1055,7 @@ public class ServerRequests {
                 else return new Item(-1, -1, "Timeout", "Timeout", -1, 1, "Timeout", "Timeout");
             } catch (Exception e) {
                 e.printStackTrace();
+                return new Item(-1, -1, "Timeout", "Timeout", -1, 1, "Timeout", "Timeout");
             } finally {
                 if(reader != null) {
                     try {
@@ -1134,6 +1147,7 @@ public class ServerRequests {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                return "Timeout";
             } finally {
                 if(reader != null) {
                     try {
@@ -1210,6 +1224,7 @@ public class ServerRequests {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                return "Timeout";
             } finally {
                 if(reader != null) {
                     try {
@@ -1293,6 +1308,8 @@ public class ServerRequests {
                 else usernames.add("Error: Timeout");
             } catch (Exception e) {
                 e.printStackTrace();
+                usernames.add("Error: Timeout");
+                return usernames;
             } finally {
                 if(reader != null) {
                     try {
@@ -1370,6 +1387,7 @@ public class ServerRequests {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                return "Timeout";
             } finally {
                 if(reader != null) {
                     try {
@@ -1456,6 +1474,7 @@ public class ServerRequests {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                return "Timeout";
             } finally {
                 if(reader != null) {
                     try {

@@ -52,13 +52,13 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
         getSupportActionBar().setTitle(listName);
 
         // create an instance of the local database
-        items = new ArrayList<>();
         dbGetData = DBGetData.getInstance(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        items = new ArrayList<>();
         final ProgressDialog progressDialogFetching = new ProgressDialog(this,R.style.MyTheme);
         progressDialogFetching.setCancelable(false);
         progressDialogFetching.setProgressStyle(android.R.style.Widget_ProgressBar_Large);

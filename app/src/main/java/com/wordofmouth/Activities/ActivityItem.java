@@ -142,10 +142,11 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
                             if (response.equals("Timeout")) {
                                 showError("Network error! Check your internet connection and try again!");
                             }
-                            else if (response.equals("You have already rated that item\n")) {
+                            else if (response.equals("You have already rated that item")) {
                                 showError("You have already rated that item!");
                             }
                             else  Toast.makeText(ActivityItem.this, "Your rating was uploaded to server", Toast.LENGTH_SHORT).show();
+                            //onResume();
                         }
 
                     });

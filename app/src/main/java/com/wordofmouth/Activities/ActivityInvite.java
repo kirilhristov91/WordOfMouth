@@ -165,9 +165,9 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
                                         @Override
                                         public void done(String response) {
                                             progressDialog.dismiss();
-                                            if (response.equals("That person has already been invited to that list!\n")) {
+                                            if (response.equals("That person has already been invited to that list!")) {
                                                 showError("That person has already been invited to list '" + listName + "'!");
-                                            } else if (response.equals("Cannot invite the creator of the list!\n")) {
+                                            } else if (response.equals("Cannot invite the creator of the list!")) {
                                                 showError("That is the creator of the list '" + listName + "'! He/She already has acces to this list!");
                                             } else if (response.equals("Timeout")) {
                                                 showError("Network error! Check your internet connection and try again!");

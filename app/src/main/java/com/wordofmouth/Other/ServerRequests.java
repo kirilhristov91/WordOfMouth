@@ -57,8 +57,8 @@ public class ServerRequests {
         new FetchUserDataAsyncTask(user, userCallback).execute();
     }
 
-    public void UploadProfilePictureAsyncTask(String username, String image, GetUser userCallback){
-        new UploadProfilePictureAsyncTask(username, image, userCallback).execute();
+    public void UploadProfilePictureAsyncTask(String username, String image, GetResponse getResponse){
+        new UploadProfilePictureAsyncTask(username, image, getResponse).execute();
     }
 
     public void UploadListAsyncTask(List list, GetList getList){
@@ -121,9 +121,10 @@ public class ServerRequests {
                 e.printStackTrace();
             }
 
-            if(sb.length()>0)
-                sb.append("&");
-            sb.append(key + "=" + value);
+            if(sb.length()>0) sb.append("&");
+            sb.append(key);
+            sb.append("=");
+            sb.append(value);
         }
         return sb.toString();
     }
@@ -274,7 +275,8 @@ public class ServerRequests {
 
                     String line;
                     while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
+                        sb.append(line);
+                        sb.append("\n");
                     }
                     line = sb.toString();
                     Log.i("custom_Login_check", "The values received are as follows:");
@@ -321,19 +323,19 @@ public class ServerRequests {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////
-    private static class UploadProfilePictureAsyncTask extends AsyncTask<Void, Void, User>{
+    private static class UploadProfilePictureAsyncTask extends AsyncTask<Void, Void, String>{
         String username;
-        GetUser userCallback;
+        GetResponse getResponse;
         String image;
 
-        public UploadProfilePictureAsyncTask(String username, String image, GetUser userCallback) {
+        public UploadProfilePictureAsyncTask(String username, String image, GetResponse getResponse) {
             this.username = username;
-            this.userCallback = userCallback;
             this.image = image;
+            this.getResponse = getResponse;
         }
 
         @Override
-        protected User doInBackground(Void... params) {
+        protected String doInBackground(Void... params) {
 
             Map<String,String> dataToSend = new HashMap<>();
             dataToSend.put("username", username);
@@ -341,7 +343,6 @@ public class ServerRequests {
 
             String encodedStr = getEncodedData(dataToSend);
             BufferedReader reader = null;
-            User returnedUser = null;
 
             //Connection Handling
             try {
@@ -367,20 +368,15 @@ public class ServerRequests {
                     line = sb.toString();
                     Log.i("UploadPicture_check", "The values received:");
                     Log.i("custom_check", line);
-
-                    if (line.equals("failure")) {
-                        Log.i("Fail", "could not upload the picture");
-                        returnedUser = new User(-1, "failure", "failure", "failure", "failure");
-                    }
+                    return line;
                 }
 
                 else {
-                    returnedUser = new User(-1, "Timeout", "Timeout", "Timeout", "Timeout");
+                    return "Timeout";
                 }
-
             } catch (Exception e) {
                 e.printStackTrace();
-                return new User(-1, "Timeout", "Timeout", "Timeout", "Timeout");
+                return "Timeout";
             } finally {
                 if(reader != null) {
                     try {
@@ -390,13 +386,12 @@ public class ServerRequests {
                     }
                 }
             }
-            return returnedUser;
         }
 
         @Override
-        protected void onPostExecute(User returnedUser) {
-            userCallback.done(returnedUser);
-            super.onPostExecute(returnedUser);
+        protected void onPostExecute(String response) {
+            getResponse.done(response);
+            super.onPostExecute(response);
         }
     }
 
@@ -445,7 +440,8 @@ public class ServerRequests {
 
                     String line;
                     while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
+                        sb.append(line);
+                        sb.append("\n");
                     }
                     line = sb.toString();
                     Log.i("custom_ListUpload_check", "The values received are as follows:");
@@ -455,19 +451,14 @@ public class ServerRequests {
                         returnedList = null;
                     } else {
                         JSONObject jResult = new JSONObject(line);
-
-                        if (jResult.length() == 0) {
-                            returnedList = null;
-                        } else {
-                            int id = jResult.getInt("id");
-                            int userId = jResult.getInt("userId");
-                            String username = jResult.getString("username");
-                            String name = jResult.getString("name");
-                            String description = jResult.getString("description");
-                            String image = jResult.getString("image");
-                            returnedList = new List(userId, username, name, description, image);
-                            returnedList.set_listId(id);
-                        }
+                        int id = jResult.getInt("id");
+                        int userId = jResult.getInt("userId");
+                        String username = jResult.getString("username");
+                        String name = jResult.getString("name");
+                        String description = jResult.getString("description");
+                        String image = jResult.getString("image");
+                        returnedList = new List(userId, username, name, description, image);
+                        returnedList.set_listId(id);
                     }
                 }
 
@@ -550,7 +541,8 @@ public class ServerRequests {
 
                     String line;
                     while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
+                        sb.append(line);
+                        sb.append("\n");
                     }
                     line = sb.toString();
                     Log.i("custom_ItemUpload_check", "The values received are as follows:");
@@ -561,22 +553,19 @@ public class ServerRequests {
                     } else {
                         JSONObject jResult = new JSONObject(line);
 
-                        if (jResult.length() == 0) {
-                            returnedItem = null;
-                        } else {
-                            int id = jResult.getInt("id");
-                            int lId = jResult.getInt("listId");
-                            int creatorId = jResult.getInt("userId");
-                            String username = jResult.getString("username");
-                            String name = jResult.getString("name");
-                            double r = jResult.getDouble("rating");
-                            int ratingCounter = jResult.getInt("ratingCounter");
-                            String description = jResult.getString("description");
-                            String image = jResult.getString("picture");
-                            returnedItem = new Item(lId, creatorId, username, name, rating, ratingCounter, description, image);
-                            returnedItem.set_itemId(id);
-                            returnedItem.setSeen(1);
-                        }
+                        int id = jResult.getInt("id");
+                        int lId = jResult.getInt("listId");
+                        int creatorId = jResult.getInt("userId");
+                        String username = jResult.getString("username");
+                        String name = jResult.getString("name");
+                        double r = jResult.getDouble("rating");
+                        int ratingCounter = jResult.getInt("ratingCounter");
+                        String description = jResult.getString("description");
+                        String image = jResult.getString("picture");
+                        returnedItem = new Item(lId, creatorId, username, name, r, ratingCounter, description, image);
+                        returnedItem.set_itemId(id);
+                        returnedItem.setSeen(1);
+
                     }
                 }
                 else return new Item(-1, -1, "Timeout", "Timeout", -1, 1, "Timeout", "Timeout");
@@ -586,7 +575,7 @@ public class ServerRequests {
             } finally {
                 if(reader != null) {
                     try {
-                        reader.close();     //Closing the
+                        reader.close();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -614,11 +603,10 @@ public class ServerRequests {
             this.getUsers = getUsers;
         }
 
-
         @Override
         protected ArrayList<User> doInBackground(Void... params) {
 
-            ArrayList<User> returnedUsers = new ArrayList<User>();
+            ArrayList<User> returnedUsers = new ArrayList<>();
 
             Map<String,String> dataToSend = new HashMap<>();
             Integer cuid = currentUserId;
@@ -648,7 +636,8 @@ public class ServerRequests {
 
                     String line;
                     while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
+                        sb.append(line);
+                        sb.append("\n");
                     }
                     line = sb.toString();
                     Log.i("fetchUsers", "The values received are as follows:");
@@ -754,7 +743,7 @@ public class ServerRequests {
 
                     String line;
                     while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
+                        sb.append(line);
                     }
                     line = sb.toString();
                     Log.i("invite", "The values received are as follows:");
@@ -832,7 +821,8 @@ public class ServerRequests {
 
                     String line;
                     while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
+                        sb.append(line);
+                        sb.append("\n");
                     }
                     line = sb.toString();
                     Log.i("downloadList", "The values received are as follows:");
@@ -844,10 +834,6 @@ public class ServerRequests {
 
                     else {
                         JSONObject jResult = new JSONObject(line);
-
-                        //if (jResult.length() == 0) {
-                          //  returnedList = null;
-                        //} else {
                         int id = jResult.getInt("id");
                         int userId = jResult.getInt("userId");
                         String username = jResult.getString("username");
@@ -856,7 +842,6 @@ public class ServerRequests {
                         String image = jResult.getString("image");
                         returnedList = new List(userId, username, name, description, image);
                         returnedList.set_listId(id);
-                        //}
                     }
                 }
 
@@ -902,7 +887,7 @@ public class ServerRequests {
             Map<String,String> dataToSend = new HashMap<>();
             Integer lid = listId;
             String lidString = lid.toString();
-            ArrayList<Item> items = new ArrayList<Item>();
+            ArrayList<Item> items = new ArrayList<>();
             dataToSend.put("listId", lidString);
             String encodedStr = getEncodedData(dataToSend);
             BufferedReader reader = null;
@@ -925,7 +910,8 @@ public class ServerRequests {
 
                     String line;
                     while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
+                        sb.append(line);
+                        sb.append("\n");
                     }
                     line = sb.toString();
                     Log.i("downloadItems", "The values received are as follows:");
@@ -1021,7 +1007,8 @@ public class ServerRequests {
 
                     String line;
                     while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
+                        sb.append(line);
+                        sb.append("\n");
                     }
                     line = sb.toString();
                     Log.i("downloadNewItem", "The values received are as follows:");
@@ -1029,26 +1016,26 @@ public class ServerRequests {
 
                     JSONObject jResult = new JSONObject(line);
 
-                    if (jResult.length() == 0) {
-                        returnedItem = null;
-                    } else {
-                        int id = jResult.getInt("id");
-                        int lId = jResult.getInt("listId");
-                        int creatorId = jResult.getInt("userId");
-                        String username = jResult.getString("username");
-                        String name = jResult.getString("name");
-                        double r = jResult.getDouble("rating");
-                        int ratingCounter = jResult.getInt("ratingCounter");
-                        String description = jResult.getString("description");
-                        String image = jResult.getString("picture");
-                        returnedItem = new Item(lId, creatorId, username, name, r, ratingCounter, description, image);
-                        returnedItem.set_itemId(id);
-                        returnedItem.setSeen(0);
-                    }
+                    int id = jResult.getInt("id");
+                    int lId = jResult.getInt("listId");
+                    int creatorId = jResult.getInt("userId");
+                    String username = jResult.getString("username");
+                    String name = jResult.getString("name");
+                    double r = jResult.getDouble("rating");
+                    int ratingCounter = jResult.getInt("ratingCounter");
+                    String description = jResult.getString("description");
+                    String image = jResult.getString("picture");
+                    returnedItem = new Item(lId, creatorId, username, name, r, ratingCounter, description, image);
+                    returnedItem.set_itemId(id);
+                    returnedItem.setSeen(0);
+
                 }
                 else return new Item(-1, -1, "Timeout", "Timeout", -1, 1, "Timeout", "Timeout");
             } catch (Exception e) {
                 e.printStackTrace();
+                if(e instanceof JSONException){
+                    return null;
+                }
                 return new Item(-1, -1, "Timeout", "Timeout", -1, 1, "Timeout", "Timeout");
             } finally {
                 if(reader != null) {
@@ -1128,7 +1115,7 @@ public class ServerRequests {
 
                     String line;
                     while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
+                        sb.append(line);
                     }
                     line = sb.toString();
                     Log.i("rate", "The values received are as follows:");
@@ -1205,7 +1192,7 @@ public class ServerRequests {
 
                     String line;
                     while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
+                        sb.append(line);
                     }
                     line = sb.toString();
                     Log.i("sendFeedback", "The values received are as follows:");
@@ -1282,7 +1269,8 @@ public class ServerRequests {
 
                     String line;
                     while ((line = reader.readLine()) != null) {
-                        sb.append(line + "\n");
+                        sb.append(line);
+                        sb.append("\n");
                     }
                     line = sb.toString();
                     Log.i("downloadUsernames", "The values received are as follows:");

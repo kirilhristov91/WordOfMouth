@@ -226,23 +226,22 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
             progressDialog.setCancelable(false);
             progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
             progressDialog.show();
-            serverRequests.UploadProfilePictureAsyncTask(currentUser.getUsername(), imageToSave, new GetUser() {
+            serverRequests.UploadProfilePictureAsyncTask(currentUser.getUsername(), imageToSave, new GetResponse() {
                 @Override
-                public void done(User returnedUser) {
+                public void done(String response) {
                     progressDialog.dismiss();
-                    if (returnedUser != null) {
-                        if (returnedUser.getUsername().equals("Timeout")) {
-                            showError("Network error! Check your internet connection and try again!");
-                        } else if (returnedUser.getUsername().equals("failure")) {
-                            showError("Server Error! Failed to upload your picture!");
-                        }
+
+                    if (response.equals("Timeout")) {
+                        showError("Network error! Check your internet connection and try again!");
+                    } else if (response.equals("failure")) {
+                        showError("Server Error! Failed to upload your picture!");
                     } else {
                         Toast.makeText(ActivityProfile.this, "Your profile picture was updated!", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(ActivityProfile.this, MainActivity.class));
                         finish();
                     }
-
                 }
+
             });
         }
     }

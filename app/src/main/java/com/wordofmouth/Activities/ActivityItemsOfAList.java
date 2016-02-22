@@ -106,6 +106,7 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
         });
 
         // set adapter listener to open itemView if there is an item selected
+        //itemsListView.smoothScrollToPosition();
         itemsListView.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override

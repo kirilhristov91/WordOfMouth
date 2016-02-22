@@ -39,7 +39,11 @@ public class ActivityNotifications extends BaseActivity {
 
         dbHandler = DBHandler.getInstance(this);
         serverRequests = ServerRequests.getInstance(this);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         notifications = dbHandler.getNotifications();
         String[] messages = new String[notifications.size()];
         for(int i = 0; i<notifications.size();i++){
@@ -66,7 +70,6 @@ public class ActivityNotifications extends BaseActivity {
                     }
                 }
         );
-
     }
 
     @Override

@@ -6,9 +6,12 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.wordofmouth.Interfaces.GetFeedbackResponse;
@@ -16,12 +19,14 @@ import com.wordofmouth.Other.ServerRequests;
 import com.wordofmouth.Other.Utilities;
 import com.wordofmouth.R;
 
-public class ActivityFeedback extends BaseActivity implements View.OnClickListener{
+public class ActivityFeedback extends BaseActivity implements View.OnClickListener, View.OnTouchListener{
 
     EditText feedbackField;
     Button feedbackButton;
     ServerRequests serverRequests;
+    LinearLayout feedbackLayout;
     Utilities utilities;
+    ScrollView feedbackScroll;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,9 +36,13 @@ public class ActivityFeedback extends BaseActivity implements View.OnClickListen
         serverRequests = ServerRequests.getInstance(this);
         utilities = Utilities.getInstance(this);
 
+        feedbackScroll = (ScrollView) findViewById(R.id.feedbackScroll);
+        feedbackLayout = (LinearLayout) findViewById(R.id.feedbackLayout);
         feedbackField = (EditText) findViewById(R.id.feedbackField);
         feedbackButton = (Button) findViewById(R.id.feedbackButton);
 
+        feedbackLayout.setOnTouchListener(this);
+        feedbackField.setOnTouchListener(this);
         feedbackButton.setOnClickListener(this);
     }
 
@@ -76,6 +85,26 @@ public class ActivityFeedback extends BaseActivity implements View.OnClickListen
                 break;
         }
     }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        switch(v.getId()) {
+            case R.id.feedbackLayout:
+                utilities.hideKeyboard(v);
+                break;
+            case R.id.feedbackField:
+                feedbackScroll.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        feedbackScroll.fullScroll(ScrollView.FOCUS_DOWN);
+                        feedbackField.requestFocus();
+                    }
+                }, 500);
+                break;
+        }
+        return false;
+    }
+
     public boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);

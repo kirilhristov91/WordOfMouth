@@ -5,15 +5,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:showIn="@layout/activity_add_list" tools:context="com.wordofmouth.Activities.ActivityAddList">
+    tools:showIn="@layout/activity_add_list" tools:context="com.wordofmouth.Activities.ActivityAddList"
+    android:id="@+id/listScroll">
 
     <RelativeLayout
         android:id="@+id/addListLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:descendantFocusability="beforeDescendants"
+        android:focusableInTouchMode="true">
 
         <ImageView
             android:id="@+id/addImageToList"
@@ -44,7 +45,7 @@
 
         <EditText
             android:id="@+id/listNameField"
-            android:layout_marginTop="180dp"
+            android:layout_marginTop="140dp"
             android:hint="Name"
             android:textColor="#FFF"
             android:background="#d3d3d3"

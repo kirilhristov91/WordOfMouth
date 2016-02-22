@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 
 import com.wordofmouth.Interfaces.GetListId;
 import com.wordofmouth.ObjectClasses.MyList;
@@ -26,7 +27,7 @@ import com.wordofmouth.Other.Utilities;
 import com.wordofmouth.R;
 import com.wordofmouth.SharedPreferences.UserLocalStore;
 
-public class ActivityAddList extends BaseActivity implements View.OnClickListener{
+public class ActivityAddList extends BaseActivity implements View.OnClickListener, View.OnTouchListener{
 
     static final int REQUEST_BROWSE_GALLERY = 1;
     EditText listNameField, listDescriptionField;
@@ -37,6 +38,7 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
     RelativeLayout addListLayout;
     Utilities utilities;
     int angle = 0;
+    ScrollView listScroll;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,7 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
         rotateRightList = (ImageView) findViewById(R.id.rotateRightList);
         rotateLeftList = (ImageView) findViewById(R.id.rotateLeftList);
         createNewListButton = (Button) findViewById(R.id.createNewListButton);
+        listScroll = (ScrollView) findViewById(R.id.listScroll);
 
         addImageToList.setOnClickListener(this);
         rotateRightList.setOnClickListener(this);
@@ -58,13 +61,10 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
         createNewListButton.setOnClickListener(this);
 
         addListLayout = (RelativeLayout) findViewById(R.id.addListLayout);
-        addListLayout.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                utilities.hideKeyboard(v);
-                return false;
-            }
-        });
+        addListLayout.setOnTouchListener(this);
+        addListLayout.requestFocus();
+        listNameField.setOnTouchListener(this);
+        listDescriptionField.setOnTouchListener(this);
     }
 
     @Override
@@ -136,6 +136,34 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
                 }
                 break;
         }
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        switch(v.getId()) {
+            case R.id.addListLayout:
+                utilities.hideKeyboard(v);
+                break;
+            case R.id.listNameField:
+                listScroll.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        listScroll.fullScroll(ScrollView.FOCUS_DOWN);
+                        listNameField.requestFocus();
+                    }
+                }, 500);
+                break;
+            case R.id.listDescriptionField:
+                listScroll.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        listScroll.fullScroll(ScrollView.FOCUS_DOWN);
+                        listDescriptionField.requestFocus();
+                    }
+                }, 500);
+                break;
+        }
+        return false;
     }
 
     public boolean isNetworkAvailable() {

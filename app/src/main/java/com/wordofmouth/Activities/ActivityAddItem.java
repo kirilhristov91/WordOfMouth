@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 
 import com.wordofmouth.Interfaces.GetItemId;
 import com.wordofmouth.ObjectClasses.Item;
@@ -27,7 +28,7 @@ import com.wordofmouth.Other.Utilities;
 import com.wordofmouth.R;
 import com.wordofmouth.SharedPreferences.UserLocalStore;
 
-public class ActivityAddItem extends BaseActivity implements View.OnClickListener{
+public class ActivityAddItem extends BaseActivity implements View.OnClickListener, View.OnTouchListener{
 
     static final int REQUEST_BROWSE_GALLERY = 1;
     EditText itemNameField, itemDescriptionField;
@@ -40,6 +41,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
     Bitmap photo;
     RelativeLayout addItemLayout;
     Utilities utilities;
+    ScrollView itemScroll;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,24 +65,22 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
         rotateLeftItem = (ImageView) findViewById(R.id.rotateLeftItem);
         rotateRightItem = (ImageView) findViewById(R.id.rotateRightItem);
 
-        ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-            public void onRatingChanged(RatingBar ratingBar, float rating,
-                                        boolean fromUser) {
-                ratingSelected = (double) rating;
-            }
-        });
+        itemScroll = (ScrollView) findViewById(R.id.itemScroll);
+        addItemLayout = (RelativeLayout) findViewById(R.id.addItemLayout);
+        addItemLayout.setOnTouchListener(this);
+        addItemLayout.requestFocus();
+        itemNameField.setOnTouchListener(this);
+        itemDescriptionField.setOnTouchListener(this);
 
         rotateRightItem.setOnClickListener(this);
         rotateLeftItem.setOnClickListener(this);
         addItemPhoto.setOnClickListener(this);
         addItemButton.setOnClickListener(this);
 
-        addItemLayout = (RelativeLayout) findViewById(R.id.addItemLayout);
-        addItemLayout.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                utilities.hideKeyboard(v);
-                return false;
+        ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            public void onRatingChanged(RatingBar ratingBar, float rating,
+                                        boolean fromUser) {
+                ratingSelected = (double) rating;
             }
         });
     }
@@ -156,6 +156,34 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
                 }
                 break;
         }
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        switch(v.getId()) {
+            case R.id.addItemLayout:
+                utilities.hideKeyboard(v);
+                break;
+            case R.id.itemNameField:
+                itemScroll.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        itemScroll.fullScroll(ScrollView.FOCUS_DOWN);
+                        itemNameField.requestFocus();
+                    }
+                }, 500);
+                break;
+            case R.id.itemDescriptionField:
+                itemScroll.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        itemScroll.fullScroll(ScrollView.FOCUS_DOWN);
+                        itemDescriptionField.requestFocus();
+                    }
+                }, 500);
+                break;
+        }
+        return false;
     }
 
     @Override

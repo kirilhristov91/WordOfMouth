@@ -86,7 +86,6 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
         else {
             noItemsYet.setVisibility(View.INVISIBLE);
 
-
             itemNames = new String[items.size()];
             for (int i = 0; i < items.size(); i++) {
                 itemNames[i] = items.get(i).get_name();

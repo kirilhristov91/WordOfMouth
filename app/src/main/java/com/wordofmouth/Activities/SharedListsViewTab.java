@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.wordofmouth.Interfaces.GetBitmap;
 import com.wordofmouth.Interfaces.GetLists;
@@ -29,16 +30,19 @@ public class SharedListsViewTab extends Fragment {
 
     MainActivity mainActivity;
     ListView sharedListView;
+    TextView noSharedListsYet;
     ArrayList<List> sharedLists;
     ArrayList <Shared> usernames;
     DBGetData dbGetData;
     String username;
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.shared_lists_tab,container,false);
 
         mainActivity = (MainActivity) getActivity();
         sharedListView = (ListView) v.findViewById(R.id.sharedListsListView);
+        noSharedListsYet = (TextView) v.findViewById(R.id.noSharedListsYet);
         username = UserLocalStore.getInstance(mainActivity).getUserLoggedIn().getUsername();
         sharedLists = new ArrayList<List>();
         dbGetData = DBGetData.getInstance(mainActivity);
@@ -66,45 +70,48 @@ public class SharedListsViewTab extends Fragment {
     public void display(ArrayList<List> lists){
 
         sharedLists = lists;
-        final String[] listNames = new String[sharedLists.size()];
-        for (int i = 0; i < sharedLists.size(); i++) {
-            listNames[i] = sharedLists.get(i).get_name();
-        }
-
-        DBHandler dbHandler = DBHandler.getInstance(mainActivity);
-        usernames = dbHandler.getUsernames();
-
-        StringToBitmapRequests stbr = StringToBitmapRequests.getInstance(mainActivity);
-        final ProgressDialog progressDialogShared = new ProgressDialog(mainActivity,R.style.MyTheme);
-        progressDialogShared.setCancelable(false);
-        progressDialogShared.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
-        progressDialogShared.show();
-        stbr.ListsStringToBitmapInBackground(sharedLists, new GetBitmap() {
-            @Override
-            public void done(ArrayList<Bitmap> resultShared) {
-                progressDialogShared.dismiss();
-                ArrayAdapter<String> listAdapterShared =
-                        new CustomListRowAdapter(mainActivity, listNames, sharedLists, resultShared, usernames);
-                sharedListView.setAdapter(listAdapterShared);
+        if(sharedLists.size()>0) {
+            noSharedListsYet.setVisibility(View.INVISIBLE);
+            final String[] listNames = new String[sharedLists.size()];
+            for (int i = 0; i < sharedLists.size(); i++) {
+                listNames[i] = sharedLists.get(i).get_name();
             }
-        });
 
-        sharedListView.setOnItemClickListener(
-                new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        int idClicked;
-                        String list = String.valueOf(parent.getItemAtPosition(position));
-                        idClicked = sharedLists.get(position).get_listId();
-                        Intent myIntent = new Intent(mainActivity, ActivityItemsOfAList.class);
-                        myIntent.putExtra("listId", idClicked);
-                        myIntent.putExtra("name", list);
-                        myIntent.putExtra("tab", 1);
-                        startActivity(myIntent);
-                        mainActivity.finish();
-                    }
+            DBHandler dbHandler = DBHandler.getInstance(mainActivity);
+            usernames = dbHandler.getUsernames();
+
+            StringToBitmapRequests stbr = StringToBitmapRequests.getInstance(mainActivity);
+            final ProgressDialog progressDialogShared = new ProgressDialog(mainActivity, R.style.MyTheme);
+            progressDialogShared.setCancelable(false);
+            progressDialogShared.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
+            progressDialogShared.show();
+            stbr.ListsStringToBitmapInBackground(sharedLists, new GetBitmap() {
+                @Override
+                public void done(ArrayList<Bitmap> resultShared) {
+                    progressDialogShared.dismiss();
+                    ArrayAdapter<String> listAdapterShared =
+                            new CustomListRowAdapter(mainActivity, listNames, sharedLists, resultShared, usernames);
+                    sharedListView.setAdapter(listAdapterShared);
                 }
-        );
+            });
+
+            sharedListView.setOnItemClickListener(
+                    new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            int idClicked;
+                            String list = String.valueOf(parent.getItemAtPosition(position));
+                            idClicked = sharedLists.get(position).get_listId();
+                            Intent myIntent = new Intent(mainActivity, ActivityItemsOfAList.class);
+                            myIntent.putExtra("listId", idClicked);
+                            myIntent.putExtra("name", list);
+                            myIntent.putExtra("tab", 1);
+                            startActivity(myIntent);
+                            mainActivity.finish();
+                        }
+                    }
+            );
+        }
     }
 
 }

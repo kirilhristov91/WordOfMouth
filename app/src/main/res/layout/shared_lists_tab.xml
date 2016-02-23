@@ -14,4 +14,13 @@
         android:layout_marginTop="10dp"
         android:dividerHeight="2dp"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/noSharedListsYet"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:text="There are no lists shared with you"
+        android:textSize="20sp" />
+
 </RelativeLayout>

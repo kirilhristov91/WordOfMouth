@@ -28,7 +28,7 @@ import java.util.ArrayList;
 
 public class MyListsViewTab extends Fragment implements View.OnClickListener{
 
-    TextView createList;
+    TextView createList, noMyListsYet;
     ListView myListView;
     MainActivity mainActivity;
     ArrayList<List> myLists;
@@ -42,6 +42,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
         createList = (TextView) v.findViewById(R.id.createListText);
         myListView = (ListView) v.findViewById(R.id.myListsListView);
         createList.setOnClickListener(this);
+        noMyListsYet = (TextView) v.findViewById(R.id.noMyListsYet);
         username = UserLocalStore.getInstance(mainActivity).getUserLoggedIn().getUsername();
         return v;
     }
@@ -68,45 +69,50 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
     public void display(ArrayList<List> lists){
 
         myLists = lists;
-        final String[] listNames = new String[myLists.size()];
-        for (int i = 0; i < myLists.size(); i++) {
-            listNames[i] = myLists.get(i).get_name();
-        }
 
-        DBHandler dbHandler = DBHandler.getInstance(mainActivity);
-        final ArrayList<Shared> usernames = dbHandler.getUsernames();
+        if(myLists.size()>0) {
+            noMyListsYet.setVisibility(View.INVISIBLE);
 
-        StringToBitmapRequests stbr = StringToBitmapRequests.getInstance(mainActivity);
-        final ProgressDialog progressDialog = new ProgressDialog(mainActivity,R.style.MyTheme);
-        progressDialog.setCancelable(false);
-        progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
-        progressDialog.show();
-        stbr.ListsStringToBitmapInBackground(myLists, new GetBitmap() {
-            @Override
-            public void done(ArrayList<Bitmap> result) {
-                progressDialog.dismiss();
-                ArrayAdapter<String> listAdapter =
-                        new CustomListRowAdapter(mainActivity, listNames, myLists, result, usernames);
-                myListView.setAdapter(listAdapter);
+            final String[] listNames = new String[myLists.size()];
+            for (int i = 0; i < myLists.size(); i++) {
+                listNames[i] = myLists.get(i).get_name();
             }
-        });
 
-        myListView.setOnItemClickListener(
-                new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        int idClicked;
-                        String list = String.valueOf(parent.getItemAtPosition(position));
-                        idClicked = myLists.get(position).get_listId();
-                        Intent myIntent = new Intent(mainActivity, ActivityItemsOfAList.class);
-                        myIntent.putExtra("listId", idClicked);
-                        myIntent.putExtra("name", list);
-                        myIntent.putExtra("tab", 0);
-                        startActivity(myIntent);
-                        mainActivity.finish();
-                    }
+            DBHandler dbHandler = DBHandler.getInstance(mainActivity);
+            final ArrayList<Shared> usernames = dbHandler.getUsernames();
+
+            StringToBitmapRequests stbr = StringToBitmapRequests.getInstance(mainActivity);
+            final ProgressDialog progressDialog = new ProgressDialog(mainActivity, R.style.MyTheme);
+            progressDialog.setCancelable(false);
+            progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
+            progressDialog.show();
+            stbr.ListsStringToBitmapInBackground(myLists, new GetBitmap() {
+                @Override
+                public void done(ArrayList<Bitmap> result) {
+                    progressDialog.dismiss();
+                    ArrayAdapter<String> listAdapter =
+                            new CustomListRowAdapter(mainActivity, listNames, myLists, result, usernames);
+                    myListView.setAdapter(listAdapter);
                 }
-        );
+            });
+
+            myListView.setOnItemClickListener(
+                    new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            int idClicked;
+                            String list = String.valueOf(parent.getItemAtPosition(position));
+                            idClicked = myLists.get(position).get_listId();
+                            Intent myIntent = new Intent(mainActivity, ActivityItemsOfAList.class);
+                            myIntent.putExtra("listId", idClicked);
+                            myIntent.putExtra("name", list);
+                            myIntent.putExtra("tab", 0);
+                            startActivity(myIntent);
+                            mainActivity.finish();
+                        }
+                    }
+            );
+        }
     }
 
     @Override

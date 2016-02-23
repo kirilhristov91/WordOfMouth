@@ -23,8 +23,7 @@ import java.util.ArrayList;
 
 public class ActivityItemsOfAList extends BaseActivity implements View.OnClickListener{
 
-    TextView addItemText;
-    TextView invitePeople;
+    TextView addItemText, invitePeople, noItemsYet;
     ListView itemsListView;
     ArrayList<Item> items;
     int selectedListId;
@@ -42,6 +41,7 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
         invitePeople = (TextView) findViewById(R.id.invitePeople);
         invitePeople.setOnClickListener(this);
         itemsListView = (ListView) findViewById(R.id.itemsListView);
+        noItemsYet = (TextView) findViewById(R.id.noItemsYet);
 
         // get the sent information from Another activity
         // there is no listID 0 in the database so set 0 as itemimage value
@@ -83,49 +83,53 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
             DBHandler dbHandler = DBHandler.getInstance(this);
             dbHandler.updateHasNewContent(selectedListId, 0);
         }
+        else {
+            noItemsYet.setVisibility(View.INVISIBLE);
 
-        itemNames = new String[items.size()];
-        for(int i =0; i< items.size();i++){
-            itemNames[i] = items.get(i).get_name();
-        }
 
-        StringToBitmapRequests stbr = StringToBitmapRequests.getInstance(this);
-        final ProgressDialog progressDialog = new ProgressDialog(this,R.style.MyTheme);
-        progressDialog.setCancelable(false);
-        progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
-        progressDialog.show();
-        stbr.stringToBitmapInBackground(items, new GetBitmap() {
-            @Override
-            public void done(ArrayList<Bitmap> result) {
-                progressDialog.dismiss();
-                ArrayAdapter<String> womAdapter =
-                        new CustomItemRowAdapter(ActivityItemsOfAList.this, itemNames, items, result);
-                itemsListView.setAdapter(womAdapter);
-
+            itemNames = new String[items.size()];
+            for (int i = 0; i < items.size(); i++) {
+                itemNames[i] = items.get(i).get_name();
             }
-        });
 
-        // set adapter listener to open itemView if there is an item selected
-        //itemsListView.smoothScrollToPosition();
-        itemsListView.setOnItemClickListener(
-                new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        String itemName = String.valueOf(parent.getItemAtPosition(position));
-                        int itemIdClicked = items.get(position).get_itemId();
-                        DBHandler dbHandler = DBHandler.getInstance(ActivityItemsOfAList.this);
-                        dbHandler.updateSeen(itemIdClicked);
-                        Intent myIntent = new Intent(ActivityItemsOfAList.this, ActivityItem.class);
-                        myIntent.putExtra("listId", selectedListId);
-                        myIntent.putExtra("listName", listName);
-                        myIntent.putExtra("itemId", itemIdClicked);
-                        myIntent.putExtra("itemName", itemName);
-                        myIntent.putExtra("tab", tabToreturn);
-                        startActivity(myIntent);
-                        finish();
-                    }
+            StringToBitmapRequests stbr = StringToBitmapRequests.getInstance(this);
+            final ProgressDialog progressDialog = new ProgressDialog(this, R.style.MyTheme);
+            progressDialog.setCancelable(false);
+            progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
+            progressDialog.show();
+            stbr.stringToBitmapInBackground(items, new GetBitmap() {
+                @Override
+                public void done(ArrayList<Bitmap> result) {
+                    progressDialog.dismiss();
+                    ArrayAdapter<String> womAdapter =
+                            new CustomItemRowAdapter(ActivityItemsOfAList.this, itemNames, items, result);
+                    itemsListView.setAdapter(womAdapter);
+
                 }
-        );
+            });
+
+            // set adapter listener to open itemView if there is an item selected
+            //itemsListView.smoothScrollToPosition();
+            itemsListView.setOnItemClickListener(
+                    new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            String itemName = String.valueOf(parent.getItemAtPosition(position));
+                            int itemIdClicked = items.get(position).get_itemId();
+                            DBHandler dbHandler = DBHandler.getInstance(ActivityItemsOfAList.this);
+                            dbHandler.updateSeen(itemIdClicked);
+                            Intent myIntent = new Intent(ActivityItemsOfAList.this, ActivityItem.class);
+                            myIntent.putExtra("listId", selectedListId);
+                            myIntent.putExtra("listName", listName);
+                            myIntent.putExtra("itemId", itemIdClicked);
+                            myIntent.putExtra("itemName", itemName);
+                            myIntent.putExtra("tab", tabToreturn);
+                            startActivity(myIntent);
+                            finish();
+                        }
+                    }
+            );
+        }
     }
 
     @Override

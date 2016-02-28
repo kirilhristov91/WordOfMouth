@@ -51,7 +51,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
         selectedListId = intent.getIntExtra("listId", 0);
         listName = intent.getStringExtra("name");
         tabToreturn = intent.getIntExtra("tab", 0);
-        getSupportActionBar().setTitle("Invite to: " + listName);
+        getSupportActionBar().setTitle("Share list: " + listName);
 
         userLocalStore = UserLocalStore.getInstance(this);
         utilities = Utilities.getInstance(this);
@@ -63,6 +63,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
                 searchView.onActionViewExpanded();
             }
         });
+        searchView.setQueryHint("Search users");
 
         searchButton = (Button) findViewById(R.id.searchUsersButton);
         searchButton.setOnClickListener(this);

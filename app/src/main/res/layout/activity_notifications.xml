@@ -12,7 +12,7 @@
         android:divider="@color/backgroundColor"
         android:background="@color/listBackground"
         android:id="@+id/notificationListView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:dividerHeight="10dp">
 

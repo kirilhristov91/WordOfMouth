@@ -285,11 +285,9 @@ public class ServerRequests {
                     JSONObject jResult = new JSONObject(line);
 
                     int id = jResult.getInt("id");
-                    String gcmId = jResult.getString("gcmId");
                     String name = jResult.getString("name");
                     String email = jResult.getString("email");
                     returnedUser = new User(id, name, email, user.getUsername(), user.getPassword());
-                    returnedUser.setGcmId(gcmId);
                 }
 
                 else {
@@ -420,7 +418,6 @@ public class ServerRequests {
             dataToSend.put("image", list.getImage());
             String encodedStr = getEncodedData(dataToSend);
             BufferedReader reader = null;
-            List returnedList = null;
 
             try {
                 URL url = new URL(SERVER_ADDRESS + "uploadList.php");
@@ -448,22 +445,16 @@ public class ServerRequests {
                     Log.i("custom_ListUpload_check", line);
 
                     if (line.equals("You have already created a list with that name!\n")) {
-                        returnedList = null;
+                        return null;
                     } else {
                         JSONObject jResult = new JSONObject(line);
                         int id = jResult.getInt("id");
-                        int userId = jResult.getInt("userId");
-                        String username = jResult.getString("username");
-                        String name = jResult.getString("name");
-                        String description = jResult.getString("description");
-                        String image = jResult.getString("image");
-                        returnedList = new List(userId, username, name, description, image);
-                        returnedList.set_listId(id);
+                        list.set_listId(id);
                     }
                 }
 
                 else {
-                    returnedList = new List(-1, "Timeout", "Timeout", "Timeout", "Timeout");
+                    return new List(-1, "Timeout", "Timeout", "Timeout", "Timeout");
                 }
 
             } catch (Exception e) {
@@ -478,7 +469,7 @@ public class ServerRequests {
                     }
                 }
             }
-            return returnedList;
+            return list;
         }
 
         @Override
@@ -519,7 +510,6 @@ public class ServerRequests {
 
             String encodedStr = getEncodedData(dataToSend);
             BufferedReader reader = null;
-            Item returnedItem = null;
 
             //Connection Handling
             try {
@@ -549,23 +539,13 @@ public class ServerRequests {
                     Log.i("custom_ItemUpload_check", line);
 
                     if (line.equals("An item with that name for that list already exists!\n")) {
-                        returnedItem = null;
+                        return null;
                     } else {
                         JSONObject jResult = new JSONObject(line);
 
                         int id = jResult.getInt("id");
-                        int lId = jResult.getInt("listId");
-                        int creatorId = jResult.getInt("userId");
-                        String username = jResult.getString("username");
-                        String name = jResult.getString("name");
-                        double r = jResult.getDouble("rating");
-                        int ratingCounter = jResult.getInt("ratingCounter");
-                        String description = jResult.getString("description");
-                        String image = jResult.getString("picture");
-                        returnedItem = new Item(lId, creatorId, username, name, r, ratingCounter, description, image);
-                        returnedItem.set_itemId(id);
-                        returnedItem.setSeen(1);
-
+                        item.set_itemId(id);
+                        item.setSeen(1);
                     }
                 }
                 else return new Item(-1, -1, "Timeout", "Timeout", -1, 1, "Timeout", "Timeout");
@@ -581,7 +561,7 @@ public class ServerRequests {
                     }
                 }
             }
-            return returnedItem;
+            return item;
         }
 
         @Override

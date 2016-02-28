@@ -133,7 +133,6 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
                                         showError("Network error! Check your internet connection and try again!");
                                     } else {
                                         DBHandler dbHandler = DBHandler.getInstance(ActivityAddItem.this);
-                                        item.setSeen(1);
                                         dbHandler.addItem(item);
                                         Intent intent = new Intent(ActivityAddItem.this, ActivityItemsOfAList.class);
                                         intent.putExtra("listId", listId);

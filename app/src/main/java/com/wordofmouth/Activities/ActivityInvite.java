@@ -64,6 +64,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
             }
         });
         searchView.setQueryHint("Search users");
+        searchView.setIconified(false);
 
         searchButton = (Button) findViewById(R.id.searchUsersButton);
         searchButton.setOnClickListener(this);

@@ -172,6 +172,7 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        dbHandler.deleteTemp();
         finish();
     }
 
@@ -206,8 +207,9 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
 
         if (requestCode == REQUEST_BROWSE_GALLERY && resultCode == Activity.RESULT_OK) {
             Uri targetUri = data.getData();
-            System.out.println(targetUri.toString());
-            profilePictureinProfile.setImageBitmap(utilities.getBitmapFromURI(targetUri, 200, 200));
+            System.out.println("TARGET URI: " + targetUri.toString());
+            toSave = utilities.getBitmapFromURI(targetUri, 200, 200);
+            profilePictureinProfile.setImageBitmap(toSave);
         }
     }
 

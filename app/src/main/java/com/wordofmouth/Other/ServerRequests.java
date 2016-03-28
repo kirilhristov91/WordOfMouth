@@ -33,6 +33,9 @@ import java.util.Map;
 
 public class ServerRequests {
 
+    // a class to make server requests in the background using the corresponding AsyncTask
+    // each AsyncTask returns a result to the main thread
+
     private static ServerRequests INSTANCE = null;
     private static final int CONNECTION_TIMEOUT = 1000 * 5;
     private static final String SERVER_ADDRESS = "http://wordofmouth.netau.net/";
@@ -192,7 +195,6 @@ public class ServerRequests {
 
                     // if username exists
                     if (line.equals("Username Already Exists")) {
-                        Log.i("ZAETO", "VLQZAH");
                         returnedUser = new User(-1, "Exists", "Exists", "Exists", "Exists");
                     }
 

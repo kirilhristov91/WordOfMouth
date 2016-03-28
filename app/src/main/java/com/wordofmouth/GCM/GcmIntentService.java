@@ -68,7 +68,9 @@ public class GcmIntentService extends IntentService {
                 userLocalStore = UserLocalStore.getInstance(this);
                 dbHandler = DBHandler.getInstance(this);
                 if(recieved_message.contains("invited")) {
-
+                    // if the messag contains "invited" parse the list id and
+                    // create a Notification object to save on the local database
+                    // Finally show the push notification to the user
                     int index = recieved_message.length()-1;
                     while(recieved_message.charAt(index)!=' '){
                         index--;
@@ -92,6 +94,8 @@ public class GcmIntentService extends IntentService {
                 }
 
                 else if(recieved_message.contains("rating")) {
+                    // if the messag contains "rating" parse the item id and download the item
+                    // to uplate the local database
                     int index = recieved_message.length()-1;
                     while(recieved_message.charAt(index)!=' '){
                         index--;
@@ -110,6 +114,8 @@ public class GcmIntentService extends IntentService {
                 }
 
                 else if(recieved_message.contains("new user to list:")){
+                    // if the messag contains "new user to list" parse the list id and download the usernames
+                    // of all users the list is shared with to update the local database
                     ArrayList<String> splittedString = new ArrayList<>();
                     for (String retval: recieved_message.split(" ")){
                         splittedString.add(retval);
@@ -123,6 +129,8 @@ public class GcmIntentService extends IntentService {
                 }
 
                 else {
+                    // parse the item id and download the item
+                    // to save it the local database
                     Integer itemId = Integer.parseInt(recieved_message);
                     ServerRequests serverRequests = ServerRequests.getInstance(this);
                     serverRequests.downloadNewItemInBackground(itemId, new GetItem() {
@@ -147,9 +155,7 @@ public class GcmIntentService extends IntentService {
         GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
 
-    // Put the message into a notification and post it.
-    // This is just one simple example of what you might choose to do with
-    // a GCM message.
+    // Put the message into a notification and post it
     private void sendNotification(String msg) {
         NotificationManager mNotificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);

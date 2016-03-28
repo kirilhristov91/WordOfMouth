@@ -44,7 +44,6 @@ public class ActivityItemsOfAList extends BaseActivity implements View.OnClickLi
         noItemsYet = (TextView) findViewById(R.id.noItemsYet);
 
         // get the sent information from Another activity
-        // there is no listID 0 in the database so set 0 as itemimage value
         Intent intent = getIntent();
         selectedListId = intent.getIntExtra("listId", 0);
         listName = intent.getStringExtra("name");

@@ -1,16 +1,11 @@
 package com.wordofmouth.Other;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.util.Base64;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -18,6 +13,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class Utilities {
+
+    // a helper class mainly for image manipulation
+    // there is also the method to hash a password
 
     private static Utilities INSTANCE;
     private Context context;

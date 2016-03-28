@@ -41,6 +41,7 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_view);
 
+        // link the GUI elements
         itemNameTitle = (TextView) findViewById(R.id.itemNameTitle);
         itemPicture = (ImageView) findViewById(R.id.itemPicture);
         usernameText = (TextView) findViewById(R.id.creatorUsername);
@@ -49,6 +50,7 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
         rateButton = (Button) findViewById(R.id.rateButton);
         ratedBy = (TextView) findViewById(R.id.ratedBy);
 
+        // get data from intent extra
         Intent intent = getIntent();
         listId = intent.getIntExtra("listId", 0);
         listName = intent.getStringExtra("listName");
@@ -56,6 +58,7 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
         itemName = intent.getStringExtra("itemName");
         tabToreturn = intent.getIntExtra("tab", 0);
 
+        // set the item name in the Action bar using the name provided by the intent extra data
         getSupportActionBar().setTitle(itemName);
 
         rateItYourselfRatingBar = (RatingBar) findViewById(R.id.rateItYourselfRatingBar);
@@ -68,12 +71,14 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
         utilities = Utilities.getInstance(this);
 
 
+        // set listeners to GUI elements
         serverRequests = ServerRequests.getInstance(this);
         userLocalStore = UserLocalStore.getInstance(this);
         userId = userLocalStore.getUserLoggedIn().getId();
         rateButton.setOnClickListener(this);
     }
 
+    // get the selected item from the database and display it
     @Override
     protected void onResume() {
         super.onResume();
@@ -123,18 +128,22 @@ public class ActivityItem extends BaseActivity implements View.OnClickListener{
         finish();
     }
 
+    // rate shared item
     @Override
     public void onClick(View v) {
         switch(v.getId()) {
             case R.id.rateButton:
+                // check for network
                 if (!isNetworkAvailable()) {
                     showError("Network error! Check your internet connection and try again!");
                 }
                 else {
+                    // show progress dialog
                     final ProgressDialog progressDialog = new ProgressDialog(this,R.style.MyTheme);
                     progressDialog.setCancelable(false);
                     progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
                     progressDialog.show();
+                    // upload rating to server
                     serverRequests.rateInBackground(listId, itemId, userId, ratingSelected, new GetResponse() {
                         @Override
                         public void done(String response) {

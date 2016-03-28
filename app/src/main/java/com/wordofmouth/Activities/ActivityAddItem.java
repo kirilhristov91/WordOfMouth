@@ -26,6 +26,7 @@ import com.wordofmouth.SharedPreferences.UserLocalStore;
 
 public class ActivityAddItem extends BaseActivity implements View.OnClickListener, View.OnTouchListener{
 
+    // declare global variables
     static final int REQUEST_BROWSE_GALLERY = 1;
     EditText itemNameField, itemDescriptionField;
     RatingBar ratingBar;
@@ -44,6 +45,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_item_view);
 
+        // get data from intent extra
         Intent intent = getIntent();
         listId = intent.getIntExtra("listId", 0);
         listName = intent.getStringExtra("name");
@@ -53,6 +55,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
         photo = null;
         utilities = Utilities.getInstance(this);
 
+        // link gui elements
         addItemPhoto = (ImageView) findViewById(R.id.addImageToItem);
         itemNameField = (EditText) findViewById(R.id.itemNameField);
         itemDescriptionField = (EditText) findViewById(R.id.itemDescriptionField);
@@ -60,9 +63,10 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
         addItemButton = (Button) findViewById(R.id.addItemButton);
         rotateLeftItem = (ImageView) findViewById(R.id.rotateLeftItem);
         rotateRightItem = (ImageView) findViewById(R.id.rotateRightItem);
-
         itemScroll = (ScrollView) findViewById(R.id.itemScroll);
         addItemLayout = (RelativeLayout) findViewById(R.id.addItemLayout);
+
+        // set listeners to gui elements
         addItemLayout.setOnTouchListener(this);
         addItemLayout.requestFocus();
         itemNameField.setOnTouchListener(this);
@@ -104,6 +108,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
                     showError("Please enter a name for the item!");
                 }
                 else {
+                    // check for network
                     if (!isNetworkAvailable()) {
                         showError("Network error! Check your internet connection and try again!");
                     }
@@ -112,15 +117,18 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
                         if (photo != null) {
                             imageToSave = utilities.BitMapToString(photo);
                         }
+                        // create an item object with the information provided
                         UserLocalStore userLocalStore = UserLocalStore.getInstance(this);
                         Item i = new Item(listId, userLocalStore.getUserLoggedIn().getId(), userLocalStore.getUserLoggedIn().getUsername(),
                                 itemNameField.getText().toString(), ratingSelected, 1, itemDescriptionField.getText().toString(), imageToSave);
 
+                        //show progress dialog
                         final ProgressDialog progressDialog = new ProgressDialog(this,R.style.MyTheme);
                         progressDialog.setCancelable(false);
                         progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
                         progressDialog.show();
 
+                        // add item to the server
                         ServerRequests serverRequests = ServerRequests.getInstance(this);
                         serverRequests.UploadItemInBackground(i, new GetItem() {
                             @Override
@@ -132,8 +140,10 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
                                     if (item.get_creatorUsername().equals("Timeout")) {
                                         showError("Network error! Check your internet connection and try again!");
                                     } else {
+                                        // add the item to the local database
                                         DBHandler dbHandler = DBHandler.getInstance(ActivityAddItem.this);
                                         dbHandler.addItem(item);
+                                        // go back to previous activity
                                         Intent intent = new Intent(ActivityAddItem.this, ActivityItemsOfAList.class);
                                         intent.putExtra("listId", listId);
                                         intent.putExtra("name", listName);
@@ -191,6 +201,7 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
         finish();
     }
 
+    // open the gallery of the phone
     public void browseGallery(){
         Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, REQUEST_BROWSE_GALLERY);
@@ -200,7 +211,9 @@ public class ActivityAddItem extends BaseActivity implements View.OnClickListene
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_BROWSE_GALLERY && resultCode == Activity.RESULT_OK) {
+            // get the URI of the selected image
             Uri targetUri = data.getData();
+            // create a Bitmap object using the URI
             photo = utilities.getBitmapFromURI(targetUri, 150, 150);
             addItemPhoto.setImageBitmap(photo);
 

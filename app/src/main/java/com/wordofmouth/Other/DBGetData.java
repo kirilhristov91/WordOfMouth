@@ -12,6 +12,8 @@ import java.util.ArrayList;
 
 public class DBGetData {
 
+    // a class to get lists or items from the database in the background
+
     private static DBHandler dbHandler;
 
     private static DBGetData INSTANCE = null;
@@ -52,15 +54,6 @@ public class DBGetData {
 
         @Override
         protected ArrayList<List> doInBackground(Void... params) {
-
-           /* if(flag == 0) {
-                result = dbHandler.getLists(username);
-            }
-            else {
-                result = dbHandler.getSharedLists(username);
-            }*/
-
-            //return result;
             return dbHandler.getLists(username, flag);
         }
 

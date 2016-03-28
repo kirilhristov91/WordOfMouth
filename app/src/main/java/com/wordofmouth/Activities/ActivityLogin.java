@@ -39,6 +39,7 @@ public class ActivityLogin extends BaseActivity implements View.OnClickListener 
 
         utilities = Utilities.getInstance(this);
 
+        // link the GUI elements
         loginLayout = (LinearLayout) findViewById(R.id.loginLayout);
         usernameField = (EditText) findViewById(R.id.usernameField);
         passwordField = (EditText) findViewById(R.id.passwordField);
@@ -46,6 +47,7 @@ public class ActivityLogin extends BaseActivity implements View.OnClickListener 
         forgotPassword = (TextView) findViewById(R.id.forgotPassword);
         loginButton = (Button) findViewById(R.id.loginButton);
 
+        // set listeners to GUI elements
         loginLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -71,8 +73,12 @@ public class ActivityLogin extends BaseActivity implements View.OnClickListener 
                     showError("Incorrect username or password");
                 }
                 else {
+                    // if the provided information is valid
+                     // hash the password
                     String generatedPassword = utilities.hashPassword(password);
+                     // create user object
                     User user = new User(username, generatedPassword);
+                     // authenticate user
                     authenticate(user);
                 }
                 break;
@@ -86,17 +92,20 @@ public class ActivityLogin extends BaseActivity implements View.OnClickListener 
     }
 
     private void authenticate(User user){
+        // check for network
         if(!isNetworkAvailable()){
             showError("Network error! Check your internet connection and try again!");
         }
         else {
             ServerRequests serverRequests = ServerRequests.getInstance(this);
 
+            // show progress dialog
             final ProgressDialog progressDialog = new ProgressDialog(this,R.style.MyTheme);
             progressDialog.setCancelable(false);
             progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
             progressDialog.show();
 
+            // check if the provided data matches the user data on the server
             serverRequests.fetchUserDataInBackground(user, new GetUser() {
                 @Override
                 public void done(User returnedUser) {
@@ -107,6 +116,7 @@ public class ActivityLogin extends BaseActivity implements View.OnClickListener 
                         if (returnedUser.getUsername().equals("Timeout")) {
                            showError("Network error! Check your internet connection and try again!");
                         } else {
+                            // if the user information matches - sign the user in
                             logUserIn(returnedUser);
                         }
                     }

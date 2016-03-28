@@ -43,6 +43,7 @@ public class ActivityNotifications extends BaseActivity {
         userLocalStore = UserLocalStore.getInstance(ActivityNotifications.this);
     }
 
+    // get the notification objects from the database and display them
     @Override
     protected void onResume() {
         super.onResume();
@@ -66,6 +67,7 @@ public class ActivityNotifications extends BaseActivity {
                         if (notifications.get(position).getAccepted() == 1) {
                             showError("You have already accepted that invitation!");
                         } else {
+                            // if the notification is not already accepted show confirmation dialog on click
                             notificationId = notifications.get(position).getId();
                             showConfirmationDialog(notifications.get(position));
                         }
@@ -74,6 +76,8 @@ public class ActivityNotifications extends BaseActivity {
         );
     }
 
+    // check if the user is logged in before entering the notification page
+    // to avoid entering from clicking on a push notification outside of the application if the user is not logged in
     @Override
     protected void onStart() {
         super.onStart();
@@ -99,6 +103,7 @@ public class ActivityNotifications extends BaseActivity {
                 if (!isNetworkAvailable()) {
                     showError("Network error! Check your internet connection and try again!");
                 } else {
+                    // if the user accepts the request show progress dialog and download the list
                     final ProgressDialog progressDialogDownloadList = new ProgressDialog(ActivityNotifications.this, R.style.MyTheme);
                     progressDialogDownloadList.setCancelable(false);
                     progressDialogDownloadList.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
@@ -112,6 +117,7 @@ public class ActivityNotifications extends BaseActivity {
                             } else if (list.get_username().equals("UpdError")) {
                                 showError("Server error");
                             } else {
+                                // save the list into the local database
                                 DBHandler dbHandler = DBHandler.getInstance(ActivityNotifications.this);
                                 list.setHasNewContent(1);
                                 dbHandler.addList(list);
@@ -136,7 +142,7 @@ public class ActivityNotifications extends BaseActivity {
     private void downloadItems(List list){
 
         listId = list.get_listId();
-
+        // after the downloading of a list is completed, download all its items from the server
         final ProgressDialog progressDialogDownloadItem = new ProgressDialog(ActivityNotifications.this,R.style.MyTheme);
         progressDialogDownloadItem.setCancelable(false);
         progressDialogDownloadItem.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
@@ -149,6 +155,7 @@ public class ActivityNotifications extends BaseActivity {
                     if (items.get(0).get_itemId() == -1) {
                         showError("Network error! Check your internet connection and try again!");
                     } else {
+                        // add the downloaded items to the local database
                         dbHandler.addMultipleItems(items);
                     }
                 downloadUsernames();
@@ -158,6 +165,7 @@ public class ActivityNotifications extends BaseActivity {
     }
 
     private void downloadUsernames(){
+        // finally download the usernames of the users the list is shared with
         final ProgressDialog progressDialogDownloadItem = new ProgressDialog(ActivityNotifications.this,R.style.MyTheme);
         progressDialogDownloadItem.setCancelable(false);
         progressDialogDownloadItem.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
@@ -176,6 +184,7 @@ public class ActivityNotifications extends BaseActivity {
                         dbHandler.addMultipleUsersToSharedWith(listId, usernames);
                     }
                 }
+                // save those usernames and open the shared with me tab from the home page
                 dbHandler.updateAccepted(notificationId);
                 Intent intent = new Intent(ActivityNotifications.this, MainActivity.class);
                 intent.putExtra("tab", 1);

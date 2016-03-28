@@ -25,6 +25,7 @@ import com.wordofmouth.SharedPreferences.UserLocalStore;
 
 public class ActivityAddList extends BaseActivity implements View.OnClickListener, View.OnTouchListener{
 
+    // global variables
     static final int REQUEST_BROWSE_GALLERY = 1;
     EditText listNameField, listDescriptionField;
     String image;
@@ -40,17 +41,18 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_list);
-
         utilities = Utilities.getInstance(this);
+
+        //link GUI elements
         listNameField = (EditText) findViewById(R.id.listNameField);
         listDescriptionField = (EditText) findViewById(R.id.listDescriptionField);
-
         addImageToList = (ImageView) findViewById(R.id.addImageToList);
         rotateRightList = (ImageView) findViewById(R.id.rotateRightList);
         rotateLeftList = (ImageView) findViewById(R.id.rotateLeftList);
         createNewListButton = (Button) findViewById(R.id.createNewListButton);
         listScroll = (ScrollView) findViewById(R.id.listScroll);
 
+        // add listeners to GUI elements
         addImageToList.setOnClickListener(this);
         rotateRightList.setOnClickListener(this);
         rotateLeftList.setOnClickListener(this);
@@ -86,6 +88,7 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
                 }
 
                 else {
+                    // check for network
                     if (!isNetworkAvailable()) {
                         showError("Network error! Check your internet connection and try again!");
                     }
@@ -95,16 +98,19 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
                             image = utilities.BitMapToString(photo);
                         }
 
+                        // create a List object with the provided data
                         UserLocalStore userLocalStore = UserLocalStore.getInstance(this);
                         int currentUserId = userLocalStore.getUserLoggedIn().getId();
                         String currentUserUsername = userLocalStore.getUserLoggedIn().getUsername();
                         List list = new List(currentUserId, currentUserUsername, listNameField.getText().toString(), listDescriptionField.getText().toString(), image);
 
+                        // show progress dialog
                         final ProgressDialog progressDialog = new ProgressDialog(this,R.style.MyTheme);
                         progressDialog.setCancelable(false);
                         progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
                         progressDialog.show();
 
+                        // upload the list to the server
                         ServerRequests serverRequests = ServerRequests.getInstance(this);
                         serverRequests.UploadListInBackground(list, new GetList() {
                             @Override
@@ -116,6 +122,7 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
                                     if (returnedList.get_username().equals("Timeout")) {
                                        showError("Network error! Check your internet connection and try again!");
                                     } else {
+                                        // save the list on the local database
                                         DBHandler dbHandler = DBHandler.getInstance(ActivityAddList.this);
                                         returnedList.setHasNewContent(0);
                                         dbHandler.addList(returnedList);
@@ -167,6 +174,7 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
         finish();
     }
 
+    // open the gallery of the phone
     public void browseGallery(){
         Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, REQUEST_BROWSE_GALLERY);
@@ -176,7 +184,9 @@ public class ActivityAddList extends BaseActivity implements View.OnClickListene
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_BROWSE_GALLERY && resultCode == Activity.RESULT_OK) {
+            // get the URI of the selected image
             Uri targetUri = data.getData();
+            // create a Bitmap object using the URI
             photo = utilities.getBitmapFromURI(targetUri, 100, 100);
             addImageToList.setImageBitmap(photo);
         }

@@ -50,8 +50,10 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
     @Override
     public void onResume() {
         super.onResume();
-        // get the user`s lists to display on fragment
+        // get the user`s lists in background to display on fragment
+
         DBGetData dbGetData = DBGetData.getInstance(mainActivity);
+        // show progress dialog in the meantime
         final ProgressDialog progressDialogFetching = new ProgressDialog(mainActivity,R.style.MyTheme);
         progressDialogFetching.setCancelable(false);
         progressDialogFetching.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
@@ -66,11 +68,13 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
         });
     }
 
+    // display the obtained lists
     public void display(ArrayList<List> lists){
 
         myLists = lists;
 
         if(myLists.size()>0) {
+            // remove the no lists text if lists created by the user exist
             noMyListsYet.setVisibility(View.INVISIBLE);
 
             final String[] listNames = new String[myLists.size()];
@@ -78,14 +82,18 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
                 listNames[i] = myLists.get(i).get_name();
             }
 
+            // get the usernames of the people the list is shared with
             DBHandler dbHandler = DBHandler.getInstance(mainActivity);
             final ArrayList<Shared> usernames = dbHandler.getUsernames();
 
+            // show progress dialog during image(s) manupulation
             StringToBitmapRequests stbr = StringToBitmapRequests.getInstance(mainActivity);
             final ProgressDialog progressDialog = new ProgressDialog(mainActivity, R.style.MyTheme);
             progressDialog.setCancelable(false);
             progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
             progressDialog.show();
+
+            // transform the images into Bitmap objects in background
             stbr.ListsStringToBitmapInBackground(myLists, new GetBitmap() {
                 @Override
                 public void done(ArrayList<Bitmap> result) {
@@ -96,6 +104,7 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
                 }
             });
 
+            // set the onItemClick listener and link to the Items of a List page
             myListView.setOnItemClickListener(
                     new AdapterView.OnItemClickListener() {
                         @Override
@@ -115,12 +124,13 @@ public class MyListsViewTab extends Fragment implements View.OnClickListener{
         }
     }
 
+
+    // set the link to the Create List page
     @Override
     public void onClick(View view){
         switch(view.getId()){
             case R.id.createListText:
                 startActivity(new Intent(mainActivity, ActivityAddList.class));
-                //mainActivity.finish();
                 break;
         }
     }

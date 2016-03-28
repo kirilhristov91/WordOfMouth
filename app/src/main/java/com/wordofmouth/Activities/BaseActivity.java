@@ -38,6 +38,7 @@ public abstract class BaseActivity extends AppCompatActivity{
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private UserLocalStore userLocalStore;
 
+    // If the actionBar is not be used by an Activity it should override this method to return false
     public boolean usesToolbar(){
         return true;
     }
@@ -73,6 +74,7 @@ public abstract class BaseActivity extends AppCompatActivity{
                     R.string.drawer_close  /* "close drawer" description */
             );
 
+            // creates the menu list
             ListView menuListView = (ListView) mDrawerLayout.findViewById(R.id.list_slidermenu);
             String[] drawerListViewItems = getResources().getStringArray(R.array.menu_items);
             ArrayAdapter<String> menuAdapter = new CustomMenuItemAdapter(this, drawerListViewItems);
@@ -80,6 +82,7 @@ public abstract class BaseActivity extends AppCompatActivity{
             DrawerItemClickListener drawerItemClickListener = new DrawerItemClickListener(this, mDrawerLayout);
             menuListView.setOnItemClickListener(drawerItemClickListener);
 
+            // set the link to the Profile Activity
             ImageView menuProfilePicture = (ImageView) mDrawerLayout.findViewById(R.id.menuProfilePicture);
             menuProfilePicture.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -94,6 +97,7 @@ public abstract class BaseActivity extends AppCompatActivity{
                 }
             });
 
+            // set the profile picture inside the menu
             userLocalStore = UserLocalStore.getInstance(this);
             DBHandler dbHandler = DBHandler.getInstance(this);
             Utilities utilities = Utilities.getInstance(this);
@@ -111,6 +115,7 @@ public abstract class BaseActivity extends AppCompatActivity{
         setContentView(baseLayout);
     }
 
+    // sets the menu navigation links
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         Context context;
         DrawerLayout mDrawerLayout;
@@ -210,11 +215,12 @@ public abstract class BaseActivity extends AppCompatActivity{
         }
     }
 
+    // opens the drawer menu on menu icon click
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         boolean drawerOpened = false;
         switch (item.getItemId()) {
-            case R.id.action_vili:
+            case R.id.action_navmenu:
                 drawerOpened = true;
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 break;
@@ -227,6 +233,7 @@ public abstract class BaseActivity extends AppCompatActivity{
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    // method to check if the phone has Internet connection
     protected boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -234,6 +241,7 @@ public abstract class BaseActivity extends AppCompatActivity{
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
+    // method to display a message containing dialog box to the user
     protected void showError(String message){
         AlertDialog.Builder allertBuilder = new AlertDialog.Builder(this);
         allertBuilder.setMessage(message);
@@ -241,6 +249,7 @@ public abstract class BaseActivity extends AppCompatActivity{
         allertBuilder.show();
     }
 
+    // method to hide the soft keyboard. The event to hide the keyboard is defined in the particular Activity
     public void hideKeyboard(View view){
         InputMethodManager in = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
         in.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);

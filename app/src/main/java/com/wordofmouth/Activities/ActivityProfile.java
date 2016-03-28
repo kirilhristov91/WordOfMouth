@@ -21,7 +21,6 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.wordofmouth.Interfaces.GetResponse;
-import com.wordofmouth.Interfaces.GetUser;
 import com.wordofmouth.Other.DBHandler;
 import com.wordofmouth.Other.ServerRequests;
 import com.wordofmouth.Other.Utilities;
@@ -56,6 +55,7 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
         serverRequests = ServerRequests.getInstance(this);
         utilities = Utilities.getInstance(this);
 
+        // link the GUI elements
         profilePictureinProfile = (ImageView) findViewById(R.id.profilePicture);
         updatePicture = (Button) findViewById(R.id.updatePictureButton);
         chooseFromGallery = (Button) findViewById(R.id.chooseFromGallery);
@@ -70,6 +70,7 @@ public class ActivityProfile extends BaseActivity implements View.OnClickListene
         profileScroll = (ScrollView) findViewById(R.id.profileScroll);
         profileLayout.requestFocus();
 
+        //set listeners to the GUI elements
         rotateRight.setOnClickListener(this);
         rotateLeft.setOnClickListener(this);
         updatePicture.setOnClickListener(this);

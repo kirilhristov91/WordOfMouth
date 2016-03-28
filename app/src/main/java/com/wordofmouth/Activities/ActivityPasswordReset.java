@@ -62,6 +62,7 @@ public class ActivityPasswordReset extends BaseActivity implements View.OnClickL
                     showError("Please provide an email!");
                 }
                 else{
+                    // ask the user to confirm he/she wants to reset his/her password
                     showConfirmationDialog();
                 }
                 break;
@@ -78,6 +79,7 @@ public class ActivityPasswordReset extends BaseActivity implements View.OnClickL
                 if (!isNetworkAvailable()) {
                     showError("Network error! Check your internet connection and try again!");
                 } else {
+                    // if confirmed add connect to the server to reset the password
                     final ProgressDialog progressDialogDownloadList = new ProgressDialog(ActivityPasswordReset.this, R.style.MyTheme);
                     progressDialogDownloadList.setCancelable(false);
                     progressDialogDownloadList.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
@@ -91,6 +93,7 @@ public class ActivityPasswordReset extends BaseActivity implements View.OnClickL
                             } else if (response.equals("No user with such email")) {
                                 showError("There is no user with such email!");
                             } else {
+                                // notify the user that his/her password has been reset
                                 Toast.makeText(ActivityPasswordReset.this, "Check your email for your new password!", Toast.LENGTH_LONG).show();
                             }
                         }

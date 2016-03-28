@@ -12,6 +12,8 @@ import java.util.ArrayList;
 
 public class StringToBitmapRequests {
 
+    // a class to transfrom String represented lists or items images into Bitmap objects in the background
+
     private static StringToBitmapRequests INSTANCE;
     private static Utilities utilities;
 

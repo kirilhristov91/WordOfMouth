@@ -52,7 +52,7 @@ public class SharedListsViewTab extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // get the user`s lists to display on fragment
+        // get the shared with the user lists to display on fragment
         final ProgressDialog progressDialogFetching = new ProgressDialog(mainActivity,R.style.MyTheme);
         progressDialogFetching.setCancelable(false);
         progressDialogFetching.setProgressStyle(android.R.style.Widget_ProgressBar_Large);

@@ -34,7 +34,8 @@ public class MainActivity extends BaseActivity{
         pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(adapter);
 
-        // taka se slaga koi tab da se pokaje 0 ili 1
+        // by default the first tab is shown when the Activity is opened.
+        // this forces the second tab to be shown instead if needed
         if(getIntent().getIntExtra("tab", 0) == 1) {
             pager.setCurrentItem(1);
         }
@@ -58,13 +59,14 @@ public class MainActivity extends BaseActivity{
     @Override
     protected void onStart() {
         super.onStart();
-        //System.out.println(userLocalStore.userLocalDatabase.getAll().toString());
+        // open the Login Activity if no user is currently logged in
         if(!authenticate()){
             startActivity(new Intent(MainActivity.this, ActivityLogin.class));
             finish();
         }
     }
 
+    // check if a user is currently logged in
     private boolean authenticate(){
         UserLocalStore userLocalStore = UserLocalStore.getInstance(this);
         return userLocalStore.getIfLoggedIn();

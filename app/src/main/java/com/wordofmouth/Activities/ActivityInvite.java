@@ -47,15 +47,18 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_invite);
 
+        // get data from intent extra
         Intent intent = getIntent();
         selectedListId = intent.getIntExtra("listId", 0);
         listName = intent.getStringExtra("name");
         tabToreturn = intent.getIntExtra("tab", 0);
+        // set the list name in the Action bar
         getSupportActionBar().setTitle("Share list: " + listName);
 
         userLocalStore = UserLocalStore.getInstance(this);
         utilities = Utilities.getInstance(this);
 
+        // link GUI elements and set listeners
         searchView = (SearchView) findViewById(R.id.searchUsersField);
         searchView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,14 +101,17 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
                 searchView.clearFocus();
                 hideKeyboard(v);
                 searchView.clearFocus();
+                // check for network
                 if (!isNetworkAvailable()) {
                     showError("Network error! Check your internet connection and try again!");
                 } else {
+                    // show progress dialog
                     final ProgressDialog progressDialog = new ProgressDialog(this,R.style.MyTheme);
                     progressDialog.setCancelable(false);
                     progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
                     progressDialog.show();
 
+                    // get the users mathching the entered text in the search box
                     ServerRequests serverRequests = ServerRequests.getInstance(this);
                     serverRequests.fetchUsersInBackground(searchView.getQuery().toString(), userLocalStore.getUserLoggedIn().getId(), new GetUsers() {
                         @Override
@@ -128,6 +134,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
         }
     }
 
+    // displays the fetched from the server users
     public void display(ArrayList<User> returnedUsers){
         users = returnedUsers;
         usernames = new String[users.size()];
@@ -140,28 +147,33 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
         if (usernames.length == 0){
             userAdapter.clear();
         }
+        // set listener to the listView of users
         fetchedUserList.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         userClicked = position;
+                        // show confirmation dialog when a card containing a user is clicked
                         AlertDialog.Builder allertBuilder = new AlertDialog.Builder(ActivityInvite.this);
                         allertBuilder.setMessage("Are you sure you want to share the list with that user?");
                         allertBuilder.setCancelable(false);
 
                         allertBuilder.setPositiveButton("Invite", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
+                                // check for network
                                 if (!isNetworkAvailable()) {
                                     showError("Network error! Check your internet connection and try again!");
                                 } else {
                                     int sharedWithId = users.get(userClicked).getId();
                                     int currentUserId = userLocalStore.getUserLoggedIn().getId();
 
+                                    // show progress dialog
                                     final ProgressDialog progressDialog = new ProgressDialog(ActivityInvite.this, R.style.MyTheme);
                                     progressDialog.setCancelable(false);
                                     progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
                                     progressDialog.show();
 
+                                    // send invitation to the selected user - stores on the server the id of the list and the ids of the two users
                                     ServerRequests serverRequests = ServerRequests.getInstance(ActivityInvite.this);
                                     serverRequests.inviteInBackground(selectedListId, currentUserId, sharedWithId, new GetResponse() {
                                         @Override
@@ -174,12 +186,7 @@ public class ActivityInvite extends BaseActivity implements View.OnClickListener
                                             } else if (response.equals("Timeout")) {
                                                 showError("Network error! Check your internet connection and try again!");
                                             } else {
-                                                Intent myIntent = new Intent(ActivityInvite.this, ActivityItemsOfAList.class);
-                                                myIntent.putExtra("listId", selectedListId);
-                                                myIntent.putExtra("name", listName);
-                                                myIntent.putExtra("tab", tabToreturn);
-                                                startActivity(myIntent);
-                                                finish();
+                                                Toast.makeText(ActivityInvite.this, "The selected user was invited to the current list", Toast.LENGTH_SHORT).show();
                                             }
                                         }
                                     });

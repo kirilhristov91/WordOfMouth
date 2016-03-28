@@ -28,7 +28,7 @@ public class ActivityFeedback extends BaseActivity implements View.OnClickListen
         setContentView(R.layout.activity_feedback);
 
         serverRequests = ServerRequests.getInstance(this);
-
+        // link the GUI elements
         feedbackScroll = (ScrollView) findViewById(R.id.feedbackScroll);
         feedbackLayout = (LinearLayout) findViewById(R.id.feedbackLayout);
         feedbackField = (EditText) findViewById(R.id.feedbackField);
@@ -58,10 +58,12 @@ public class ActivityFeedback extends BaseActivity implements View.OnClickListen
                         showError("Network error! Check your internet connection and try again!");
                     }
                     else{
+                        // show progress dialog
                         final ProgressDialog progressDialog = new ProgressDialog(this,R.style.MyTheme);
                         progressDialog.setCancelable(false);
                         progressDialog.setProgressStyle(android.R.style.Widget_ProgressBar_Large);
                         progressDialog.show();
+                        // upload the feedback message to the server
                         serverRequests.sendFeedbackInBackground(feedback, new GetResponse() {
                             @Override
                             public void done(String response) {

@@ -95,7 +95,7 @@ public class DBHandler extends SQLiteOpenHelper{
                 ");";
 
         String CreateItemTableQuery = "CREATE TABLE " + TABLE_Item + "(" +
-                COLUMN_ItemID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_ItemID + " INTEGER PRIMARY KEY , " +
                 COLUMN_ListID + " INTEGER, " +
                 COLUMN_CreatorId + " INTEGER, " +
                 COLUMN_Creator + " TEXT, " +
@@ -115,7 +115,7 @@ public class DBHandler extends SQLiteOpenHelper{
                 ");";
 
         String CreateNotificationTableQuery = "CREATE TABLE " + TABLE_Notification + "(" +
-                COLUMN_NotificationID + " INTEGER PRIMARY KEY, " +
+                COLUMN_NotificationID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_NotificationListId + " INTEGER, " +
                 COLUMN_NotificationMsg + " TEXT, " +
                 COLUMN_NotificationDate + " TEXT, " +
@@ -206,12 +206,23 @@ public class DBHandler extends SQLiteOpenHelper{
         db.close();
     }
 
-    public void addUserToSharedWith(int listId, String username){
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_SharedListId, listId);
-        values.put(COLUMN_SharedWithUsername, username);
+    public void addUserToSharedWith(int listId, String username) {
         SQLiteDatabase db = getWritableDatabase();
-        db.insert(TABLE_SharedWith, null, values);
+        String check = "SELECT * FROM " + TABLE_SharedWith
+                + " WHERE " + COLUMN_SharedListId + " = " + listId
+                + " AND " + COLUMN_SharedWithUsername + " =\"" + username + "\";";
+
+        Cursor c = db.rawQuery(check, null);
+        c.moveToFirst();
+        // if the list is not already shared with that user in the db
+        if (c.isAfterLast()) {
+            // insert the record
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_SharedListId, listId);
+            values.put(COLUMN_SharedWithUsername, username);
+            db.insert(TABLE_SharedWith, null, values);
+        }
+        c.close();
         db.close();
     }
 

@@ -159,7 +159,7 @@ public class ActivityRegister extends BaseActivity implements View.OnClickListen
         return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
     }
 
-    // Get GcmId in Background
+    // Get Gcm Registration Id in Background
     private static class GCMRequest{
 
         static Context context;
